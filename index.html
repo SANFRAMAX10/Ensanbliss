@@ -1,14 +1,12 @@
-<!-- Android 4.1 compatibility pass: CSS vars expanded, ES6 reduced -->
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="viewport" content="width=2400, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0c0f" />
   <title>Ensanbliss — Panel</title>
 
   <style>
-
     /* [Todos los estilos CSS anteriores van aquí - son idénticos] */
     :root{
       --bg: #0b0c0f;
@@ -34,11 +32,10 @@
     html, body { height: 100%; }
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color: rgba(255,255,255,.92);
-      background: #0b0c0f;
+      font-family: var(--ui-font);
+      color: var(--text);
+      background: var(--bg);
       overflow: hidden;
-      zoom: 0.85;
     }
 
     .bg{
@@ -64,10 +61,10 @@
     }
 
     .card{
-      background: rgba(15, 16, 20, .62);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
-      box-shadow: 0 12px 40px rgba(0,0,0,.45);
+      background: var(--glass);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       overflow: hidden;
@@ -93,9 +90,9 @@
       font-size: 12px;
       padding: 6px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.10);
+      border: 1px solid var(--stroke);
       background: rgba(0,0,0,.20);
-      color: rgba(255,255,255,.70);
+      color: var(--muted);
       user-select:none;
       white-space: nowrap;
     }
@@ -121,7 +118,7 @@
 
     .btn{
       appearance: none;
-      border: 1px solid rgba(255,255,255,.16);
+      border: 1px solid var(--stroke-2);
       background: rgba(10,10,14,.42);
       color: rgba(255,255,255,.92);
       padding: 10px 12px;
@@ -199,7 +196,7 @@
       gap: 10px;
     }
     .brand{
-      font-family: "Breathing", "Breathe", "Segoe Script", "Brush Script MT", "Snell Roundhand", cursive;
+      font-family: var(--brand-font);
       font-size: 34px;
       line-height: 1.06;
       letter-spacing: .4px;
@@ -209,7 +206,7 @@
     }
     .sub{
       margin:0;
-      color: rgba(255,255,255,.70);
+      color: var(--muted);
       font-size: 14px;
       line-height: 1.35;
     }
@@ -220,7 +217,7 @@
       gap: 12px;
       margin-top: 6px;
       padding-top: 10px;
-      border-top: 1px solid rgba(255,255,255,.10);
+      border-top: 1px solid var(--stroke);
     }
     .time{
       font-size: 44px;
@@ -229,7 +226,7 @@
     }
     .date{
       text-align:right;
-      color: rgba(255,255,255,.70);
+      color: var(--muted);
       font-size: 14px;
       line-height: 1.2;
       white-space: nowrap;
@@ -262,12 +259,12 @@
     }
     .wx-temp .unit{
       font-size: 15px;
-      color: rgba(255,255,255,.70);
+      color: var(--muted);
       padding-bottom: 6px;
     }
     .wx-meta{
       margin-top: 4px;
-      color: rgba(255,255,255,.70);
+      color: var(--muted);
       font-size: 13px;
       line-height: 1.35;
       white-space: nowrap;
@@ -283,7 +280,7 @@
     }
     .wx-right .desc{
       margin: 6px 0 0;
-      color: rgba(255,255,255,.70);
+      color: var(--muted);
       font-size: 13px;
       line-height: 1.25;
     }
@@ -291,7 +288,7 @@
       display:flex;
       gap: 16px;
       padding: 0 16px 8px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
+      border-bottom: 1px solid var(--stroke);
     }
     .tab{
       position: relative;
@@ -309,7 +306,7 @@
       position:absolute;
       left:0; right:0; bottom:-1px;
       height: 2px;
-      background: #f0c14b;
+      background: var(--accent);
       border-radius: 2px;
     }
 
@@ -353,7 +350,7 @@
       display:flex;
       gap: 12px;
       padding-top: 12px;
-      border-top: 1px solid rgba(255,255,255,.10);
+      border-top: 1px solid var(--stroke);
       overflow-x: auto;
       scrollbar-width: thin;
     }
@@ -443,8 +440,8 @@
       right: 14px;
       bottom: 14px;
       z-index: 70;
-      background: rgba(15, 16, 20, .78);
-      border: 1px solid rgba(255,255,255,.10);
+      background: var(--glass-2);
+      border: 1px solid var(--stroke);
       border-radius: 18px;
       box-shadow: 0 18px 45px rgba(0,0,0,.50);
       backdrop-filter: blur(12px);
@@ -641,7 +638,7 @@
       flex-shrink: 0;
     }
     .music-item.active .num{
-      background: #f0c14b;
+      background: var(--accent);
       color: rgba(20,20,22,.92);
     }
     .music-item .info{
@@ -867,8 +864,7 @@
       border: 2px solid rgba(255,255,255,.12);
     }
 
-  
-</style>
+  </style>
 </head>
 
 <body>
@@ -1226,15 +1222,14 @@
   </div>
 
   <script>
-
-    var $ = function(s){ return document.querySelector(s); };
-    var $$ = function(s){ return Array.from(document.querySelectorAll(s)); };
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
 
     function pad2(n){ return String(n).padStart(2,'0'); }
     function clamp(n, a, b){ return Math.min(b, Math.max(a, n)); }
 
     // PLAYLIST CON URLs REALES DE ARCHIVE.ORG
-    var musicPlaylist = [
+    const musicPlaylist = [
       { 
         title: 'Meditación Zen Profunda', 
         artist: 'Sonidos Naturaleza',
@@ -1361,7 +1356,7 @@
      * 2 PESTAÑAS
      ***********************/
     function setPage(name){
-      var isPanel = name === 'panel';
+      const isPanel = name === 'panel';
       $('#pagePanel').classList.toggle('hidden', !isPanel);
       $('#pageMusic').classList.toggle('hidden', isPanel);
 
@@ -1382,12 +1377,12 @@
      * Reloj / Fecha
      ***********************/
     function tickClock(){
-      var now = new Date();
-      var timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       $('#time').textContent = timeStr;
 
-      var weekday = now.toLocaleDateString('es-ES', { weekday: 'long' });
-      var date = now.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: '2-digit' });
+      const weekday = now.toLocaleDateString('es-ES', { weekday: 'long' });
+      const date = now.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: '2-digit' });
       $('#dateLine1').textContent = weekday.charAt(0).toUpperCase() + weekday.slice(1);
       $('#dateLine2').textContent = date;
     }
@@ -1410,8 +1405,8 @@
     }
     $('#btnFullscreen').addEventListener('click', toggleFullscreen);
     document.addEventListener('fullscreenchange', () => {
-      var btn = $('#btnFullscreen');
-      var icon = btn.querySelector('.icon svg');
+      const btn = $('#btnFullscreen');
+      const icon = btn.querySelector('.icon svg');
       if(document.fullscreenElement){
         icon.innerHTML = '<path d="M4 9h5V4M15 4h5v5M15 20h5v-5M4 15h5v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
         btn.childNodes[2].textContent = ' Salir pantalla completa';
@@ -1424,8 +1419,8 @@
     /***********************
      * Wake Lock
      ***********************/
-    var wakeLock = null;
-    var wakeWanted = false;
+    let wakeLock = null;
+    let wakeWanted = false;
 
     async function requestWakeLock(){
       wakeWanted = true;
@@ -1452,12 +1447,12 @@
 
     function setWakeStatus(ok, text){
       $('#wakeText').textContent = `Wake Lock: ${text}`;
-      var dot = $('#dotWake');
+      const dot = $('#dotWake');
       dot.classList.toggle('ok', !!ok);
       dot.classList.toggle('bad', !ok);
 
       $('#wakeText2').textContent = `Wake Lock: ${text}`;
-      var dot2 = $('#dotWake2');
+      const dot2 = $('#dotWake2');
       dot2.classList.toggle('ok', !!ok);
       dot2.classList.toggle('bad', !ok);
     }
@@ -1490,9 +1485,9 @@
     /***********************
      * Clima (CÓDIGO COMPLETO ANTERIOR - sin cambios)
      ***********************/
-    var DEFAULT = { name: 'Málaga', lat: 36.7213, lon: -4.4217 };
+    const DEFAULT = { name: 'Málaga', lat: 36.7213, lon: -4.4217 };
 
-    var WMO = {
+    const WMO = {
       0:  { text: 'Despejado' , icon: 'sun' },
       1:  { text: 'Mayormente despejado', icon: 'suncloud' },
       2:  { text: 'Parcialmente nublado', icon: 'suncloud' },
@@ -1517,10 +1512,10 @@
     };
 
     function iconSVG(kind, size=34){
-      var s = size;
-      var common = `width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"`;
-      var stroke = `stroke="rgba(255,255,255,.92)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"`;
-      var accent = `stroke="rgba(240,193,75,.95)"`;
+      const s = size;
+      const common = `width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"`;
+      const stroke = `stroke="rgba(255,255,255,.92)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"`;
+      const accent = `stroke="rgba(240,193,75,.95)"`;
       switch(kind){
         case 'sun':
           return `<svg ${common}>
@@ -1582,31 +1577,31 @@
     }
 
     function setGeoStatus(ok, text){
-      var dot = $('#dotGeo');
+      const dot = $('#dotGeo');
       dot.classList.toggle('ok', !!ok);
       dot.classList.toggle('bad', !ok);
       $('#geoText').textContent = text;
     }
 
     function formatDow(dateStr){
-      var d = new Date(dateStr);
+      const d = new Date(dateStr);
       return d.toLocaleDateString('es-ES', { weekday:'short' }).replace('.', '');
     }
 
     function nearestIndex(times){
-      var now = Date.now();
-      var best = 0;
-      var bestDiff = Infinity;
-      for(var i=0;i<times.length;i++){
-        var t = new Date(times[i]).getTime();
-        var diff = Math.abs(t - now);
+      const now = Date.now();
+      let best = 0;
+      let bestDiff = Infinity;
+      for(let i=0;i<times.length;i++){
+        const t = new Date(times[i]).getTime();
+        const diff = Math.abs(t - now);
         if(diff < bestDiff){ bestDiff = diff; best = i; }
       }
       return best;
     }
 
     async function loadWeather(lat, lon, placeLabel){
-      var url = new URL('https://api.open-meteo.com/v1/forecast');
+      const url = new URL('https://api.open-meteo.com/v1/forecast');
       url.searchParams.set('latitude', lat);
       url.searchParams.set('longitude', lon);
       url.searchParams.set('timezone', 'auto');
@@ -1614,13 +1609,13 @@
       url.searchParams.set('hourly', 'temperature_2m,precipitation_probability,weather_code,relative_humidity_2m,wind_speed_10m');
       url.searchParams.set('daily', 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max');
 
-      var res = await fetch(url.toString(), { cache: 'no-store' });
+      const res = await fetch(url.toString(), { cache: 'no-store' });
       if(!res.ok) throw new Error('No se pudo obtener el tiempo');
-      var data = await res.json();
+      const data = await res.json();
 
-      var cur = data.current;
-      var code = cur.weather_code;
-      var wx = WMO[code] || { text: 'Tiempo', icon: 'cloud' };
+      const cur = data.current;
+      const code = cur.weather_code;
+      const wx = WMO[code] || { text: 'Tiempo', icon: 'cloud' };
 
       $('#wxTemp').textContent = Math.round(cur.temperature_2m);
       $('#wxMeta').innerHTML =
@@ -1629,35 +1624,35 @@
         `Viento: ${Math.round(cur.wind_speed_10m ?? 0)} km/h`;
 
       $('#wxPlace').textContent = placeLabel || 'Tiempo';
-      var now = new Date();
-      var timeLabel = now.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
+      const now = new Date();
+      const timeLabel = now.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
       $('#wxDesc').textContent = `${wx.text} · ${timeLabel}`;
 
-      var times = data.hourly.time;
-      var start = nearestIndex(times);
-      var count = 12;
-      var slice = function(arr){ return arr.slice(start, start+count); };
+      const times = data.hourly.time;
+      const start = nearestIndex(times);
+      const count = 12;
+      const slice = (arr) => arr.slice(start, start+count);
 
-      var temp = slice(data.hourly.temperature_2m);
-      var pr   = slice(data.hourly.precipitation_probability);
-      var wind = slice(data.hourly.wind_speed_10m);
-      var tms  = slice(times);
+      const temp = slice(data.hourly.temperature_2m);
+      const pr   = slice(data.hourly.precipitation_probability);
+      const wind = slice(data.hourly.wind_speed_10m);
+      const tms  = slice(times);
 
       renderLineChart('#svgTemp', '#labelsTemp', tms, temp, '°C');
       renderLineChart('#svgPrecip', '#labelsPrecip', tms, pr, '%');
       renderLineChart('#svgWind', '#labelsWind', tms, wind, 'km/h');
 
-      var daily = $('#daily');
+      const daily = $('#daily');
       daily.innerHTML = '';
-      var dTimes = data.daily.time;
-      for(var i=0;i<dTimes.length;i++){
-        var c = data.daily.weather_code[i];
-        var info = WMO[c] || { text:'', icon:'cloud' };
-        var max = Math.round(data.daily.temperature_2m_max[i]);
-        var min = Math.round(data.daily.temperature_2m_min[i]);
-        var pp  = data.daily.precipitation_probability_max?.[i];
+      const dTimes = data.daily.time;
+      for(let i=0;i<dTimes.length;i++){
+        const c = data.daily.weather_code[i];
+        const info = WMO[c] || { text:'', icon:'cloud' };
+        const max = Math.round(data.daily.temperature_2m_max[i]);
+        const min = Math.round(data.daily.temperature_2m_min[i]);
+        const pp  = data.daily.precipitation_probability_max?.[i];
 
-        var el = document.createElement('div');
+        const el = document.createElement('div');
         el.className = 'day';
         el.innerHTML = `
           <div class="dow">${formatDow(dTimes[i])}</div>
@@ -1670,41 +1665,41 @@
     }
 
     function renderLineChart(svgSel, labelsSel, times, values, unit){
-      var svg = document.querySelector(svgSel);
-      var labels = document.querySelector(labelsSel);
+      const svg = document.querySelector(svgSel);
+      const labels = document.querySelector(labelsSel);
       svg.innerHTML = '';
       labels.innerHTML = '';
 
-      var w = 1000, h = 300;
-      var padX = 42, padY = 34;
+      const w = 1000, h = 300;
+      const padX = 42, padY = 34;
 
-      var minV = Math.min(...values);
-      var maxV = Math.max(...values);
-      var range = (maxV - minV) || 1;
+      const minV = Math.min(...values);
+      const maxV = Math.max(...values);
+      const range = (maxV - minV) || 1;
 
-      var xStep = (w - padX*2) / (values.length - 1);
-      var yFor = function(v){
-        var t = (v - minV) / range;
+      const xStep = (w - padX*2) / (values.length - 1);
+      const yFor = (v) => {
+        const t = (v - minV) / range;
         return (h - padY) - t * (h - padY*2);
       };
 
-      var d = '';
-      for(var i=0;i<values.length;i++){
-        var x = padX + xStep*i;
-        var y = yFor(values[i]);
+      let d = '';
+      for(let i=0;i<values.length;i++){
+        const x = padX + xStep*i;
+        const y = yFor(values[i]);
         d += (i===0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
       }
 
-      var area = `${d} L ${padX + xStep*(values.length-1)} ${h-padY} L ${padX} ${h-padY} Z`;
+      const area = `${d} L ${padX + xStep*(values.length-1)} ${h-padY} L ${padX} ${h-padY} Z`;
 
       svg.insertAdjacentHTML('beforeend', `
         <path d="${area}" fill="rgba(240,193,75,.18)"></path>
         <path d="${d}" stroke="rgba(240,193,75,.95)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
       `);
 
-      for(var i=0;i<values.length;i++){
-        var x = padX + xStep*i;
-        var y = yFor(values[i]);
+      for(let i=0;i<values.length;i++){
+        const x = padX + xStep*i;
+        const y = yFor(values[i]);
 
         svg.insertAdjacentHTML('beforeend', `
           <circle cx="${x}" cy="${y}" r="5" fill="rgba(240,193,75,.95)"></circle>
@@ -1712,15 +1707,15 @@
         `);
 
         if(i % 3 === 0 || i === values.length-1){
-          var t = new Date(times[i]).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
+          const t = new Date(times[i]).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
 
-          var lx = document.createElement('div');
+          const lx = document.createElement('div');
           lx.className = 'x';
           lx.style.left = (x / w * 100) + '%';
           lx.textContent = t;
           labels.appendChild(lx);
 
-          var lt = document.createElement('div');
+          const lt = document.createElement('div');
           lt.className = 't';
           lt.style.left = (x / w * 100) + '%';
           lt.style.top = (y / h * 100) + '%';
@@ -1739,7 +1734,7 @@
 
     function setTab(name){
       $$('.tab').forEach(t => {
-        var active = t.dataset.tab === name;
+        const active = t.dataset.tab === name;
         t.classList.toggle('active', active);
         t.setAttribute('aria-selected', active ? 'true' : 'false');
       });
@@ -1749,7 +1744,7 @@
     }
 
     (async () => {
-      var loc = await getCoords();
+      const loc = await getCoords();
       if(loc.ok){
         setGeoStatus(true, `Ubicación: detectada (lat ${loc.lat.toFixed(2)}, lon ${loc.lon.toFixed(2)})`);
         $('#wxPlace').textContent = 'Tu zona';
@@ -1768,7 +1763,7 @@
     /***********************
      * Ding tipo "cuenco"
      ***********************/
-    var audioCtx = null;
+    let audioCtx = null;
 
     function playBowlDing(){
       try{
@@ -1777,8 +1772,8 @@
         return;
       }
 
-      var now = audioCtx.currentTime;
-      var out = audioCtx.createGain();
+      const now = audioCtx.currentTime;
+      const out = audioCtx.createGain();
       out.gain.value = 0.0001;
       out.connect(audioCtx.destination);
 
@@ -1786,25 +1781,25 @@
       out.gain.exponentialRampToValueAtTime(0.55, now + 0.02);
       out.gain.exponentialRampToValueAtTime(0.001, now + 4.2);
 
-      var freqs = [220, 330, 440, 554, 660, 880];
-      var gains = [0.55, 0.28, 0.18, 0.14, 0.10, 0.06];
+      const freqs = [220, 330, 440, 554, 660, 880];
+      const gains = [0.55, 0.28, 0.18, 0.14, 0.10, 0.06];
 
       freqs.forEach((f, i) => {
-        var osc = audioCtx.createOscillator();
+        const osc = audioCtx.createOscillator();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(f, now);
 
-        var g = audioCtx.createGain();
+        const g = audioCtx.createGain();
         g.gain.value = 0.0001;
 
         g.gain.setValueAtTime(0.0001, now);
         g.gain.exponentialRampToValueAtTime(gains[i], now + 0.02);
         g.gain.exponentialRampToValueAtTime(0.0001, now + (2.4 + i*0.35));
 
-        var lfo = audioCtx.createOscillator();
+        const lfo = audioCtx.createOscillator();
         lfo.type = 'sine';
         lfo.frequency.value = 5.2 + i*0.35;
-        var lfoGain = audioCtx.createGain();
+        const lfoGain = audioCtx.createGain();
         lfoGain.gain.value = 0.7 + i*0.08;
         lfo.connect(lfoGain);
         lfoGain.connect(osc.frequency);
@@ -1818,18 +1813,18 @@
         lfo.stop(now + 4.6);
       });
 
-      var buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.25, audioCtx.sampleRate);
-      var data = buffer.getChannelData(0);
-      for(var i=0;i<data.length;i++) data[i] = (Math.random()*2-1) * Math.exp(-i/(data.length/6));
-      var noise = audioCtx.createBufferSource();
+      const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.25, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for(let i=0;i<data.length;i++) data[i] = (Math.random()*2-1) * Math.exp(-i/(data.length/6));
+      const noise = audioCtx.createBufferSource();
       noise.buffer = buffer;
 
-      var filter = audioCtx.createBiquadFilter();
+      const filter = audioCtx.createBiquadFilter();
       filter.type = 'bandpass';
       filter.frequency.value = 2200;
       filter.Q.value = 6;
 
-      var ng = audioCtx.createGain();
+      const ng = audioCtx.createGain();
       ng.gain.value = 0.18;
 
       noise.connect(filter);
@@ -1845,7 +1840,7 @@
     /***********************
      * Temporizador de terapia
      ***********************/
-    var timer = {
+    let timer = {
       running: false,
       startMs: 0,
       endMs: 0,
@@ -1856,15 +1851,15 @@
 
     function msToHMS(ms){
       ms = Math.max(0, ms);
-      var s = Math.floor(ms/1000);
-      var hh = Math.floor(s/3600);
-      var mm = Math.floor((s%3600)/60);
-      var ss = s%60;
+      const s = Math.floor(ms/1000);
+      const hh = Math.floor(s/3600);
+      const mm = Math.floor((s%3600)/60);
+      const ss = s%60;
       return `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
     }
 
     function startTherapy(totalMs){
-      var now = Date.now();
+      const now = Date.now();
       timer.running = true;
       timer.startMs = now;
       timer.totalMs = totalMs;
@@ -1890,10 +1885,10 @@
     function loopTherapy(){
       if(!timer.running) return;
 
-      var now = Date.now();
-      var remaining = timer.endMs - now;
-      var elapsed = now - timer.startMs;
-      var frac = clamp(1 - (elapsed / timer.totalMs), 0, 1);
+      const now = Date.now();
+      const remaining = timer.endMs - now;
+      const elapsed = now - timer.startMs;
+      const frac = clamp(1 - (elapsed / timer.totalMs), 0, 1);
 
       $('#theraCount').textContent = msToHMS(remaining);
       $('#theraProg').style.transform = `scaleX(${frac})`;
@@ -1922,7 +1917,7 @@
       $('#modalErr').style.display = 'none';
       $('#inMinutes').focus();
 
-      var msg = wakeWanted ? 'solicitado' : 'no solicitado';
+      const msg = wakeWanted ? 'solicitado' : 'no solicitado';
       $('#wakeText2').textContent = `Wake Lock: ${msg}`;
       $('#dotWake2').classList.toggle('ok', wakeWanted);
       $('#dotWake2').classList.toggle('bad', !wakeWanted);
@@ -1941,9 +1936,9 @@
     });
 
     $('#btnStart').addEventListener('click', () => {
-      var h = parseInt($('#inHours').value, 10) || 0;
-      var m = parseInt($('#inMinutes').value, 10) || 0;
-      var totalMin = h*60 + m;
+      const h = parseInt($('#inHours').value, 10) || 0;
+      const m = parseInt($('#inMinutes').value, 10) || 0;
+      const totalMin = h*60 + m;
 
       if(totalMin < 1){
         $('#modalErr').style.display = 'block';
@@ -1958,23 +1953,23 @@
      * MUSIC PLAYER CON URLs REALES
      ***********************/
     
-    var audioPlayer = $('#audioPlayer');
-    var currentTrackIndex = -1;
-    var isPlaying = false;
+    const audioPlayer = $('#audioPlayer');
+    let currentTrackIndex = -1;
+    let isPlaying = false;
 
     function formatTime(seconds){
       if(!isFinite(seconds)) return '00:00';
-      var m = Math.floor(seconds / 60);
-      var s = Math.floor(seconds % 60);
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
       return `${pad2(m)}:${pad2(s)}`;
     }
 
     function renderMusicList(){
-      var list = $('#musicList');
+      const list = $('#musicList');
       list.innerHTML = '';
 
       musicPlaylist.forEach((track, index) => {
-        var item = document.createElement('div');
+        const item = document.createElement('div');
         item.className = 'music-item';
         item.dataset.index = index;
         item.innerHTML = `
@@ -1998,7 +1993,7 @@
 
     function selectTrack(index){
       currentTrackIndex = index;
-      var track = musicPlaylist[index];
+      const track = musicPlaylist[index];
 
       audioPlayer.src = track.url;
       $('#playerTitle').textContent = track.title;
@@ -2054,14 +2049,14 @@
     });
 
     audioPlayer.addEventListener('timeupdate', () => {
-      var current = audioPlayer.currentTime;
-      var total = audioPlayer.duration;
+      const current = audioPlayer.currentTime;
+      const total = audioPlayer.duration;
       
       $('#currentTime').textContent = formatTime(current);
       $('#totalTime').textContent = formatTime(total);
       
       if(total > 0){
-        var percent = (current / total) * 100;
+        const percent = (current / total) * 100;
         $('#progressFill').style.width = percent + '%';
       }
     });
@@ -2084,8 +2079,8 @@
 
     $('#progressBar').addEventListener('click', (e) => {
       if(audioPlayer.duration > 0){
-        var rect = $('#progressBar').getBoundingClientRect();
-        var percent = (e.clientX - rect.left) / rect.width;
+        const rect = $('#progressBar').getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
         audioPlayer.currentTime = percent * audioPlayer.duration;
       }
     });
@@ -2094,7 +2089,6 @@
 
     renderMusicList();
 
-  
-</script>
+  </script>
 </body>
 </html>
