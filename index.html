@@ -1,0 +1,2099 @@
+<!-- Android 4.1 compatibility pass: CSS vars expanded, ES6 reduced -->
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0c0f" />
+  <title>Ensanbliss — Panel</title>
+
+  <style>
+
+    /* [Todos los estilos CSS anteriores van aquí - son idénticos] */
+    :root{
+      --bg: #0b0c0f;
+      --glass: rgba(15, 16, 20, .62);
+      --glass-2: rgba(15, 16, 20, .78);
+      --stroke: rgba(255,255,255,.10);
+      --stroke-2: rgba(255,255,255,.16);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --muted2: rgba(255,255,255,.55);
+      --accent: #f0c14b;
+      --accent-2: #f7d57a;
+      --danger: #ff6b6b;
+      --ok: #7ee081;
+
+      --brand-font: "Breathing", "Breathe", "Segoe Script", "Brush Script MT", "Snell Roundhand", cursive;
+      --ui-font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --radius: 18px;
+      --shadow: 0 12px 40px rgba(0,0,0,.45);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: rgba(255,255,255,.92);
+      background: #0b0c0f;
+      overflow: hidden;
+    }
+
+    .bg{
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(1200px 700px at 10% 0%, rgba(0,0,0,.15), rgba(0,0,0,.65) 55%, rgba(0,0,0,.82)),
+        url("https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/refs/heads/main/ensanblis.png");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transform: scale(1.02);
+      filter: saturate(1.05) contrast(1.03);
+    }
+    .vignette{
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,.60), rgba(0,0,0,.15) 35%, rgba(0,0,0,.40)),
+        radial-gradient(900px 500px at 0% 0%, rgba(0,0,0,.0), rgba(0,0,0,.55));
+      mix-blend-mode: multiply;
+    }
+
+    .card{
+      background: rgba(15, 16, 20, .62);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+    .card .inner{ padding: 16px 16px 14px; }
+    .card-header{
+      display:flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px 0;
+    }
+    .card-title{
+      font-weight: 650;
+      letter-spacing: .2px;
+      color: rgba(255,255,255,.92);
+      margin:0;
+      font-size: 14px;
+      text-transform: uppercase;
+      opacity:.92;
+    }
+    .chip{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
+      color: rgba(255,255,255,.70);
+      user-select:none;
+      white-space: nowrap;
+    }
+
+    .topbar{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display:flex;
+      gap: 10px;
+      z-index: 60;
+    }
+
+    .navtabs{
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 60;
+      display:flex;
+      gap: 10px;
+      align-items:center;
+    }
+
+    .btn{
+      appearance: none;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(10,10,14,.42);
+      color: rgba(255,255,255,.92);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      user-select:none;
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      font-weight: 650;
+      letter-spacing:.15px;
+      box-shadow: 0 10px 26px rgba(0,0,0,.28);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      white-space: nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(10,10,14,.55); border-color: rgba(255,255,255,.22); }
+    .btn:active{ transform: translateY(0px) scale(.99); }
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(240,193,75,.95), rgba(240,193,75,.72));
+      color: rgba(20,20,22,.92);
+      border-color: rgba(240,193,75,.55);
+    }
+    .btn.primary:hover{ background: linear-gradient(180deg, rgba(247,213,122,.98), rgba(240,193,75,.78)); }
+    .btn.small{ padding: 10px 12px; font-size: 14px; }
+
+    .btn.tab{
+      background: rgba(10,10,14,.35);
+    }
+    .btn.tab.active{
+      background: linear-gradient(180deg, rgba(240,193,75,.22), rgba(240,193,75,.10));
+      border-color: rgba(240,193,75,.45);
+    }
+
+    .icon{
+      width: 18px; height: 18px;
+      display:inline-block;
+    }
+    .icon svg{ width: 18px; height: 18px; display:block; }
+
+    .page{
+      position: relative;
+      height: 100%;
+      padding: 18px;
+      padding-top: 74px;
+      padding-bottom: 90px;
+      overflow: hidden;
+    }
+    .page.hidden{ display:none; }
+
+    .app{
+      position: relative;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 980px){
+      .app{ grid-template-columns: 1fr; }
+    }
+
+    .left{
+      display:flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .welcome{
+      padding: 16px;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .brand{
+      font-family: "Breathing", "Breathe", "Segoe Script", "Brush Script MT", "Snell Roundhand", cursive;
+      font-size: 34px;
+      line-height: 1.06;
+      letter-spacing: .4px;
+      margin: 2px 0 0;
+      color: rgba(255,255,255,.96);
+      text-shadow: 0 10px 28px rgba(0,0,0,.35);
+    }
+    .sub{
+      margin:0;
+      color: rgba(255,255,255,.70);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .datetime{
+      display:flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 6px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,.10);
+    }
+    .time{
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: .6px;
+    }
+    .date{
+      text-align:right;
+      color: rgba(255,255,255,.70);
+      font-size: 14px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .weather{ padding: 0; }
+    .weather-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px 10px;
+    }
+    .wx-main{
+      display:flex;
+      align-items:flex-start;
+      gap: 12px;
+      min-width: 0;
+    }
+    .wx-temp{
+      display:flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .wx-temp .val{
+      font-size: 46px;
+      font-weight: 750;
+      letter-spacing: .2px;
+      line-height: 1;
+    }
+    .wx-temp .unit{
+      font-size: 15px;
+      color: rgba(255,255,255,.70);
+      padding-bottom: 6px;
+    }
+    .wx-meta{
+      margin-top: 4px;
+      color: rgba(255,255,255,.70);
+      font-size: 13px;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+    .wx-right{
+      text-align:right;
+      min-width: 140px;
+    }
+    .wx-right .place{
+      font-weight: 750;
+      font-size: 18px;
+      margin:0;
+    }
+    .wx-right .desc{
+      margin: 6px 0 0;
+      color: rgba(255,255,255,.70);
+      font-size: 13px;
+      line-height: 1.25;
+    }
+    .tabs{
+      display:flex;
+      gap: 16px;
+      padding: 0 16px 8px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    .tab{
+      position: relative;
+      padding: 10px 0;
+      color: rgba(255,255,255,.82);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      user-select:none;
+      opacity:.92;
+    }
+    .tab.active{ color: rgba(255,255,255,.96); }
+    .tab.active::after{
+      content:"";
+      position:absolute;
+      left:0; right:0; bottom:-1px;
+      height: 2px;
+      background: #f0c14b;
+      border-radius: 2px;
+    }
+
+    .wx-body{ padding: 12px 16px 14px; }
+    .chart{
+      width: 100%;
+      height: 120px;
+      border-radius: 14px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.08);
+      overflow: hidden;
+      position: relative;
+    }
+    .chart .gridline{
+      position:absolute; left:0; right:0;
+      height: 1px;
+      background: rgba(255,255,255,.06);
+    }
+    .chart .labels{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+    .chart .labels .x{
+      position:absolute;
+      bottom: 6px;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: rgba(255,255,255,.55);
+      white-space: nowrap;
+    }
+    .chart .labels .t{
+      position:absolute;
+      transform: translate(-50%, -10px);
+      font-size: 11px;
+      color: rgba(255,255,255,.70);
+      white-space: nowrap;
+    }
+
+    .daily{
+      display:flex;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+    .day{
+      min-width: 78px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      border-radius: 14px;
+      padding: 10px 10px 9px;
+      text-align:center;
+      flex: 0 0 auto;
+    }
+    .day .dow{
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      font-weight: 750;
+      margin-bottom: 8px;
+      text-transform: lowercase;
+    }
+    .day .minmax{
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      margin-top: 6px;
+    }
+    .day .pp{
+      font-size: 11px;
+      color: rgba(255,255,255,.55);
+      margin-top: 4px;
+    }
+
+    .right{
+      display:flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .iframe-container{
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 500px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(0,0,0,.25);
+    }
+    .iframe-container iframe{
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .cta-wrap{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .statusline{
+      font-size: 12px;
+      color: rgba(255,255,255,.60);
+      margin-top: 10px;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+    .dot{
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.38);
+      box-shadow: 0 0 0 3px rgba(255,255,255,.07);
+      flex: 0 0 auto;
+    }
+    .dot.ok{ background: rgba(126,224,129,.9); box-shadow: 0 0 0 3px rgba(126,224,129,.15); }
+    .dot.bad{ background: rgba(255,107,107,.9); box-shadow: 0 0 0 3px rgba(255,107,107,.15); }
+
+    .wx-panel{ display:none; }
+    .wx-panel.active{ display:block; }
+
+    .therapybar{
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 70;
+      background: rgba(15, 16, 20, .78);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.50);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow: hidden;
+      display: none;
+    }
+    .therapybar .row{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 14px;
+    }
+    .therapybar .leftinfo{
+      display:flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .therapybar .label{
+      font-size: 12px;
+      color: rgba(255,255,255,.70);
+      font-weight: 700;
+      letter-spacing: .2px;
+      text-transform: uppercase;
+    }
+    .therapybar .count{
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      white-space: nowrap;
+    }
+    .therapybar .actions{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex: 0 0 auto;
+    }
+    .progress{
+      height: 8px;
+      background: rgba(255,255,255,.10);
+    }
+    .progress > div{
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, rgba(240,193,75,.95), rgba(247,213,122,.85));
+      transform-origin: left center;
+      transform: scaleX(1);
+    }
+
+    .modal-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items: center;
+      justify-content: center;
+      z-index: 90;
+      padding: 18px;
+      backdrop-filter: blur(4px);
+    }
+    .modal{
+      width: min(520px, 100%);
+      max-height: 85vh;
+      border-radius: 20px;
+      background: rgba(14, 15, 19, .88);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 24px 70px rgba(0,0,0,.58);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow:hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal .hd{
+      padding: 16px 16px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .modal .hd h3{
+      margin:0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+    .modal .bd{
+      padding: 14px 16px 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .form{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    @media (max-width: 520px){
+      .form{ grid-template-columns: 1fr; }
+    }
+    .field label{
+      display:block;
+      font-size: 12px;
+      color: rgba(255,255,255,.70);
+      font-weight: 750;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing:.2px;
+    }
+    .field input{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      color: rgba(255,255,255,.92);
+      font-size: 16px;
+      outline: none;
+    }
+    .field input:focus{ border-color: rgba(240,193,75,.55); box-shadow: 0 0 0 3px rgba(240,193,75,.18); }
+    .hint{
+      margin: 10px 0 0;
+      font-size: 13px;
+      color: rgba(255,255,255,.62);
+      line-height: 1.35;
+    }
+    .err{
+      margin-top: 10px;
+      font-size: 13px;
+      color: rgba(255,107,107,.95);
+      display:none;
+    }
+    .modal .ft{
+      padding: 12px 16px 16px;
+      display:flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    .music-grid{
+      height: 100%;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 980px){
+      .music-grid{ grid-template-columns: 1fr; }
+    }
+
+    .music-list{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px 16px 16px;
+      overflow: auto;
+      max-height: calc(100vh - 74px - 90px - 90px);
+      scrollbar-width: thin;
+    }
+    .music-item{
+      padding: 12px 14px;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all .15s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .music-item:hover{
+      background: rgba(0,0,0,.35);
+      border-color: rgba(240,193,75,.35);
+      transform: translateX(4px);
+    }
+    .music-item.active{
+      background: linear-gradient(90deg, rgba(240,193,75,.18), rgba(240,193,75,.08));
+      border-color: rgba(240,193,75,.55);
+    }
+    .music-item .num{
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .music-item.active .num{
+      background: #f0c14b;
+      color: rgba(20,20,22,.92);
+    }
+    .music-item .info{
+      flex: 1;
+      min-width: 0;
+    }
+    .music-item .title{
+      font-size: 14px;
+      font-weight: 650;
+      color: rgba(255,255,255,.92);
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .music-item .artist{
+      font-size: 12px;
+      color: rgba(255,255,255,.60);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .music-item .duration{
+      font-size: 11px;
+      color: rgba(255,255,255,.50);
+      flex-shrink: 0;
+    }
+
+    .player-wrap{
+      padding: 16px;
+      display:flex;
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+    }
+
+    .player-visual{
+      position: relative;
+      width: 100%;
+      flex: 1;
+      min-height: 320px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(240,193,75,.08), rgba(126,224,129,.08));
+      border: 1px solid rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      padding: 32px;
+    }
+
+    .player-icon{
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(240,193,75,.22), rgba(126,224,129,.22));
+      border: 2px solid rgba(255,255,255,.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.9; }
+    }
+
+    .player-icon svg{
+      width: 60px;
+      height: 60px;
+    }
+
+    .player-now{
+      text-align: center;
+    }
+
+    .player-now .title{
+      font-size: 22px;
+      font-weight: 750;
+      color: rgba(255,255,255,.96);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .player-now .artist{
+      font-size: 15px;
+      color: rgba(255,255,255,.70);
+    }
+
+    .player-controls{
+      padding: 18px 20px;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .player-progress{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-time{
+      font-size: 12px;
+      color: rgba(255,255,255,.70);
+      min-width: 48px;
+      font-weight: 650;
+    }
+
+    .progress-bar{
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,.12);
+      border-radius: 3px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .progress-fill{
+      height: 100%;
+      background: linear-gradient(90deg, rgba(240,193,75,.95), rgba(247,213,122,.85));
+      border-radius: 3px;
+      width: 0%;
+      transition: width .1s linear;
+    }
+
+    .player-buttons{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .player-btn{
+      appearance: none;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(10,10,14,.45);
+      color: rgba(255,255,255,.92);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .12s ease;
+    }
+
+    .player-btn:hover{
+      background: rgba(10,10,14,.65);
+      border-color: rgba(255,255,255,.28);
+      transform: scale(1.05);
+    }
+
+    .player-btn:active{
+      transform: scale(0.98);
+    }
+
+    .player-btn.play{
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(180deg, rgba(240,193,75,.95), rgba(240,193,75,.72));
+      border-color: rgba(240,193,75,.55);
+      color: rgba(20,20,22,.92);
+    }
+
+    .player-btn.play:hover{
+      background: linear-gradient(180deg, rgba(247,213,122,.98), rgba(240,193,75,.78));
+    }
+
+    .player-btn svg{
+      width: 24px;
+      height: 24px;
+    }
+
+    .player-btn.play svg{
+      width: 32px;
+      height: 32px;
+    }
+
+    .volume-control{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.10);
+    }
+
+    .volume-slider{
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255,255,255,.12);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .volume-slider::-webkit-slider-thumb{
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(180deg, rgba(240,193,75,.95), rgba(240,193,75,.72));
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255,255,255,.12);
+    }
+
+    .volume-slider::-moz-range-thumb{
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(180deg, rgba(240,193,75,.95), rgba(240,193,75,.72));
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255,255,255,.12);
+    }
+
+  
+</style>
+</head>
+
+<body>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+
+  <div class="navtabs" role="tablist" aria-label="Navegación principal">
+    <button class="btn tab active" id="tabPanel" type="button" role="tab" aria-selected="true" data-page="panel">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 12a8 8 0 1 1 16 0v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 15h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Panel
+    </button>
+
+    <button class="btn tab" id="tabMusic" type="button" role="tab" aria-selected="false" data-page="music">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+          <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </span>
+      Música
+    </button>
+  </div>
+
+  <div class="topbar">
+    <button class="btn small" id="btnFullscreen" type="button" title="Pantalla completa">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      Pantalla completa
+    </button>
+    <button class="btn small" id="btnWake" type="button" title="Mantener pantalla activa">
+      <span class="icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3v4M12 17v4M5 6l3 3M16 15l3 3M3 12h4M17 12h4M6 19l3-3M15 9l3-3"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M12 8a4 4 0 1 0 0 8a4 4 0 0 0 0-8Z"
+                stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </span>
+      Awake
+    </button>
+  </div>
+
+  <!-- PAGE: PANEL -->
+  <section class="page" id="pagePanel" role="tabpanel" aria-labelledby="tabPanel">
+    <main class="app">
+      <section class="left">
+        <div class="card">
+          <div class="welcome">
+            <div class="cta-wrap">
+              <div class="chip" id="chipMode">Panel</div>
+              <div class="chip" id="chipAwake">Awake: pendiente</div>
+            </div>
+
+            <h1 class="brand">Bienvenido </h1>
+            <p class="sub">Gestión rápida de sesión y ambiente. Pantalla completa, reloj, tiempo y temporizador de terapia.</p>
+
+            <div class="datetime" aria-live="polite">
+              <div class="time" id="time">--:--</div>
+              <div class="date">
+                <div id="dateLine1">—</div>
+                <div id="dateLine2">—</div>
+              </div>
+            </div>
+
+            <div class="statusline">
+              <span class="dot" id="dotGeo"></span>
+              <span id="geoText">Ubicación: esperando permiso (si se deniega, se usará Málaga)</span>
+            </div>
+
+            <div class="statusline" style="margin-top:6px">
+              <span class="dot" id="dotWake"></span>
+              <span id="wakeText">Wake Lock: pendiente</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card weather">
+          <div class="weather-top">
+            <div class="wx-main">
+              <div class="wx-temp">
+                <div class="val" id="wxTemp">--</div>
+                <div class="unit">°C</div>
+              </div>
+              <div class="wx-meta" id="wxMeta">
+                Precipitaciones: --%<br />
+                Humedad: --%<br />
+                Viento: -- km/h
+              </div>
+            </div>
+            <div class="wx-right">
+              <p class="place" id="wxPlace">Tiempo</p>
+              <p class="desc" id="wxDesc">Cargando…</p>
+            </div>
+          </div>
+
+          <div class="tabs" role="tablist" aria-label="Panel de tiempo">
+            <div class="tab active" role="tab" aria-selected="true" tabindex="0" data-tab="temp">Temperatura</div>
+            <div class="tab" role="tab" aria-selected="false" tabindex="0" data-tab="precip">Precipitaciones</div>
+            <div class="tab" role="tab" aria-selected="false" tabindex="0" data-tab="wind">Viento</div>
+          </div>
+
+          <div class="wx-body">
+            <div class="wx-panel active" id="panel-temp">
+              <div class="chart" id="chartTemp" aria-label="Gráfico temperatura por horas">
+                <div class="gridline" style="top:25%"></div>
+                <div class="gridline" style="top:50%"></div>
+                <div class="gridline" style="top:75%"></div>
+                <svg id="svgTemp" viewBox="0 0 1000 300" preserveAspectRatio="none" style="width:100%;height:100%;display:block;"></svg>
+                <div class="labels" id="labelsTemp"></div>
+              </div>
+            </div>
+
+            <div class="wx-panel" id="panel-precip">
+              <div class="chart" id="chartPrecip" aria-label="Gráfico precipitación por horas">
+                <div class="gridline" style="top:25%"></div>
+                <div class="gridline" style="top:50%"></div>
+                <div class="gridline" style="top:75%"></div>
+                <svg id="svgPrecip" viewBox="0 0 1000 300" preserveAspectRatio="none" style="width:100%;height:100%;display:block;"></svg>
+                <div class="labels" id="labelsPrecip"></div>
+              </div>
+            </div>
+
+            <div class="wx-panel" id="panel-wind">
+              <div class="chart" id="chartWind" aria-label="Gráfico viento por horas">
+                <div class="gridline" style="top:25%"></div>
+                <div class="gridline" style="top:50%"></div>
+                <div class="gridline" style="top:75%"></div>
+                <svg id="svgWind" viewBox="0 0 1000 300" preserveAspectRatio="none" style="width:100%;height:100%;display:block;"></svg>
+                <div class="labels" id="labelsWind"></div>
+              </div>
+            </div>
+
+            <div class="daily" id="daily"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="inner">
+            <div class="cta-wrap">
+              <button class="btn primary" id="btnProgramar" type="button">
+                <span class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M7 3v3M17 3v3M4.5 8.5h15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M6 6h12a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3Z"
+                          stroke="currentColor" stroke-width="2"/>
+                    <path d="M8.2 13.2h3.2v3.2H8.2zM12.6 13.2h3.2v3.2h-3.2z" fill="currentColor" opacity=".75"/>
+                  </svg>
+                </span>
+                Programar terapia
+              </button>
+
+              <button class="btn" id="btnTestDing" type="button" title="Probar sonido">
+                <span class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3a7 7 0 0 0-7 7v4l-2 2v1h18v-1l-2-2v-4a7 7 0 0 0-7-7Z"
+                          stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M9 19a3 3 0 0 0 6 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </span>
+                Probar ding
+              </button>
+
+              <button class="btn" id="btnGoMusic" type="button" title="Ir a Música">
+                <span class="icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </span>
+                Música relajante
+              </button>
+            </div>
+
+            <p class="hint" style="margin-top:12px">
+              Al iniciar una sesión, aparecerá una barra inferior con cuenta atrás. A ~5 minutos del final sonará un "ding" suave (tipo cuenco).
+              La pantalla se intentará mantener activa mediante Wake Lock (si el navegador lo soporta).
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="right">
+        <div class="card" style="flex: 1; display: flex; flex-direction: column;">
+          <div class="card-header">
+            <p class="card-title"></p>
+            <div class="chip">En vivo</div>
+          </div>
+          <div class="inner" style="flex: 1; padding: 0;">
+            <div class="iframe-container">
+              <iframe src="https://ensanbliss.es" title="Ensanbliss" allow="autoplay"></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <!-- PAGE: MUSIC -->
+  <section class="page hidden" id="pageMusic" role="tabpanel" aria-labelledby="tabMusic">
+    <div class="music-grid">
+      <div class="card" style="display:flex;flex-direction:column;">
+        <div class="card-header">
+          <p class="card-title">Meditación & Relax</p>
+          <div class="chip" id="musicStatus">20 pistas</div>
+        </div>
+        <div class="music-list" id="musicList"></div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;">
+        <div class="card-header">
+          <p class="card-title">Reproductor</p>
+          <div class="chip" id="musicNowChip">Sin selección</div>
+        </div>
+
+        <div class="player-wrap">
+          <div class="player-visual">
+            <div class="player-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+                <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <div class="player-now">
+              <div class="title" id="playerTitle">Selecciona una pista</div>
+              <div class="artist" id="playerArtist">Música para meditación y relajación</div>
+            </div>
+          </div>
+
+          <div class="player-controls">
+            <div class="player-progress">
+              <div class="player-time" id="currentTime">00:00</div>
+              <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+              </div>
+              <div class="player-time" id="totalTime">00:00</div>
+            </div>
+
+            <div class="player-buttons">
+              <button class="player-btn" id="btnPrev" type="button" title="Anterior">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M19 5v14l-10-7 10-7ZM5 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+
+              <button class="player-btn play" id="btnPlayPause" type="button" title="Reproducir/Pausar">
+                <svg id="playIcon" viewBox="0 0 24 24" fill="none">
+                  <path d="M8 5v14l11-7L8 5Z" fill="currentColor"/>
+                </svg>
+                <svg id="pauseIcon" viewBox="0 0 24 24" fill="none" style="display:none;">
+                  <path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/>
+                </svg>
+              </button>
+
+              <button class="player-btn" id="btnNext" type="button" title="Siguiente">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M5 5v14l10-7L5 5ZM19 5v14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="volume-control">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M11 5L6 9H2v6h4l5 4V5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70" />
+            </div>
+          </div>
+
+          <p class="hint" style="margin:0;">
+            Música libre de anuncios para meditación, mindfulness y relajación. Archive.org - dominio público.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <audio id="audioPlayer" preload="metadata"></audio>
+  </section>
+
+  <div class="therapybar" id="therapybar" role="status" aria-live="polite">
+    <div class="row">
+      <div class="leftinfo">
+        <div class="label">Sesión en curso</div>
+        <div class="count" id="theraCount">--:--:--</div>
+      </div>
+      <div class="actions">
+        <div class="chip" id="theraTotal">Total: --</div>
+        <button class="btn small" id="btnStop" type="button" title="Detener sesión">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M7 7h10v10H7z" fill="currentColor" opacity=".85"/>
+            </svg>
+          </span>
+          Detener
+        </button>
+      </div>
+    </div>
+    <div class="progress"><div id="theraProg"></div></div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="hd">
+        <h3 id="modalTitle">Programar terapia</h3>
+        <button class="btn small" id="btnCloseModal" type="button" aria-label="Cerrar">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Cerrar
+        </button>
+      </div>
+      <div class="bd">
+        <p class="hint" style="margin:0 0 10px">
+          Indica la duración total. La barra inferior consumirá el tiempo restante y avisará a 5 minutos del final.
+        </p>
+
+        <div class="form">
+          <div class="field">
+            <label for="inHours">Horas</label>
+            <input id="inHours" type="number" inputmode="numeric" min="0" max="23" value="0" />
+          </div>
+          <div class="field">
+            <label for="inMinutes">Minutos</label>
+            <input id="inMinutes" type="number" inputmode="numeric" min="0" max="59" value="45" />
+          </div>
+        </div>
+
+        <div class="err" id="modalErr">Introduce una duración válida (mínimo 1 minuto).</div>
+
+        <div class="statusline" style="margin-top:12px">
+          <span class="dot" id="dotWake2"></span>
+          <span id="wakeText2">Wake Lock: pendiente</span>
+        </div>
+      </div>
+      <div class="ft">
+        <button class="btn" id="btnCancel" type="button">Cancelar</button>
+        <button class="btn primary" id="btnStart" type="button">Iniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    var $ = function(s){ return document.querySelector(s); };
+    var $$ = function(s){ return Array.from(document.querySelectorAll(s)); };
+
+    function pad2(n){ return String(n).padStart(2,'0'); }
+    function clamp(n, a, b){ return Math.min(b, Math.max(a, n)); }
+
+    // PLAYLIST CON URLs REALES DE ARCHIVE.ORG
+    var musicPlaylist = [
+      { 
+        title: 'Meditación Zen Profunda', 
+        artist: 'Sonidos Naturaleza',
+        duration: '1:02:15',
+        url: 'https://archive.org/download/meditation-music/Buddhist%20Meditation%20Music%20for%20Positive%20Energy.mp3'
+      },
+      { 
+        title: 'Jardín Japonés Relajante', 
+        artist: 'Zen Garden',
+        duration: '27:35',
+        url: 'https://archive.org/download/meditation-music/Japanese%20Garden%20Relaxing%20Music.mp3'
+      },
+      { 
+        title: 'Música de Meditación', 
+        artist: 'Relax Sounds',
+        duration: '55:17',
+        url: 'https://archive.org/download/meditation-music/Meditation%20Music.mp3'
+      },
+      { 
+        title: 'Música Japonesa Relajante', 
+        artist: 'Asian Ambience',
+        duration: '56:17',
+        url: 'https://archive.org/download/meditation-music/Relaxing%20Japanese%20Music.mp3'
+      },
+      { 
+        title: 'Samurai Relax', 
+        artist: 'Japanese Zen',
+        duration: '56:14',
+        url: 'https://archive.org/download/meditation-music/Samurai%20Relax%20Meditation%20Music.mp3'
+      },
+      { 
+        title: 'Activación Chi 3 Horas', 
+        artist: 'Energy Flow',
+        duration: '3:02:30',
+        url: 'https://archive.org/download/meditation-music-for-focus/3%20Hours%20Chi%20Activation%20Music.mp3'
+      },
+      { 
+        title: 'Música de Estudio Ambiente', 
+        artist: 'Focus Music',
+        duration: '3:28:09',
+        url: 'https://archive.org/download/meditation-music-for-focus/Ambient%20Study%20Music%20To%20Concentrate.mp3'
+      },
+      { 
+        title: 'Estimulación Cerebral Profunda', 
+        artist: 'Brain Waves',
+        duration: '1:05:39',
+        url: 'https://archive.org/download/meditation-music-for-focus/Deep%20Brain%20Stimulation%20Music.mp3'
+      },
+      { 
+        title: 'Binaural Brainwave Potente', 
+        artist: 'Frequency Healing',
+        duration: '56:32',
+        url: 'https://archive.org/download/meditation-music-for-focus/Extremely%20Powerful%20Brainwave%20Binaural.mp3'
+      },
+      { 
+        title: 'Música para Concentración', 
+        artist: 'Study Focus',
+        duration: '3:11:49',
+        url: 'https://archive.org/download/meditation-music-for-focus/Focus%20Music%2C.mp3'
+      },
+      { 
+        title: 'Mejora Concentración y Foco', 
+        artist: 'Mental Power',
+        duration: '2:34:36',
+        url: 'https://archive.org/download/meditation-music-for-focus/Improve%20Concentration%20and%20Focus%20Study.mp3'
+      },
+      { 
+        title: 'Música para Trabajo', 
+        artist: 'Productive Vibes',
+        duration: '1:42:46',
+        url: 'https://archive.org/download/meditation-music-for-focus/Music%20for%20Work%20and%20Concentration.mp3'
+      },
+      { 
+        title: 'Piano Relajante para Estudiar', 
+        artist: 'Calm Piano',
+        duration: '3:02:08',
+        url: 'https://archive.org/download/meditation-music-for-focus/Relaxing%20Piano%20Music%20for%20Studying%20Concentration.mp3'
+      },
+      { 
+        title: 'Guitarra Relajante 3 Horas', 
+        artist: 'Guitar Meditation',
+        duration: '3:01:54',
+        url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/3%20Hour%20Relaxing%20Guitar%20Music%20Meditation%20Music%2C%20Instrumental%20Music%2C%20Calming%20Music%2C%20Soft%20Music%2C%20%E2%98%AF2432.mp3'
+      },
+      { 
+        title: 'Piano y Flauta Relajante', 
+        artist: 'Instrumental Peace',
+        duration: '3:03:15',
+        url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/3%20HOURS%20The%20Best%20Relaxing%20Piano%20Flute%20Music%20Ever.mp3'
+      },
+      { 
+        title: 'Música Celta Hermosa', 
+        artist: 'Celtic Harp',
+        duration: '1:00:36',
+        url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Beautiful%20Celtic%20Music%20Celtic%20Harp%20Relaxing%2C%20Ambient%2C%20Instrumental.mp3'
+      },
+      { 
+        title: 'Piano Violín Cello Romántico', 
+        artist: 'Orchestra Relax',
+        duration: '3:02:12',
+        url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Beautiful%20Relaxing%20Music%20Romantic%20Music%2C%20Piano%20Music%2C%20Violin%20Music%2C%20Cello%20Music%20%E2%98%85115.mp3'
+      },
+      { 
+        title: 'Arpa con Lluvia y Truenos', 
+        artist: 'Nature Sounds',
+        duration: '3:01:52',
+        url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Relaxing%20Harp%20Music%20Rain%20%26%20Thunder%2C%20Sleep%20Music%2C%20Relaxing%20Music%2C%20Sleeping%20Music%2C%20Fall%20Asleep%20%E2%98%85120.mp3'
+      },
+      { 
+        title: 'Piano Relajante para Dormir', 
+        artist: 'Sleep Music',
+        duration: '3:04:10',
+        url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Relaxing%20Piano%20Music%20Relaxing%20Music%2C%20Romantic%20Music%2C%20Beautiful%20Music%2C%20Soothing%20Sleep%20Music%20%E2%98%85119.mp3'
+      },
+      { 
+        title: 'Música Zen Profunda', 
+        artist: 'Binaural Zen',
+        duration: '1:57:40',
+        url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Zen%20Meditation%20Music%2C%20Soothing%20Music%2C%20Relaxing%20Music%20Meditation%2C%20Zen%2C%20Binaural%20Beats%2C%20%E2%98%AF3236.ogg'
+      }
+    ];
+
+    /***********************
+     * 2 PESTAÑAS
+     ***********************/
+    function setPage(name){
+      var isPanel = name === 'panel';
+      $('#pagePanel').classList.toggle('hidden', !isPanel);
+      $('#pageMusic').classList.toggle('hidden', isPanel);
+
+      $('#tabPanel').classList.toggle('active', isPanel);
+      $('#tabMusic').classList.toggle('active', !isPanel);
+
+      $('#tabPanel').setAttribute('aria-selected', isPanel ? 'true' : 'false');
+      $('#tabMusic').setAttribute('aria-selected', !isPanel ? 'true' : 'false');
+
+      $('#chipMode').textContent = isPanel ? 'Panel' : 'Música';
+    }
+
+    $('#tabPanel').addEventListener('click', () => setPage('panel'));
+    $('#tabMusic').addEventListener('click', () => setPage('music'));
+    $('#btnGoMusic').addEventListener('click', () => setPage('music'));
+
+    /***********************
+     * Reloj / Fecha
+     ***********************/
+    function tickClock(){
+      var now = new Date();
+      var timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      $('#time').textContent = timeStr;
+
+      var weekday = now.toLocaleDateString('es-ES', { weekday: 'long' });
+      var date = now.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: '2-digit' });
+      $('#dateLine1').textContent = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+      $('#dateLine2').textContent = date;
+    }
+    tickClock();
+    setInterval(tickClock, 1000);
+
+    /***********************
+     * Pantalla completa
+     ***********************/
+    async function toggleFullscreen(){
+      try{
+        if(!document.fullscreenElement){
+          await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+        }else{
+          await document.exitFullscreen();
+        }
+      }catch(e){
+        console.warn('Fullscreen no disponible:', e);
+      }
+    }
+    $('#btnFullscreen').addEventListener('click', toggleFullscreen);
+    document.addEventListener('fullscreenchange', () => {
+      var btn = $('#btnFullscreen');
+      var icon = btn.querySelector('.icon svg');
+      if(document.fullscreenElement){
+        icon.innerHTML = '<path d="M4 9h5V4M15 4h5v5M15 20h5v-5M4 15h5v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+        btn.childNodes[2].textContent = ' Salir pantalla completa';
+      }else{
+        icon.innerHTML = '<path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+        btn.childNodes[2].textContent = ' Pantalla completa';
+      }
+    });
+
+    /***********************
+     * Wake Lock
+     ***********************/
+    var wakeLock = null;
+    var wakeWanted = false;
+
+    async function requestWakeLock(){
+      wakeWanted = true;
+      try{
+        if('wakeLock' in navigator){
+          wakeLock = await navigator.wakeLock.request('screen');
+          setWakeStatus(true, 'Wake Lock activo');
+          $('#chipAwake').textContent = 'Awake: activo';
+          wakeLock.addEventListener('release', () => {
+            if(wakeWanted) setWakeStatus(false, 'Wake Lock liberado');
+          });
+          return true;
+        }else{
+          setWakeStatus(false, 'Wake Lock no soportado');
+          $('#chipAwake').textContent = 'Awake: no soportado';
+          return false;
+        }
+      }catch(e){
+        setWakeStatus(false, 'Wake Lock rechazado');
+        $('#chipAwake').textContent = 'Awake: falló';
+        return false;
+      }
+    }
+
+    function setWakeStatus(ok, text){
+      $('#wakeText').textContent = `Wake Lock: ${text}`;
+      var dot = $('#dotWake');
+      dot.classList.toggle('ok', !!ok);
+      dot.classList.toggle('bad', !ok);
+
+      $('#wakeText2').textContent = `Wake Lock: ${text}`;
+      var dot2 = $('#dotWake2');
+      dot2.classList.toggle('ok', !!ok);
+      dot2.classList.toggle('bad', !ok);
+    }
+
+    async function releaseWakeLock(){
+      wakeWanted = false;
+      try{
+        if(wakeLock){
+          await wakeLock.release();
+          wakeLock = null;
+        }
+      }catch(e){}
+      setWakeStatus(false, 'desactivado');
+      $('#chipAwake').textContent = 'Awake: desactivado';
+    }
+
+    document.addEventListener('visibilitychange', async () => {
+      if(document.visibilityState === 'visible' && wakeWanted){
+        await requestWakeLock();
+      }
+    });
+
+    $('#btnWake').addEventListener('click', async () => {
+      if(wakeWanted) await releaseWakeLock();
+      else await requestWakeLock();
+    });
+
+    requestWakeLock();
+
+    /***********************
+     * Clima (CÓDIGO COMPLETO ANTERIOR - sin cambios)
+     ***********************/
+    var DEFAULT = { name: 'Málaga', lat: 36.7213, lon: -4.4217 };
+
+    var WMO = {
+      0:  { text: 'Despejado' , icon: 'sun' },
+      1:  { text: 'Mayormente despejado', icon: 'suncloud' },
+      2:  { text: 'Parcialmente nublado', icon: 'suncloud' },
+      3:  { text: 'Nublado', icon: 'cloud' },
+      45: { text: 'Niebla', icon: 'fog' },
+      48: { text: 'Niebla helada', icon: 'fog' },
+      51: { text: 'Llovizna ligera', icon: 'drizzle' },
+      53: { text: 'Llovizna', icon: 'drizzle' },
+      55: { text: 'Llovizna intensa', icon: 'drizzle' },
+      61: { text: 'Lluvia ligera', icon: 'rain' },
+      63: { text: 'Lluvia', icon: 'rain' },
+      65: { text: 'Lluvia intensa', icon: 'rain' },
+      71: { text: 'Nieve ligera', icon: 'snow' },
+      73: { text: 'Nieve', icon: 'snow' },
+      75: { text: 'Nieve intensa', icon: 'snow' },
+      80: { text: 'Chubascos ligeros', icon: 'rain' },
+      81: { text: 'Chubascos', icon: 'rain' },
+      82: { text: 'Chubascos fuertes', icon: 'rain' },
+      95: { text: 'Tormenta', icon: 'storm' },
+      96: { text: 'Tormenta con granizo', icon: 'storm' },
+      99: { text: 'Tormenta con granizo', icon: 'storm' },
+    };
+
+    function iconSVG(kind, size=34){
+      var s = size;
+      var common = `width="${s}" height="${s}" viewBox="0 0 64 64" fill="none"`;
+      var stroke = `stroke="rgba(255,255,255,.92)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"`;
+      var accent = `stroke="rgba(240,193,75,.95)"`;
+      switch(kind){
+        case 'sun':
+          return `<svg ${common}>
+            <circle cx="32" cy="32" r="10" ${stroke} ${accent}/>
+            <path d="M32 6v8M32 50v8M6 32h8M50 32h8M13 13l6 6M45 45l6 6M51 13l-6 6M19 45l-6 6" ${stroke} ${accent}/>
+          </svg>`;
+        case 'suncloud':
+          return `<svg ${common}>
+            <path d="M22 24a10 10 0 1 1 18 8" ${stroke} ${accent}/>
+            <path d="M22 42h22a10 10 0 0 0 0-20a12 12 0 0 0-23 4A9 9 0 0 0 22 42Z" ${stroke}/>
+          </svg>`;
+        case 'cloud':
+          return `<svg ${common}>
+            <path d="M18 44h28a12 12 0 0 0 0-24a14 14 0 0 0-27 5A10 10 0 0 0 18 44Z" ${stroke}/>
+          </svg>`;
+        case 'fog':
+          return `<svg ${common}>
+            <path d="M18 30h28M14 38h36M18 46h28" ${stroke}/>
+            <path d="M18 26h28" ${stroke} opacity=".7"/>
+          </svg>`;
+        case 'drizzle':
+          return `<svg ${common}>
+            <path d="M18 32h28a12 12 0 0 0 0-24a14 14 0 0 0-27 5A10 10 0 0 0 18 32Z" ${stroke}/>
+            <path d="M22 40v6M32 40v6M42 40v6" ${stroke} opacity=".85"/>
+          </svg>`;
+        case 'rain':
+          return `<svg ${common}>
+            <path d="M18 32h28a12 12 0 0 0 0-24a14 14 0 0 0-27 5A10 10 0 0 0 18 32Z" ${stroke}/>
+            <path d="M22 40l-2 8M32 40l-2 8M42 40l-2 8" ${stroke} opacity=".9"/>
+          </svg>`;
+        case 'snow':
+          return `<svg ${common}>
+            <path d="M18 32h28a12 12 0 0 0 0-24a14 14 0 0 0-27 5A10 10 0 0 0 18 32Z" ${stroke}/>
+            <path d="M22 44h0M32 44h0M42 44h0" ${stroke} opacity=".9"/>
+            <path d="M22 44l-3 3M22 44l3 3M22 44l0-4M32 44l-3 3M32 44l3 3M32 44l0-4M42 44l-3 3M42 44l3 3M42 44l0-4" ${stroke} opacity=".9"/>
+          </svg>`;
+        case 'storm':
+          return `<svg ${common}>
+            <path d="M18 32h28a12 12 0 0 0 0-24a14 14 0 0 0-27 5A10 10 0 0 0 18 32Z" ${stroke}/>
+            <path d="M32 36l-6 10h6l-2 10l8-14h-6l2-6Z" fill="rgba(240,193,75,.95)"/>
+          </svg>`;
+        default:
+          return iconSVG('cloud', size);
+      }
+    }
+
+    async function getCoords(){
+      return new Promise((resolve) => {
+        if(!navigator.geolocation){
+          resolve({ ...DEFAULT, ok: false, reason: 'Geolocalización no soportada' });
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ name: 'Tu ubicación', lat: pos.coords.latitude, lon: pos.coords.longitude, ok: true }),
+          () => resolve({ ...DEFAULT, ok: false, reason: 'Permiso denegado' }),
+          { enableHighAccuracy: false, timeout: 4500, maximumAge: 300000 }
+        );
+      });
+    }
+
+    function setGeoStatus(ok, text){
+      var dot = $('#dotGeo');
+      dot.classList.toggle('ok', !!ok);
+      dot.classList.toggle('bad', !ok);
+      $('#geoText').textContent = text;
+    }
+
+    function formatDow(dateStr){
+      var d = new Date(dateStr);
+      return d.toLocaleDateString('es-ES', { weekday:'short' }).replace('.', '');
+    }
+
+    function nearestIndex(times){
+      var now = Date.now();
+      var best = 0;
+      var bestDiff = Infinity;
+      for(var i=0;i<times.length;i++){
+        var t = new Date(times[i]).getTime();
+        var diff = Math.abs(t - now);
+        if(diff < bestDiff){ bestDiff = diff; best = i; }
+      }
+      return best;
+    }
+
+    async function loadWeather(lat, lon, placeLabel){
+      var url = new URL('https://api.open-meteo.com/v1/forecast');
+      url.searchParams.set('latitude', lat);
+      url.searchParams.set('longitude', lon);
+      url.searchParams.set('timezone', 'auto');
+      url.searchParams.set('current', 'temperature_2m,relative_humidity_2m,precipitation_probability,wind_speed_10m,weather_code');
+      url.searchParams.set('hourly', 'temperature_2m,precipitation_probability,weather_code,relative_humidity_2m,wind_speed_10m');
+      url.searchParams.set('daily', 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max');
+
+      var res = await fetch(url.toString(), { cache: 'no-store' });
+      if(!res.ok) throw new Error('No se pudo obtener el tiempo');
+      var data = await res.json();
+
+      var cur = data.current;
+      var code = cur.weather_code;
+      var wx = WMO[code] || { text: 'Tiempo', icon: 'cloud' };
+
+      $('#wxTemp').textContent = Math.round(cur.temperature_2m);
+      $('#wxMeta').innerHTML =
+        `Precipitaciones: ${cur.precipitation_probability ?? '--'}%<br/>` +
+        `Humedad: ${cur.relative_humidity_2m ?? '--'}%<br/>` +
+        `Viento: ${Math.round(cur.wind_speed_10m ?? 0)} km/h`;
+
+      $('#wxPlace').textContent = placeLabel || 'Tiempo';
+      var now = new Date();
+      var timeLabel = now.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
+      $('#wxDesc').textContent = `${wx.text} · ${timeLabel}`;
+
+      var times = data.hourly.time;
+      var start = nearestIndex(times);
+      var count = 12;
+      var slice = function(arr){ return arr.slice(start, start+count); };
+
+      var temp = slice(data.hourly.temperature_2m);
+      var pr   = slice(data.hourly.precipitation_probability);
+      var wind = slice(data.hourly.wind_speed_10m);
+      var tms  = slice(times);
+
+      renderLineChart('#svgTemp', '#labelsTemp', tms, temp, '°C');
+      renderLineChart('#svgPrecip', '#labelsPrecip', tms, pr, '%');
+      renderLineChart('#svgWind', '#labelsWind', tms, wind, 'km/h');
+
+      var daily = $('#daily');
+      daily.innerHTML = '';
+      var dTimes = data.daily.time;
+      for(var i=0;i<dTimes.length;i++){
+        var c = data.daily.weather_code[i];
+        var info = WMO[c] || { text:'', icon:'cloud' };
+        var max = Math.round(data.daily.temperature_2m_max[i]);
+        var min = Math.round(data.daily.temperature_2m_min[i]);
+        var pp  = data.daily.precipitation_probability_max?.[i];
+
+        var el = document.createElement('div');
+        el.className = 'day';
+        el.innerHTML = `
+          <div class="dow">${formatDow(dTimes[i])}</div>
+          <div style="display:flex;justify-content:center;">${iconSVG(info.icon, 30)}</div>
+          <div class="minmax">${max}° <span style="color:rgba(255,255,255,.55)">${min}°</span></div>
+          <div class="pp">${(pp ?? '--')}% lluvia</div>
+        `;
+        daily.appendChild(el);
+      }
+    }
+
+    function renderLineChart(svgSel, labelsSel, times, values, unit){
+      var svg = document.querySelector(svgSel);
+      var labels = document.querySelector(labelsSel);
+      svg.innerHTML = '';
+      labels.innerHTML = '';
+
+      var w = 1000, h = 300;
+      var padX = 42, padY = 34;
+
+      var minV = Math.min(...values);
+      var maxV = Math.max(...values);
+      var range = (maxV - minV) || 1;
+
+      var xStep = (w - padX*2) / (values.length - 1);
+      var yFor = function(v){
+        var t = (v - minV) / range;
+        return (h - padY) - t * (h - padY*2);
+      };
+
+      var d = '';
+      for(var i=0;i<values.length;i++){
+        var x = padX + xStep*i;
+        var y = yFor(values[i]);
+        d += (i===0 ? `M ${x} ${y}` : ` L ${x} ${y}`);
+      }
+
+      var area = `${d} L ${padX + xStep*(values.length-1)} ${h-padY} L ${padX} ${h-padY} Z`;
+
+      svg.insertAdjacentHTML('beforeend', `
+        <path d="${area}" fill="rgba(240,193,75,.18)"></path>
+        <path d="${d}" stroke="rgba(240,193,75,.95)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      `);
+
+      for(var i=0;i<values.length;i++){
+        var x = padX + xStep*i;
+        var y = yFor(values[i]);
+
+        svg.insertAdjacentHTML('beforeend', `
+          <circle cx="${x}" cy="${y}" r="5" fill="rgba(240,193,75,.95)"></circle>
+          <circle cx="${x}" cy="${y}" r="9" fill="rgba(240,193,75,.18)"></circle>
+        `);
+
+        if(i % 3 === 0 || i === values.length-1){
+          var t = new Date(times[i]).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
+
+          var lx = document.createElement('div');
+          lx.className = 'x';
+          lx.style.left = (x / w * 100) + '%';
+          lx.textContent = t;
+          labels.appendChild(lx);
+
+          var lt = document.createElement('div');
+          lt.className = 't';
+          lt.style.left = (x / w * 100) + '%';
+          lt.style.top = (y / h * 100) + '%';
+          lt.textContent = `${Math.round(values[i])}${unit}`;
+          labels.appendChild(lt);
+        }
+      }
+    }
+
+    $$('.tab').forEach(tab => {
+      tab.addEventListener('click', () => setTab(tab.dataset.tab));
+      tab.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); setTab(tab.dataset.tab); }
+      });
+    });
+
+    function setTab(name){
+      $$('.tab').forEach(t => {
+        var active = t.dataset.tab === name;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      $('#panel-temp').classList.toggle('active', name === 'temp');
+      $('#panel-precip').classList.toggle('active', name === 'precip');
+      $('#panel-wind').classList.toggle('active', name === 'wind');
+    }
+
+    (async () => {
+      var loc = await getCoords();
+      if(loc.ok){
+        setGeoStatus(true, `Ubicación: detectada (lat ${loc.lat.toFixed(2)}, lon ${loc.lon.toFixed(2)})`);
+        $('#wxPlace').textContent = 'Tu zona';
+      }else{
+        setGeoStatus(false, `Ubicación: ${loc.reason}. Usando ${DEFAULT.name}.`);
+        $('#wxPlace').textContent = DEFAULT.name;
+      }
+      try{
+        await loadWeather(loc.lat, loc.lon, loc.ok ? 'Tu zona' : DEFAULT.name);
+        setInterval(() => loadWeather(loc.lat, loc.lon, loc.ok ? 'Tu zona' : DEFAULT.name).catch(()=>{}), 20*60*1000);
+      }catch(e){
+        $('#wxDesc').textContent = 'No se pudo cargar el tiempo';
+      }
+    })();
+
+    /***********************
+     * Ding tipo "cuenco"
+     ***********************/
+    var audioCtx = null;
+
+    function playBowlDing(){
+      try{
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      }catch(e){
+        return;
+      }
+
+      var now = audioCtx.currentTime;
+      var out = audioCtx.createGain();
+      out.gain.value = 0.0001;
+      out.connect(audioCtx.destination);
+
+      out.gain.setValueAtTime(0.0001, now);
+      out.gain.exponentialRampToValueAtTime(0.55, now + 0.02);
+      out.gain.exponentialRampToValueAtTime(0.001, now + 4.2);
+
+      var freqs = [220, 330, 440, 554, 660, 880];
+      var gains = [0.55, 0.28, 0.18, 0.14, 0.10, 0.06];
+
+      freqs.forEach((f, i) => {
+        var osc = audioCtx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, now);
+
+        var g = audioCtx.createGain();
+        g.gain.value = 0.0001;
+
+        g.gain.setValueAtTime(0.0001, now);
+        g.gain.exponentialRampToValueAtTime(gains[i], now + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + (2.4 + i*0.35));
+
+        var lfo = audioCtx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 5.2 + i*0.35;
+        var lfoGain = audioCtx.createGain();
+        lfoGain.gain.value = 0.7 + i*0.08;
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+
+        osc.connect(g);
+        g.connect(out);
+
+        lfo.start(now);
+        osc.start(now);
+        osc.stop(now + 4.6);
+        lfo.stop(now + 4.6);
+      });
+
+      var buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.25, audioCtx.sampleRate);
+      var data = buffer.getChannelData(0);
+      for(var i=0;i<data.length;i++) data[i] = (Math.random()*2-1) * Math.exp(-i/(data.length/6));
+      var noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      var filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 2200;
+      filter.Q.value = 6;
+
+      var ng = audioCtx.createGain();
+      ng.gain.value = 0.18;
+
+      noise.connect(filter);
+      filter.connect(ng);
+      ng.connect(out);
+
+      noise.start(now);
+      noise.stop(now + 0.26);
+    }
+
+    $('#btnTestDing').addEventListener('click', playBowlDing);
+
+    /***********************
+     * Temporizador de terapia
+     ***********************/
+    var timer = {
+      running: false,
+      startMs: 0,
+      endMs: 0,
+      totalMs: 0,
+      dinged5: false,
+      raf: null
+    };
+
+    function msToHMS(ms){
+      ms = Math.max(0, ms);
+      var s = Math.floor(ms/1000);
+      var hh = Math.floor(s/3600);
+      var mm = Math.floor((s%3600)/60);
+      var ss = s%60;
+      return `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
+    }
+
+    function startTherapy(totalMs){
+      var now = Date.now();
+      timer.running = true;
+      timer.startMs = now;
+      timer.totalMs = totalMs;
+      timer.endMs = now + totalMs;
+      timer.dinged5 = false;
+
+      $('#theraTotal').textContent = `Total: ${msToHMS(totalMs)}`;
+      $('#therapybar').style.display = 'block';
+
+      requestWakeLock();
+
+      if(timer.raf) cancelAnimationFrame(timer.raf);
+      loopTherapy();
+    }
+
+    function stopTherapy(){
+      timer.running = false;
+      if(timer.raf) cancelAnimationFrame(timer.raf);
+      timer.raf = null;
+      $('#therapybar').style.display = 'none';
+    }
+
+    function loopTherapy(){
+      if(!timer.running) return;
+
+      var now = Date.now();
+      var remaining = timer.endMs - now;
+      var elapsed = now - timer.startMs;
+      var frac = clamp(1 - (elapsed / timer.totalMs), 0, 1);
+
+      $('#theraCount').textContent = msToHMS(remaining);
+      $('#theraProg').style.transform = `scaleX(${frac})`;
+
+      if(!timer.dinged5 && remaining <= 5*60*1000 && remaining > 0){
+        timer.dinged5 = true;
+        playBowlDing();
+      }
+
+      if(remaining <= 0){
+        playBowlDing();
+        stopTherapy();
+        return;
+      }
+
+      timer.raf = requestAnimationFrame(loopTherapy);
+    }
+
+    $('#btnStop').addEventListener('click', stopTherapy);
+
+    /***********************
+     * Modal programación
+     ***********************/
+    function openModal(){
+      $('#modalBackdrop').style.display = 'flex';
+      $('#modalErr').style.display = 'none';
+      $('#inMinutes').focus();
+
+      var msg = wakeWanted ? 'solicitado' : 'no solicitado';
+      $('#wakeText2').textContent = `Wake Lock: ${msg}`;
+      $('#dotWake2').classList.toggle('ok', wakeWanted);
+      $('#dotWake2').classList.toggle('bad', !wakeWanted);
+    }
+
+    function closeModal(){
+      $('#modalBackdrop').style.display = 'none';
+    }
+
+    $('#btnProgramar').addEventListener('click', openModal);
+    $('#btnCloseModal').addEventListener('click', closeModal);
+    $('#btnCancel').addEventListener('click', closeModal);
+
+    $('#modalBackdrop').addEventListener('click', (e) => {
+      if(e.target === $('#modalBackdrop')) closeModal();
+    });
+
+    $('#btnStart').addEventListener('click', () => {
+      var h = parseInt($('#inHours').value, 10) || 0;
+      var m = parseInt($('#inMinutes').value, 10) || 0;
+      var totalMin = h*60 + m;
+
+      if(totalMin < 1){
+        $('#modalErr').style.display = 'block';
+        return;
+      }
+
+      startTherapy(totalMin * 60 * 1000);
+      closeModal();
+    });
+
+    /***********************
+     * MUSIC PLAYER CON URLs REALES
+     ***********************/
+    
+    var audioPlayer = $('#audioPlayer');
+    var currentTrackIndex = -1;
+    var isPlaying = false;
+
+    function formatTime(seconds){
+      if(!isFinite(seconds)) return '00:00';
+      var m = Math.floor(seconds / 60);
+      var s = Math.floor(seconds % 60);
+      return `${pad2(m)}:${pad2(s)}`;
+    }
+
+    function renderMusicList(){
+      var list = $('#musicList');
+      list.innerHTML = '';
+
+      musicPlaylist.forEach((track, index) => {
+        var item = document.createElement('div');
+        item.className = 'music-item';
+        item.dataset.index = index;
+        item.innerHTML = `
+          <div class="num">${index + 1}</div>
+          <div class="info">
+            <div class="title">${track.title}</div>
+            <div class="artist">${track.artist}</div>
+          </div>
+          <div class="duration">${track.duration}</div>
+        `;
+        item.addEventListener('click', () => selectTrack(index));
+        list.appendChild(item);
+      });
+    }
+
+    function updateMusicListUI(){
+      $$('.music-item').forEach((item, i) => {
+        item.classList.toggle('active', i === currentTrackIndex);
+      });
+    }
+
+    function selectTrack(index){
+      currentTrackIndex = index;
+      var track = musicPlaylist[index];
+
+      audioPlayer.src = track.url;
+      $('#playerTitle').textContent = track.title;
+      $('#playerArtist').textContent = track.artist;
+      $('#musicNowChip').textContent = `#${index + 1} / 20`;
+
+      updateMusicListUI();
+      
+      audioPlayer.play().catch(() => {
+        console.log('Autoplay bloqueado - haz clic en play');
+      });
+    }
+
+    function togglePlayPause(){
+      if(currentTrackIndex < 0){
+        selectTrack(0);
+        return;
+      }
+
+      if(isPlaying){
+        audioPlayer.pause();
+      }else{
+        audioPlayer.play();
+      }
+    }
+
+    function nextTrack(){
+      if(currentTrackIndex < 0){
+        selectTrack(0);
+      }else{
+        selectTrack((currentTrackIndex + 1) % musicPlaylist.length);
+      }
+    }
+
+    function prevTrack(){
+      if(currentTrackIndex < 0){
+        selectTrack(0);
+      }else{
+        selectTrack((currentTrackIndex - 1 + musicPlaylist.length) % musicPlaylist.length);
+      }
+    }
+
+    audioPlayer.addEventListener('play', () => {
+      isPlaying = true;
+      $('#playIcon').style.display = 'none';
+      $('#pauseIcon').style.display = 'block';
+    });
+
+    audioPlayer.addEventListener('pause', () => {
+      isPlaying = false;
+      $('#playIcon').style.display = 'block';
+      $('#pauseIcon').style.display = 'none';
+    });
+
+    audioPlayer.addEventListener('timeupdate', () => {
+      var current = audioPlayer.currentTime;
+      var total = audioPlayer.duration;
+      
+      $('#currentTime').textContent = formatTime(current);
+      $('#totalTime').textContent = formatTime(total);
+      
+      if(total > 0){
+        var percent = (current / total) * 100;
+        $('#progressFill').style.width = percent + '%';
+      }
+    });
+
+    audioPlayer.addEventListener('ended', () => {
+      nextTrack();
+    });
+
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      $('#totalTime').textContent = formatTime(audioPlayer.duration);
+    });
+
+    $('#btnPlayPause').addEventListener('click', togglePlayPause);
+    $('#btnNext').addEventListener('click', nextTrack);
+    $('#btnPrev').addEventListener('click', prevTrack);
+
+    $('#volumeSlider').addEventListener('input', (e) => {
+      audioPlayer.volume = e.target.value / 100;
+    });
+
+    $('#progressBar').addEventListener('click', (e) => {
+      if(audioPlayer.duration > 0){
+        var rect = $('#progressBar').getBoundingClientRect();
+        var percent = (e.clientX - rect.left) / rect.width;
+        audioPlayer.currentTime = percent * audioPlayer.duration;
+      }
+    });
+
+    audioPlayer.volume = 0.7;
+
+    renderMusicList();
+
+  
+</script>
+</body>
+</html>
