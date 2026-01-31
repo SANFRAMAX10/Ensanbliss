@@ -1,0 +1,2845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agenda Personal - Ensanbliss</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        *{ margin:0; padding:0; box-sizing:border-box; }
+
+        body{
+          font-family:'Cormorant Garamond', serif;
+          min-width:1024px;
+          overflow:hidden;
+          background:#1a1410;
+          color:#f4e4c1;
+          height:100vh;
+        }
+
+        .background{
+          position:fixed; top:0; left:0; width:100%; height:100%;
+          background-image:url('https://raw.githubusercontent.com/SANFRAMAX10/Ensanbliss/refs/heads/main/ensanblis.png');
+          background-size:cover; background-position:center; background-repeat:no-repeat;
+          z-index:-2;
+        }
+        .background::before{
+          content:'';
+          position:absolute; top:0; left:0; width:100%; height:100%;
+          background:linear-gradient(135deg, rgba(26,20,16,0.85), rgba(61,42,28,0.8));
+          z-index:1;
+        }
+
+        /* Estrellitas flotantes */
+        .stars{
+          position:fixed; top:0; left:0; width:100%; height:100%;
+          z-index:-1; pointer-events:none; overflow:hidden;
+        }
+        .star{
+          position:absolute;
+          background:#d4af37;
+          clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+          animation:twinkle 3s infinite ease-in-out;
+        }
+        @keyframes twinkle{
+          0%,100%{ opacity:.3; transform:scale(1); }
+          50%{ opacity:1; transform:scale(1.2); }
+        }
+
+        /* Contenedor Principal */
+        .main-container{
+          height:100vh;
+          padding:20px;
+          display:flex;
+          gap:20px;
+          min-height:0; /* FIX */
+        }
+
+        /* Panel Lateral */
+        .sidebar{
+          width:300px;
+          background:linear-gradient(135deg, rgba(61,42,28,.85), rgba(26,20,16,.9));
+          backdrop-filter:blur(15px);
+          border:2px solid rgba(212,175,55,.3);
+          border-radius:20px;
+          padding:20px;
+          box-shadow:0 8px 32px rgba(0,0,0,.4);
+          overflow-y:auto;
+          display:flex;
+          flex-direction:column;
+          gap:25px;
+          min-height:0; /* FIX */
+        }
+
+        .section-title{
+          font-family:'Allura', cursive;
+          font-size:2em;
+          color:#d4af37;
+          text-shadow:0 0 15px rgba(212,175,55,.4);
+          text-align:center;
+          margin-bottom:10px;
+        }
+
+        .quick-action-btn{
+          width:100%;
+          padding:15px;
+          margin-bottom:12px;
+          background:linear-gradient(135deg, rgba(139,99,60,.6), rgba(212,175,55,.4));
+          border:2px solid rgba(212,175,55,.4);
+          border-radius:12px;
+          color:#f4e4c1;
+          font-size:1.1em;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .3s ease;
+          text-align:left;
+          display:flex;
+          align-items:center;
+          gap:10px;
+        }
+        .quick-action-btn:hover{
+          background:linear-gradient(135deg, rgba(212,175,55,.6), rgba(139,99,60,.4));
+          box-shadow:0 0 20px rgba(212,175,55,.4);
+          transform:translateX(5px);
+        }
+        .quick-action-btn i{
+          color:#d4af37;
+          font-size:1.3em;
+        }
+
+        .sidebar-divider{
+          height:2px;
+          background:rgba(212,175,55,.25);
+          border-radius:999px;
+          margin:5px 0;
+        }
+
+        /* Área de Contenido */
+        .content-area{
+          flex:1;
+          background:linear-gradient(135deg, rgba(61,42,28,.85), rgba(26,20,16,.9));
+          backdrop-filter:blur(15px);
+          border:2px solid rgba(212,175,55,.3);
+          border-radius:20px;
+          padding:20px;
+          box-shadow:0 8px 32px rgba(0,0,0,.4);
+          display:flex;
+          flex-direction:column;
+          overflow:hidden;
+          min-height:0; /* FIX */
+        }
+
+        /* Pestañas */
+        .tabs{
+          display:flex;
+          gap:15px;
+          margin-bottom:20px;
+          border-bottom:2px solid rgba(212,175,55,.3);
+          padding-bottom:15px;
+          flex-shrink:0;
+        }
+
+        .tab{
+          padding:12px 25px;
+          background:rgba(26,20,16,.6);
+          border:2px solid rgba(212,175,55,.3);
+          border-radius:12px 12px 0 0;
+          color:#f4e4c1;
+          font-size:1.2em;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .3s ease;
+          user-select:none;
+        }
+        .tab:hover{ background:rgba(212,175,55,.2); }
+        .tab.active{
+          background:linear-gradient(135deg, rgba(139,99,60,.8), rgba(212,175,55,.6));
+          border-color:rgba(212,175,55,.6);
+          color:#1a1410;
+          box-shadow:0 -2px 10px rgba(212,175,55,.3);
+        }
+
+        /* Contenido de Pestañas */
+        .tab-content{ display:none; flex:1; overflow-y:auto; min-height:0; }
+        .tab-content.active{ display:flex; flex-direction:column; min-height:0; }
+
+        /* DASHBOARD */
+        .dashboard-grid{
+          display:grid;
+          grid-template-columns:repeat(3, 1fr);
+          gap:20px;
+        }
+
+        .dashboard-widget{
+          background:rgba(26,20,16,.7);
+          border:2px solid rgba(212,175,55,.3);
+          border-radius:15px;
+          padding:20px;
+          transition:all .3s ease;
+        }
+        .dashboard-widget:hover{
+          border-color:rgba(212,175,55,.6);
+          box-shadow:0 5px 20px rgba(212,175,55,.2);
+        }
+
+        .widget-header{
+          display:flex;
+          align-items:center;
+          gap:10px;
+          margin-bottom:15px;
+        }
+        .widget-icon{ font-size:2em; color:#d4af37; }
+        .widget-title{
+          font-family:'Allura', cursive;
+          font-size:1.8em;
+          color:#d4af37;
+          text-shadow:0 0 10px rgba(212,175,55,.3);
+        }
+        .widget-value{
+          font-size:3em;
+          font-weight:700;
+          color:#d4af37;
+          text-align:center;
+          text-shadow:0 0 15px rgba(212,175,55,.4);
+        }
+        .widget-label{
+          text-align:center;
+          color:rgba(244,228,193,.8);
+          font-size:1.1em;
+        }
+
+        /* Cards scrollables */
+        .cards-scroll-container{
+          display:flex;
+          gap:15px;
+          overflow-x:auto;
+          padding-bottom:10px;
+        }
+        .cards-scroll-container::-webkit-scrollbar{ height:8px; }
+        .cards-scroll-container::-webkit-scrollbar-track{
+          background:rgba(26,20,16,.5);
+          border-radius:10px;
+        }
+        .cards-scroll-container::-webkit-scrollbar-thumb{
+          background:rgba(212,175,55,.5);
+          border-radius:10px;
+        }
+
+        .event-card{
+          min-width:280px;
+          background:rgba(26,20,16,.6);
+          border:2px solid rgba(212,175,55,.3);
+          border-left:4px solid;
+          border-radius:12px;
+          padding:15px;
+          cursor:pointer;
+          transition:all .3s ease;
+        }
+        .event-card:hover{
+          background:rgba(212,175,55,.15);
+          transform:translateY(-3px);
+          box-shadow:0 5px 15px rgba(212,175,55,.3);
+        }
+        .event-card.relajante{ border-left-color:#4CAF50; }
+        .event-card.deportiva{ border-left-color:#FF9800; }
+
+        .event-card-header{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          margin-bottom:10px;
+        }
+        .event-card-icon{ font-size:1.5em; color:#d4af37; }
+        .event-card-date{ font-size:.9em; color:rgba(244,228,193,.7); }
+        .event-card-title{
+          font-size:1.3em;
+          font-weight:600;
+          color:#d4af37;
+          margin-bottom:8px;
+        }
+        .event-card-info{
+          display:flex;
+          flex-direction:column;
+          gap:5px;
+          font-size:.95em;
+          color:#f4e4c1;
+        }
+        .event-card-detail{ display:flex; align-items:center; gap:8px; }
+        .event-card-detail i{ color:rgba(212,175,55,.7); width:16px; }
+
+        /* Task Card */
+        .task-card{
+          min-width:280px;
+          background:rgba(26,20,16,.6);
+          border:2px solid rgba(212,175,55,.3);
+          border-radius:12px;
+          padding:15px;
+          display:flex;
+          align-items:flex-start;
+          gap:12px;
+          transition:all .3s ease;
+        }
+        .task-card:hover{
+          background:rgba(212,175,55,.15);
+          border-color:rgba(212,175,55,.5);
+        }
+        .task-card.completed{ opacity:.6; }
+        .task-card-checkbox{
+          width:22px;
+          height:22px;
+          cursor:pointer;
+          margin-top:3px;
+        }
+        .task-card-content{ flex:1; cursor:pointer; }
+        .task-card-text{
+          font-size:1.1em;
+          color:#f4e4c1;
+          margin-bottom:8px;
+        }
+        .task-card.completed .task-card-text{ text-decoration:line-through; }
+        .task-card-meta{
+          display:flex;
+          gap:15px;
+          font-size:.9em;
+          color:rgba(244,228,193,.7);
+          flex-wrap:wrap;
+        }
+        .task-card-meta i{ margin-right:5px; color:rgba(212,175,55,.7); }
+        .task-card-delete{
+          padding:8px 12px;
+          background:rgba(255,87,87,.6);
+          border:none;
+          border-radius:8px;
+          color:white;
+          cursor:pointer;
+          transition:all .3s ease;
+        }
+        .task-card-delete:hover{ background:rgba(255,87,87,.8); }
+
+        /* Calendario 30 días */
+        .calendar-header{
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:20px;
+          flex-shrink:0;
+        }
+        .calendar-month{
+          font-family:'Allura', cursive;
+          font-size:2.5em;
+          color:#d4af37;
+          text-shadow:0 0 15px rgba(212,175,55,.4);
+        }
+        .calendar-nav{ display:flex; gap:10px; }
+        .calendar-nav-btn{
+          padding:10px 20px;
+          background:rgba(139,99,60,.6);
+          border:2px solid rgba(212,175,55,.4);
+          border-radius:10px;
+          color:#f4e4c1;
+          font-size:1.2em;
+          cursor:pointer;
+          transition:all .3s ease;
+        }
+        .calendar-nav-btn:hover{
+          background:rgba(212,175,55,.6);
+          box-shadow:0 0 15px rgba(212,175,55,.4);
+        }
+
+        .calendar-30-days{
+          display:grid;
+          grid-template-columns:repeat(5, 1fr);
+          gap:15px;
+          align-content:start;
+        }
+        .calendar-day-30{
+          background:rgba(26,20,16,.6);
+          border:2px solid rgba(212,175,55,.2);
+          border-radius:15px;
+          padding:15px;
+          cursor:pointer;
+          transition:all .3s ease;
+          display:flex;
+          flex-direction:column;
+          min-height:150px;
+        }
+        .calendar-day-30:hover{
+          background:rgba(212,175,55,.2);
+          border-color:rgba(212,175,55,.5);
+          transform:translateY(-3px);
+          box-shadow:0 5px 15px rgba(212,175,55,.3);
+        }
+        .calendar-day-30.today{
+          background:rgba(212,175,55,.3);
+          border-color:rgba(212,175,55,.7);
+          box-shadow:0 0 15px rgba(212,175,55,.4);
+        }
+        .calendar-day-30.has-events{ background:rgba(139,99,60,.3); }
+
+        .calendar-day-header{
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:10px;
+          padding-bottom:8px;
+          border-bottom:1px solid rgba(212,175,55,.2);
+        }
+        .calendar-day-number{
+          font-size:1.5em;
+          font-weight:700;
+          color:#f4e4c1;
+        }
+        .calendar-day-30.today .calendar-day-number{ color:#d4af37; }
+        .calendar-day-name{
+          font-size:.9em;
+          color:rgba(244,228,193,.6);
+          font-weight:600;
+        }
+        .calendar-day-events{
+          display:flex;
+          flex-direction:column;
+          gap:6px;
+          flex:1;
+        }
+        .calendar-mini-event{
+          background:rgba(26,20,16,.5);
+          border-left:3px solid;
+          border-radius:6px;
+          padding:6px 8px;
+          font-size:.85em;
+          transition:all .2s ease;
+        }
+        .calendar-mini-event:hover{
+          background:rgba(212,175,55,.2);
+          transform:translateX(3px);
+        }
+        .calendar-mini-event.relajante{ border-left-color:#4CAF50; }
+        .calendar-mini-event.deportiva{ border-left-color:#FF9800; }
+        .mini-event-time{
+          color:#d4af37;
+          font-weight:600;
+          margin-bottom:2px;
+        }
+        .mini-event-title{
+          color:#f4e4c1;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+        }
+
+        /* Tareas */
+        .task-input-container{ display:flex; gap:10px; margin-bottom:20px; flex-shrink:0; }
+        .task-input{
+          flex:1;
+          padding:15px;
+          background:rgba(26,20,16,.6);
+          border:2px solid rgba(212,175,55,.4);
+          border-radius:12px;
+          color:#f4e4c1;
+          font-size:1.1em;
+          font-family:'Cormorant Garamond', serif;
+        }
+        .task-input::placeholder{ color:rgba(244,228,193,.5); }
+        .task-add-btn{
+          padding:15px 30px;
+          background:linear-gradient(135deg, rgba(139,99,60,.8), rgba(212,175,55,.6));
+          border:2px solid rgba(212,175,55,.4);
+          border-radius:12px;
+          color:#1a1410;
+          font-size:1.1em;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .3s ease;
+        }
+        .task-add-btn:hover{
+          box-shadow:0 0 20px rgba(212,175,55,.5);
+          transform:translateY(-2px);
+        }
+        .tasks-list{ display:flex; flex-direction:column; gap:10px; }
+
+        /* Modal base */
+        .modal{
+          display:none;
+          position:fixed;
+          top:0; left:0;
+          width:100%; height:100%;
+          background:rgba(0,0,0,.7);
+          backdrop-filter:blur(5px);
+          z-index:10000;
+          justify-content:center;
+          align-items:center;
+        }
+        .modal.show{ display:flex; }
+
+        .modal-content{
+          background:linear-gradient(135deg, rgba(61,42,28,.95), rgba(26,20,16,.98));
+          backdrop-filter:blur(20px);
+          border:3px solid rgba(212,175,55,.5);
+          border-radius:25px;
+          padding:40px;
+          max-width:700px;
+          width:90%;
+          max-height:85vh;
+          overflow-y:auto;
+          box-shadow:0 20px 60px rgba(0,0,0,.8);
+          position:relative;
+        }
+        .modal-close{
+          position:absolute;
+          top:15px; right:15px;
+          font-size:2em;
+          color:#d4af37;
+          cursor:pointer;
+          transition:all .3s ease;
+        }
+        .modal-close:hover{
+          color:#f4e4c1;
+          transform:rotate(90deg);
+        }
+
+        .modal-title{
+          font-family:'Allura', cursive;
+          font-size:3em;
+          color:#d4af37;
+          text-shadow:0 0 20px rgba(212,175,55,.5);
+          margin-bottom:30px;
+          text-align:center;
+        }
+
+        .form-group{ margin-bottom:20px; }
+        .form-label{
+          display:block;
+          font-size:1.2em;
+          color:#d4af37;
+          margin-bottom:8px;
+          font-weight:600;
+        }
+        .form-input, .form-select, .form-textarea{
+          width:100%;
+          padding:12px;
+          background:rgba(26,20,16,.7);
+          border:2px solid rgba(212,175,55,.4);
+          border-radius:12px;
+          color:#f4e4c1;
+          font-size:1em;
+          font-family:'Cormorant Garamond', serif;
+        }
+        .form-textarea{ min-height:80px; resize:vertical; }
+        .form-input::placeholder, .form-textarea::placeholder{ color:rgba(244,228,193,.5); }
+        .form-select option{ background:#1a1410; color:#f4e4c1; }
+        .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+
+        .location-options{ display:flex; gap:10px; margin-top:10px; }
+        .location-btn{
+          flex:1;
+          padding:12px;
+          background:rgba(26,20,16,.6);
+          border:2px solid rgba(212,175,55,.3);
+          border-radius:10px;
+          color:#f4e4c1;
+          cursor:pointer;
+          transition:all .3s ease;
+          text-align:center;
+        }
+        .location-btn:hover{
+          background:rgba(212,175,55,.2);
+          border-color:rgba(212,175,55,.5);
+        }
+        .location-btn.active{
+          background:linear-gradient(135deg, rgba(139,99,60,.6), rgba(212,175,55,.4));
+          border-color:rgba(212,175,55,.6);
+        }
+
+        .notification-settings{
+          display:flex;
+          flex-direction:column;
+          gap:10px;
+        }
+        .notification-option{
+          display:flex;
+          align-items:center;
+          gap:10px;
+          padding:10px;
+          background:rgba(26,20,16,.5);
+          border-radius:8px;
+        }
+        .notification-option input[type="checkbox"]{ width:20px; height:20px; cursor:pointer; }
+        .notification-option label{ flex:1; cursor:pointer; color:#f4e4c1; }
+
+        .modal-buttons{
+          display:flex;
+          gap:15px;
+          justify-content:flex-end;
+          margin-top:30px;
+          flex-wrap:wrap;
+        }
+        .modal-btn{
+          padding:15px 30px;
+          border:2px solid rgba(212,175,55,.4);
+          border-radius:12px;
+          font-size:1.2em;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .3s ease;
+        }
+        .modal-btn-primary{
+          background:linear-gradient(135deg, rgba(139,99,60,.8), rgba(212,175,55,.6));
+          color:#1a1410;
+        }
+        .modal-btn-primary:hover{
+          box-shadow:0 0 25px rgba(212,175,55,.6);
+          transform:translateY(-2px);
+        }
+        .modal-btn-secondary{
+          background:rgba(26,20,16,.8);
+          color:#f4e4c1;
+        }
+        .modal-btn-secondary:hover{ background:rgba(212,175,55,.3); }
+        .modal-btn-danger{
+          background:rgba(255,87,87,.7);
+          color:white;
+        }
+        .modal-btn-danger:hover{ background:rgba(255,87,87,.9); }
+
+        /* Icon Picker */
+        .icon-picker{
+          display:grid;
+          grid-template-columns:repeat(8, 1fr);
+          gap:10px;
+          max-height:300px;
+          overflow-y:auto;
+          padding:10px;
+          background:rgba(26,20,16,.5);
+          border-radius:10px;
+        }
+        .icon-option{
+          aspect-ratio:1;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          background:rgba(26,20,16,.6);
+          border:2px solid rgba(212,175,55,.3);
+          border-radius:8px;
+          cursor:pointer;
+          transition:all .3s ease;
+          font-size:1.5em;
+          color:#d4af37;
+          user-select:none;
+        }
+        .icon-option:hover{
+          background:rgba(212,175,55,.2);
+          border-color:rgba(212,175,55,.5);
+          transform:scale(1.1);
+        }
+        .icon-option.selected{
+          background:linear-gradient(135deg, rgba(139,99,60,.6), rgba(212,175,55,.4));
+          border-color:rgba(212,175,55,.7);
+        }
+
+        /* Config items con iconos */
+        .config-item{
+          display:flex;
+          align-items:center;
+          justify-content:space-between;
+          padding:15px;
+          background:rgba(26,20,16,.6);
+          border:2px solid rgba(212,175,55,.3);
+          border-radius:12px;
+          margin-bottom:10px;
+          gap:10px;
+        }
+        .config-item-left{
+          display:flex;
+          align-items:center;
+          gap:15px;
+          min-width:0;
+        }
+        .config-item-icon{
+          font-size:1.8em;
+          color:#d4af37;
+          width:40px;
+          text-align:center;
+          flex:0 0 auto;
+        }
+        .config-item-name{
+          font-size:1.2em;
+          color:#f4e4c1;
+          font-weight:600;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          max-width:420px;
+        }
+        .config-item-delete{
+          padding:8px 15px;
+          background:rgba(255,87,87,.6);
+          border:2px solid rgba(255,87,87,.4);
+          border-radius:8px;
+          color:white;
+          cursor:pointer;
+          transition:all .3s ease;
+          flex:0 0 auto;
+        }
+        .config-item-delete:hover{ background:rgba(255,87,87,.8); }
+
+        .add-config-btn{
+          width:100%;
+          padding:15px;
+          background:linear-gradient(135deg, rgba(139,99,60,.6), rgba(212,175,55,.4));
+          border:2px solid rgba(212,175,55,.4);
+          border-radius:12px;
+          color:#f4e4c1;
+          font-size:1.2em;
+          font-weight:600;
+          cursor:pointer;
+          transition:all .3s ease;
+          margin-top:15px;
+        }
+        .add-config-btn:hover{
+          background:linear-gradient(135deg, rgba(212,175,55,.6), rgba(139,99,60,.4));
+          box-shadow:0 0 20px rgba(212,175,55,.4);
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar{ width:10px; }
+        ::-webkit-scrollbar-track{
+          background:rgba(26,20,16,.5);
+          border-radius:10px;
+        }
+        ::-webkit-scrollbar-thumb{
+          background:rgba(212,175,55,.5);
+          border-radius:10px;
+        }
+        ::-webkit-scrollbar-thumb:hover{ background:rgba(212,175,55,.7); }
+
+        /* Empty state */
+        .empty-state{
+          text-align:center;
+          padding:40px 20px;
+          color:rgba(244,228,193,.6);
+          font-size:1.1em;
+          width:100%;
+        }
+        .empty-state i{
+          font-size:3em;
+          color:rgba(212,175,55,.4);
+          margin-bottom:15px;
+          display:block;
+        }
+
+        /* Ajustes modal secciones */
+        .settings-block-title{
+          font-family:'Allura', cursive;
+          font-size:2.2em;
+          color:#d4af37;
+          text-shadow:0 0 15px rgba(212,175,55,.35);
+          margin:10px 0 10px 0;
+          text-align:left;
+        }
+        .settings-subtitle{
+          color:rgba(244,228,193,.85);
+          font-weight:600;
+          margin:0 0 10px 0;
+          font-size:1.05em;
+        }
+
+        /* Debug bar */
+        .ens-debug{
+          position:fixed;
+          left:18px;
+          bottom:18px;
+          z-index:9999;
+          padding:10px 12px;
+          border-radius:12px;
+          border:1px solid rgba(255,255,255,0.12);
+          background:rgba(10,8,7,0.55);
+          color:rgba(255,255,255,0.9);
+          font-size:12px;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 14px 50px rgba(0,0,0,0.45);
+          max-width: 460px;
+        }
+        .ens-debug b{ color: rgba(210,170,110,0.95); }
+
+        /* ===== Ensanbliss Action Modal Buttons (Luxury) ===== */
+        .ens-action-btn{
+          width:100%;
+          padding:14px 14px;
+          border-radius:14px;
+          border:1px solid rgba(212,175,55,.25);
+          font-family:'Cormorant Garamond', serif;
+          letter-spacing:.3px;
+          font-size:1.05em;
+          cursor:pointer;
+          transition:transform .12s ease, filter .12s ease, box-shadow .12s ease;
+        }
+        .ens-action-btn:hover{ transform:translateY(-1px); filter:brightness(1.04); }
+        .ens-action-confirm{ background:linear-gradient(180deg, rgba(18,110,60,.95), rgba(10,70,38,.95)); }
+        .ens-action-complete{ background:linear-gradient(180deg, rgba(28,74,170,.95), rgba(16,45,120,.95)); }
+        .ens-action-cancel{ background:linear-gradient(180deg, rgba(30,42,60,.95), rgba(18,26,38,.95)); }
+        .ens-action-tpv{ background:linear-gradient(180deg, rgba(160,84,18,.96), rgba(110,54,10,.96)); }
+        .ens-action-edit{ background:linear-gradient(180deg, rgba(120,70,18,.96), rgba(78,44,8,.96)); }
+        .ens-action-danger{ background:linear-gradient(180deg, rgba(150,30,30,.96), rgba(95,15,15,.96)); border-color: rgba(255,107,107,.5); }
+    </style>
+</head>
+
+<body>
+<!-- Fondo -->
+<div class="background"></div>
+
+<!-- Estrellitas -->
+<div class="stars" id="stars"></div>
+
+<!-- Contenedor Principal -->
+<div class="main-container">
+
+    <!-- Panel Lateral -->
+    <div class="sidebar">
+        <div>
+            <h2 class="section-title">Eventos Rápidos</h2>
+            <div id="quickActionsContainer"></div>
+
+            <div class="sidebar-divider"></div>
+
+            <button class="quick-action-btn" onclick="openEventModal()">
+                <i class="fas fa-plus-circle"></i>
+                <span>Nueva sesión (manual)</span>
+            </button>
+
+            <button class="quick-action-btn" onclick="openSettingsModal()">
+                <i class="fas fa-sliders"></i>
+                <span>Ajustes</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Área de Contenido -->
+    <div class="content-area">
+
+        <!-- Pestañas -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab(event,'dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </div>
+            <div class="tab" onclick="switchTab(event,'calendar')">
+                <i class="fas fa-calendar-alt"></i> Calendario
+            </div>
+            <div class="tab" onclick="switchTab(event,'tasks')">
+                <i class="fas fa-tasks"></i> Tareas
+            </div>
+        </div>
+
+        <!-- DASHBOARD -->
+        <div id="dashboardTab" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="dashboard-widget">
+                    <div class="widget-header">
+                        <i class="fas fa-calendar-check widget-icon"></i>
+                        <div class="widget-title">Eventos</div>
+                    </div>
+                    <div class="widget-value" id="totalEvents">0</div>
+                    <div class="widget-label">Total registrados</div>
+                </div>
+
+                <div class="dashboard-widget">
+                    <div class="widget-header">
+                        <i class="fas fa-list-check widget-icon"></i>
+                        <div class="widget-title">Tareas</div>
+                    </div>
+                    <div class="widget-value" id="pendingTasks">0</div>
+                    <div class="widget-label">Pendientes</div>
+                </div>
+
+                <div class="dashboard-widget">
+                    <div class="widget-header">
+                        <i class="fas fa-calendar-day widget-icon"></i>
+                        <div class="widget-title">Hoy</div>
+                    </div>
+                    <div class="widget-value" id="todayEvents">0</div>
+                    <div class="widget-label">Eventos programados</div>
+                </div>
+
+                <div class="dashboard-widget" style="grid-column: 1 / -1;">
+                    <div class="widget-header">
+                        <i class="fas fa-clock widget-icon"></i>
+                        <div class="widget-title">Próximos Eventos</div>
+                    </div>
+                    <div class="cards-scroll-container" id="upcomingEventsCards"></div>
+                </div>
+
+                <div class="dashboard-widget" style="grid-column: 1 / -1;">
+                    <div class="widget-header">
+                        <i class="fas fa-check-circle widget-icon"></i>
+                        <div class="widget-title">Tareas Pendientes</div>
+                    </div>
+                    <div class="cards-scroll-container" id="dashboardTasksCards"></div>
+                </div>
+
+                <div class="dashboard-widget" style="grid-column: 1 / -1;">
+                    <div class="widget-header">
+                        <i class="fas fa-chart-pie widget-icon"></i>
+                        <div class="widget-title">Esta Semana</div>
+                    </div>
+                    <div style="display:flex; justify-content:space-around; padding:20px;">
+                        <div style="text-align:center;">
+                            <div style="font-size:2.5em; color:#4CAF50; margin-bottom:10px;">
+                                <i class="fas fa-spa"></i> <span id="weekRelajante">0</span>
+                            </div>
+                            <div style="font-size:1em; color:rgba(244,228,193,0.7);">Sesiones Relajantes</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:2.5em; color:#FF9800; margin-bottom:10px;">
+                                <i class="fas fa-running"></i> <span id="weekDeportiva">0</span>
+                            </div>
+                            <div style="font-size:1em; color:rgba(244,228,193,0.7);">Sesiones Deportivas</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- CALENDARIO -->
+        <div id="calendarTab" class="tab-content">
+            <div class="calendar-header">
+                <div class="calendar-month" id="currentMonth"></div>
+                <div class="calendar-nav">
+                    <button class="calendar-nav-btn" onclick="moveCalendar(-30)"><i class="fas fa-chevron-left"></i></button>
+                    <button class="calendar-nav-btn" onclick="moveCalendar(30)"><i class="fas fa-chevron-right"></i></button>
+                    <button class="calendar-nav-btn" onclick="goToToday()">Hoy</button>
+                </div>
+            </div>
+            <div class="calendar-30-days" id="calendar30Days"></div>
+        </div>
+
+        <!-- TAREAS -->
+        <div id="tasksTab" class="tab-content">
+            <div class="task-input-container">
+                <input type="text" class="task-input" id="taskInput" placeholder="Nueva tarea..." />
+                <button class="task-add-btn" onclick="openTaskModal()"><i class="fas fa-plus"></i> Añadir</button>
+            </div>
+            <div class="tasks-list" id="tasksList"></div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal: Nuevo/Editar Evento -->
+<div class="modal" id="eventModal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeEventModal()">&times;</span>
+        <h2 class="modal-title" id="eventModalTitle">Nueva Sesión</h2>
+
+        <div class="form-group">
+            <label class="form-label">Título</label>
+            <input type="text" class="form-input" id="eventTitle" placeholder="Ej: Sesión con María..." />
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Fecha</label>
+                <input type="date" class="form-input" id="eventDate" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Hora</label>
+                <input type="time" class="form-input" id="eventTime" />
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Tipo de Terapia</label>
+                <select class="form-select" id="eventType"></select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Duración (minutos)</label>
+                <input type="number" class="form-input" id="eventDuration" placeholder="60" min="15" step="15" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Ubicación</label>
+            <div class="location-options">
+                <button class="location-btn" id="locationCabin" onclick="selectLocation('cabin')"><i class="fas fa-home"></i> En Cabina</button>
+                <button class="location-btn" id="locationExternal" onclick="selectLocation('external')"><i class="fas fa-map-marker-alt"></i> Ubicación Externa</button>
+            </div>
+            <input type="text" class="form-input" id="eventLocation" placeholder="Dirección o ubicación..." style="margin-top:10px; display:none;" />
+        </div>
+
+        <!-- Campos Sesión (opcionales) se insertan por JS -->
+
+        <div class="form-group">
+            <label class="form-label">Notificaciones</label>
+            <div class="notification-settings">
+                <div class="notification-option"><input type="checkbox" id="notify15" /><label for="notify15">15 minutos antes</label></div>
+                <div class="notification-option"><input type="checkbox" id="notify30" /><label for="notify30">30 minutos antes</label></div>
+                <div class="notification-option"><input type="checkbox" id="notify1h" /><label for="notify1h">1 hora antes</label></div>
+                <div class="notification-option"><input type="checkbox" id="notify1day" /><label for="notify1day">1 día antes</label></div>
+            </div>
+        </div>
+
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-secondary" onclick="closeEventModal()">Cancelar</button>
+            <button class="modal-btn modal-btn-danger" id="deleteEventBtn" onclick="deleteCurrentEvent()" style="display:none;">Eliminar</button>
+            <button class="modal-btn modal-btn-primary" onclick="saveEvent()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Nueva/Editar Tarea -->
+<div class="modal" id="taskModal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeTaskModal()">&times;</span>
+        <h2 class="modal-title" id="taskModalTitle">Nueva Tarea</h2>
+
+        <div class="form-group">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-textarea" id="taskText" placeholder="Describe la tarea..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Fecha límite (opcional)</label>
+            <input type="date" class="form-input" id="taskDate" />
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Recordatorio</label>
+            <div class="notification-settings">
+                <div class="notification-option">
+                    <input type="checkbox" id="taskNotify" />
+                    <label for="taskNotify">Activar recordatorio</label>
+                </div>
+            </div>
+            <input type="datetime-local" class="form-input" id="taskReminderTime" style="margin-top:10px; display:none;" />
+        </div>
+
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-secondary" onclick="closeTaskModal()">Cancelar</button>
+            <button class="modal-btn modal-btn-danger" id="deleteTaskBtn" onclick="deleteCurrentTask()" style="display:none;">Eliminar</button>
+            <button class="modal-btn modal-btn-primary" onclick="saveTask()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Ajustes -->
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeSettingsModal()">&times;</span>
+        <h2 class="modal-title">Ajustes</h2>
+
+        <div>
+            <div class="settings-block-title">Tipos de Terapia</div>
+            <div class="settings-subtitle">Gestiona los tipos que aparecerán en el selector de eventos.</div>
+
+            <div id="therapyTypesList" style="margin-bottom:15px;"></div>
+            <button class="add-config-btn" onclick="openAddTherapyModal()"><i class="fas fa-plus"></i> Añadir Tipo</button>
+        </div>
+
+        <div style="height:20px;"></div>
+
+        <div>
+            <div class="settings-block-title">Eventos Rápidos</div>
+            <div class="settings-subtitle">Estos botones crean una sesión rápidamente (abrirán el modal con el título precargado).</div>
+
+            <div id="quickEventsList" style="margin-bottom:15px;"></div>
+
+            <div class="form-group">
+                <input type="text" class="form-input" id="newQuickEvent" placeholder="Nuevo evento rápido..." />
+            </div>
+
+            <button class="add-config-btn" onclick="addQuickEvent()"><i class="fas fa-plus"></i> Añadir Evento</button>
+        </div>
+
+        <div class="modal-buttons" style="margin-top:25px;">
+            <button class="modal-btn modal-btn-secondary" onclick="closeSettingsModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Añadir Tipo Terapia -->
+<div class="modal" id="addTherapyModal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeAddTherapyModal()">&times;</span>
+        <h2 class="modal-title">Nuevo Tipo de Terapia</h2>
+
+        <div class="form-group">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-input" id="newTherapyType" placeholder="Ej: Masaje Relajante..." />
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Precio (€)</label>
+                <input type="number" class="form-input" id="newTherapyPrice" placeholder="60" min="0" step="0.01" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Duración (min)</label>
+                <input type="number" class="form-input" id="newTherapyDuration" placeholder="60" min="15" step="5" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Icono</label>
+            <div class="icon-picker" id="iconPicker"></div>
+        </div>
+
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-secondary" onclick="closeAddTherapyModal()">Cancelar</button>
+            <button class="modal-btn modal-btn-primary" onclick="saveTherapyType()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal selector: Sesión o Evento -->
+<div class="modal" id="ensCreateChooser">
+    <div class="modal-content">
+        <span class="modal-close" onclick="document.getElementById('ensCreateChooser').classList.remove('show')">&times;</span>
+        <h2 class="modal-title">Crear</h2>
+        <div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
+            <button class="modal-btn modal-btn-primary" style="min-width:220px;" onclick="ensStartCreate('session')">
+                <i class="fas fa-spa"></i> Crear Sesión (Cita)
+            </button>
+            <button class="modal-btn modal-btn-secondary" style="min-width:220px;" onclick="ensStartCreate('event')">
+                <i class="fas fa-calendar"></i> Crear Evento (Interno)
+            </button>
+        </div>
+        <div style="margin-top:18px; color:rgba(244,228,193,.75); font-size:0.95em; text-align:center;">
+            Sesión = se guarda en <b>appointments</b> (Admin/TPV/Consentimiento).<br/>
+            Evento = se guarda en <b>calendar_events</b> (agenda interna).
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Acciones de Cita (Luxury) -->
+<div class="modal" id="ensActionModal">
+    <div class="modal-content" style="max-width:640px;">
+        <span class="modal-close" onclick="ensCloseActionModal()">&times;</span>
+        <h2 class="modal-title" id="ensActionTitle">Acciones</h2>
+        <div id="ensActionInfo" style="white-space:pre-line;color:rgba(244,228,193,.82);font-size:0.98em;line-height:1.35;margin-top:6px;"></div>
+
+        <div class="ens-action-grid" style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <button class="ens-action-btn ens-action-confirm" id="ensActionConfirmBtn" onclick="ensActionConfirm()">Confirmar</button>
+            <button class="ens-action-btn ens-action-complete" id="ensActionCompleteBtn" onclick="ensActionComplete()">Completar</button>
+            <button class="ens-action-btn ens-action-cancel" id="ensActionCancelBtn" onclick="ensActionCancel()">Cancelar cita</button>
+            <button class="ens-action-btn ens-action-tpv" id="ensActionTPVBtn" onclick="ensActionTPV()">Enviar a TPV</button>
+            <button class="ens-action-btn ens-action-edit" id="ensActionEditBtn" onclick="ensActionEditAll()" style="grid-column:1 / -1;">Editar todo</button>
+            <button class="ens-action-btn ens-action-danger" id="ensActionDeleteBtn" onclick="ensActionDelete()" style="grid-column:1 / -1;display:none;">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<div class="ens-debug" id="ensDebug" style="display:none;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    // ============ VARIABLES GLOBALES ============
+    let currentStartDate = new Date();
+    let selectedIconForTherapy = 'fa-spa';
+    let editingEventId = null;
+    let editingTaskId = null;
+    let selectedLocationType = 'cabin';
+
+    // ============ ENSANBLISS HELPERS (fallbacks) ============
+    if(typeof window.ensConfirm !== "function"){
+      window.ensConfirm = (message) => Promise.resolve(window.confirm(message));
+    }
+    if(typeof window.ensAlert !== "function"){
+      window.ensAlert = (message) => { window.alert(message); };
+    }
+
+    // create mode
+    let ensCreateMode = null;         // 'session' | 'event'
+    let ensPrefillTitle = "";
+
+    // ============ FECHAS: SIEMPRE EN LOCAL (FIX UTC/off-by-one) ============
+    function toLocalISODate(d){
+      const x = new Date(d);
+      const y = x.getFullYear();
+      const m = String(x.getMonth()+1).padStart(2,'0');
+      const day = String(x.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    }
+
+    // ============ SUPABASE ============
+    const SUPABASE_URL = "https://lywjxvrvvpmthmavueyq.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_SeLWhzg88bK4tmD_ODovrg_yD43dfkw";
+
+    let sb = null;
+    let supabaseEventsCache = []; // appointments + calendar_events (solo lectura aquí)
+
+    function ensDebug(msg){
+      try{
+        const box = document.getElementById("ensDebug");
+        if(!box) return;
+        box.style.display = "block";
+        box.innerHTML = msg;
+      }catch(e){}
+    }
+
+    function initSupabase(){
+      try{
+        if(window.supabase && SUPABASE_URL.includes("supabase.co") && (SUPABASE_ANON_KEY||"").length > 20){
+          sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+          window.sb = sb; // CLAVE: expone el cliente a scripts integrados
+          ensDebug(`<b>Supabase:</b> conectado. <b>URL</b> OK. <b>Key</b> OK.`);
+        }else{
+          sb = null;
+          window.sb = null;
+          ensDebug(`<b>Supabase:</b> NO conectado (revisa URL/KEY).`);
+        }
+      }catch(e){
+        console.warn("Supabase no inicializado:", e);
+        sb = null;
+        window.sb = null;
+        ensDebug(`<b>Supabase:</b> error inicializando. Abre consola.`);
+      }
+    }
+
+    // ============ TERAPIAS (CATÁLOGO SUPABASE -> DROPDOWNS + PRECIO/DURACIÓN) ============
+    function ensParseDurationToMin(val){
+      if(val == null) return null;
+      const str = String(val).trim();
+      const m1 = str.match(/(\d+)\s*min/i);
+      if(m1) return parseInt(m1[1],10);
+      const m2 = str.match(/^(\d{1,2}):(\d{2})$/);
+      if(m2) return parseInt(m2[1],10)*60 + parseInt(m2[2],10);
+      const n = parseInt(str,10);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function ensGuessIconFromTitle(title){
+      const t = (title||"").toLowerCase();
+      if(t.includes("deport")) return "fa-running";
+      if(t.includes("pareja")) return "fa-heart";
+      if(t.includes("facial")) return "fa-leaf";
+      if(t.includes("reflex")) return "fa-shoe-prints";
+      if(t.includes("bambu")) return "fa-seedling";
+      return "fa-spa";
+    }
+
+    function ensNormalizeTherapiesRows(rows){
+      const out = [];
+      (rows||[]).forEach(r=>{
+        const name = (r.title || "").trim();
+        if(!name) return;
+        const durationMin = ensParseDurationToMin(r.duration);
+        const durationLabel = (r.duration != null && String(r.duration).trim()) ? String(r.duration).trim() : (durationMin ? `${durationMin} min` : "");
+        out.push({
+          name,
+          icon: ensGuessIconFromTitle(name),
+          price: (typeof r.price === "number") ? r.price : (r.price != null ? Number(r.price) : null),
+          durationMin: durationMin || null,
+          durationLabel,
+          image_url: r.image_url || null,
+          source: "supabase"
+        });
+      });
+      out.sort((a,b)=>a.name.localeCompare(b.name,'es',{sensitivity:'base'}));
+      return out;
+    }
+
+    async function ensRefreshTherapiesFromSupabase(){
+      if(!window.sb) {
+        ensDebug((document.getElementById("ensDebug")?.innerHTML || "") + "<br><span style='opacity:.8'>Therapies:</span> Supabase no inicializado.");
+        return false;
+      }
+      try{
+        const { data, error } = await sb
+          .from("therapies")
+          .select("id,title,price,duration,image_url")
+          .order("title", { ascending:true });
+
+        if(error){
+          ensDebug((document.getElementById("ensDebug")?.innerHTML || "") + `<br><b>Therapies:</b> error leyendo therapies: <code>${escapeHtml(error.message||'unknown')}</code>`);
+          console.warn("Therapies error:", error);
+          return false;
+        }
+
+        const normalized = ensNormalizeTherapiesRows(data);
+        if(!normalized.length){
+          ensDebug((document.getElementById("ensDebug")?.innerHTML || "") + "<br><b>Therapies:</b> tabla therapies vacía o sin 'title'.");
+          return false;
+        }
+
+        db.saveTherapyTypes(normalized);
+        ensPopulateTherapySelectIfPresent();
+        ensDebug((document.getElementById("ensDebug")?.innerHTML || "") + `<br><b>Therapies:</b> OK (${normalized.length}) desde Supabase.`);
+        return true;
+      }catch(e){
+        ensDebug((document.getElementById("ensDebug")?.innerHTML || "") + "<br><b>Therapies:</b> excepción leyendo Supabase (ver consola).");
+        console.warn("Therapies exception:", e);
+        return false;
+      }
+    }
+
+    function ensFormatPriceEUR(p){
+      if(p == null || p === "") return "";
+      const n = Number(p);
+      if(!Number.isFinite(n)) return "";
+      const fixed = (Math.round(n*100)/100).toString();
+      return fixed.includes(".") ? fixed.replace(/\.0+$/,'').replace(/(\.[0-9]*?)0+$/,'$1') + " €" : fixed + " €";
+    }
+
+    function ensPopulateTherapySelectIfPresent(){
+      const select = document.getElementById("eventType");
+      if(!select) return;
+      const types = db.getTherapyTypes();
+
+      select.innerHTML = (types||[]).map(t=>{
+        const label = t.price != null ? `${t.name} — ${ensFormatPriceEUR(t.price)}` : t.name;
+        return `<option value="${escapeAttr(t.name)}">${escapeHtml(label)}</option>`;
+      }).join("");
+
+      select.onchange = () => ensApplyTherapyToForm(select.value);
+    }
+
+    function ensEnsureTherapyMetaBox(){
+      if(document.getElementById("ensTherapyMeta")) return;
+      const select = document.getElementById("eventType");
+      if(!select) return;
+      const group = select.closest(".form-group");
+      if(!group) return;
+      const meta = document.createElement("div");
+      meta.id = "ensTherapyMeta";
+      meta.style.marginTop = "10px";
+      meta.style.padding = "10px 12px";
+      meta.style.borderRadius = "12px";
+      meta.style.border = "1px solid rgba(212,175,55,.25)";
+      meta.style.background = "rgba(26,20,16,.55)";
+      meta.style.fontSize = "0.95em";
+      meta.style.color = "rgba(244,228,193,.92)";
+      meta.innerHTML = "<span style='opacity:.8'>Selecciona una terapia para ver precio/duración.</span>";
+      group.appendChild(meta);
+    }
+
+    function ensApplyTherapyToForm(therapyName){
+      const types = db.getTherapyTypes() || [];
+      const t = types.find(x => (x.name||"").toLowerCase() === (therapyName||"").toLowerCase());
+      const meta = document.getElementById("ensTherapyMeta");
+      const durInput = document.getElementById("eventDuration");
+
+      if(t && durInput && t.durationMin){
+        const cur = parseInt(durInput.value||"",10);
+        if(!Number.isFinite(cur) || cur<=0 || cur===60){
+          durInput.value = String(t.durationMin);
+        }
+      }
+
+      if(meta){
+        const priceTxt = t && t.price != null ? `<b>${escapeHtml(ensFormatPriceEUR(t.price))}</b>` : "<span style='opacity:.7'>—</span>";
+        const durTxt = t && (t.durationLabel || t.durationMin) ? `<b>${escapeHtml(t.durationLabel || (t.durationMin + " min"))}</b>` : "<span style='opacity:.7'>—</span>";
+        const src = t && t.source ? t.source : "local";
+        meta.innerHTML = `
+          <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
+            <div><span style="opacity:.75">Precio:</span> ${priceTxt}</div>
+            <div><span style="opacity:.75">Duración:</span> ${durTxt}</div>
+            <div><span style="opacity:.75">Fuente:</span> <b style="text-transform:capitalize">${escapeHtml(src)}</b></div>
+          </div>
+        `;
+      }
+    }
+
+    function getVisibleRange(){
+      const start = new Date(currentStartDate);
+      start.setHours(0,0,0,0);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 29);
+      end.setHours(23,59,59,999);
+      return { start, end };
+    }
+
+    function normalizeSupabaseCalendar(row){
+      const start = row.start_time ? new Date(row.start_time) : null;
+      const date = start ? toLocalISODate(start) : "";
+      const time = start ? start.toTimeString().slice(0,5) : "00:00";
+      return {
+        id: `sb_task_${row.id}`,
+        source: "supabase",
+        sbType: "task",
+        title: row.title || "Evento",
+        date,
+        time,
+        type: row.type || "Evento",
+        duration: 60,
+        locationType: "cabin",
+        location: "",
+        readOnly: true,
+        details: row.description || ""
+      };
+    }
+
+    function normalizeSupabaseAppointment_schemaA(row){
+      const time = (row.time || "").toString().slice(0,5);
+      return {
+        id: `sb_appt_${row.id}`,
+        source: "supabase",
+        sbType: "appointment",
+        title: `${time ? time + " - " : ""}${row.client_name || "Cliente"}`,
+        date: (row.date || "").toString().split("T")[0],
+        time: time || "00:00",
+        type: row.therapy_type || "Sesión",
+        duration: 60,
+        locationType: "cabin",
+        location: "",
+        readOnly: true,
+        details: row.notes || "",
+        appointment_id: row.id,
+        client_id: row.client_id || null,
+        client_name: row.client_name || "",
+        status: row.status || null,
+        sale_id: row.sale_id || null
+      };
+    }
+
+    function normalizeSupabaseAppointment_schemaB(row){
+      const time = (row.time || "").toString().slice(0,5);
+      return {
+        id: `sb_appt_${row.id}`,
+        source: "supabase",
+        sbType: "appointment",
+        title: `${time ? time + " - " : ""}${row.name || "Cliente"}`,
+        date: (row.date || "").toString().split("T")[0],
+        time: time || "00:00",
+        type: row.therapy_type || "Sesión",
+        duration: 60,
+        locationType: "cabin",
+        location: "",
+        readOnly: true,
+        details: row.notes || "",
+        appointment_id: row.id,
+        client_name: row.name || "",
+        email: row.email || "",
+        phone: row.phone || "",
+        status: row.status || null,
+        sale_id: row.sale_id || null
+      };
+    }
+
+    async function fetchSupabaseForVisibleRange(){
+      if(!window.sb) return [];
+
+      const { start, end } = getVisibleRange();
+      const startISO = start.toISOString();
+      const endISO = end.toISOString();
+      const startDateStr = toLocalISODate(start);
+      const endDateStr = toLocalISODate(end);
+
+      let appts = [];
+      let schemaUsed = null;
+      let q = await sb
+        .from("appointments")
+        .select("id, client_id, client_name, date, time, therapy_type, status, sale_id")
+        .gte("date", startDateStr)
+        .lte("date", endDateStr);
+
+      if(!q.error){
+        appts = q.data || [];
+        schemaUsed = "A";
+      }else{
+        const msg = (q.error.message || "").toLowerCase();
+        const missingSale = q.error.code==="42703" || (msg.includes("sale_id") && msg.includes("does not exist"));
+
+        if(missingSale){
+          const q2 = await sb
+            .from("appointments")
+            .select("id, client_id, client_name, date, time, therapy_type, status")
+            .gte("date", startDateStr)
+            .lte("date", endDateStr);
+
+          if(!q2.error){
+            appts = (q2.data || []).map(r => ({...r, sale_id:null}));
+            schemaUsed = "A";
+          }else{
+            q = q2;
+          }
+        }
+
+        if(!schemaUsed){
+          const qb = await sb
+            .from("appointments")
+            .select("id, name, email, phone, therapy_type, date, time, notes, status, sale_id")
+            .gte("date", startDateStr)
+            .lte("date", endDateStr);
+
+          if(!qb.error){
+            appts = qb.data || [];
+            schemaUsed = "B";
+          }else{
+            const msgb = (qb.error.message || "").toLowerCase();
+            const missingSaleB = qb.error.code==="42703" || (msgb.includes("sale_id") && msgb.includes("does not exist"));
+
+            if(missingSaleB){
+              const qb2 = await sb
+                .from("appointments")
+                .select("id, name, email, phone, therapy_type, date, time, notes, status")
+                .gte("date", startDateStr)
+                .lte("date", endDateStr);
+
+              if(!qb2.error){
+                appts = (qb2.data || []).map(r => ({...r, sale_id:null}));
+                schemaUsed = "B";
+              }else{
+                console.warn("Supabase appointments error (schema B):", qb2.error);
+              }
+            }else{
+              console.warn("Supabase appointments error (schema B):", qb.error);
+            }
+
+            if(!schemaUsed){
+              console.warn("Supabase appointments error (schema A):", q.error);
+            }
+          }
+        }
+      }
+
+      const { data: cal, error: calErr } = await sb
+        .from("calendar_events")
+        .select("id, title, start_time, end_time, type, description")
+        .gte("start_time", startISO)
+        .lte("start_time", endISO);
+
+      if(calErr) console.warn("Supabase calendar_events error:", calErr);
+
+      const formattedAppts = (appts || []).map(r => schemaUsed==="A" ? normalizeSupabaseAppointment_schemaA(r) : normalizeSupabaseAppointment_schemaB(r));
+      const formattedCal = (cal || []).map(normalizeSupabaseCalendar);
+
+      ensDebug(`<b>Supabase:</b> OK | <b>appointments</b>: ${formattedAppts.length} (schema ${schemaUsed || "?"}) | <b>calendar_events</b>: ${formattedCal.length}`);
+
+      return [...formattedAppts, ...formattedCal];
+    }
+
+    function getAllEvents(){
+      const local = (db.getEvents() || []).filter(e => e && e.source !== "supabase");
+      return [...local, ...supabaseEventsCache];
+    }
+
+    const availableIcons = [
+      'fa-spa','fa-leaf','fa-heart','fa-om','fa-yin-yang','fa-hands',
+      'fa-hand-holding-heart','fa-mortar-pestle','fa-seedling','fa-sun',
+      'fa-moon','fa-star','fa-fire','fa-water','fa-wind','fa-mountain',
+      'fa-tree','fa-feather','fa-dove','fa-hands-praying','fa-hand-sparkles',
+      'fa-running','fa-dumbbell','fa-walking','fa-person-swimming',
+      'fa-bicycle','fa-baseball','fa-volleyball','fa-futbol'
+    ];
+
+    // ============ BASE DE DATOS LOCAL ============
+    class AgendaDB{
+      constructor(){
+        this.dbName='EnsanblissAgenda';
+        this.version=2;
+        this.init();
+      }
+      init(){
+        if(!localStorage.getItem(this.dbName)){
+          const initialData={
+            therapyTypes:[
+              {name:'Relajante', icon:'fa-spa'},
+              {name:'Deportiva', icon:'fa-running'}
+            ],
+            quickEvents:['Sesión de Terapia'],
+            events:[],
+            tasks:[],
+            createdAt:new Date().toISOString(),
+            lastModified:new Date().toISOString()
+          };
+          localStorage.setItem(this.dbName, JSON.stringify(initialData));
+        }else{
+          const data=this.getData();
+          if(data.therapyTypes && data.therapyTypes[0] && typeof data.therapyTypes[0]==='string'){
+            data.therapyTypes=data.therapyTypes.map(name=>({name, icon:'fa-spa'}));
+            this.saveData(data);
+          }
+        }
+      }
+      getData(){ return JSON.parse(localStorage.getItem(this.dbName)); }
+      saveData(data){
+        data.lastModified=new Date().toISOString();
+        localStorage.setItem(this.dbName, JSON.stringify(data));
+      }
+      getEvents(){ return this.getData().events || []; }
+      saveEvents(events){
+        const data=this.getData();
+        data.events=events;
+        this.saveData(data);
+      }
+      getTasks(){ return this.getData().tasks || []; }
+      saveTasks(tasks){
+        const data=this.getData();
+        data.tasks=tasks;
+        this.saveData(data);
+      }
+      getTherapyTypes(){
+        const data=this.getData();
+        return data.therapyTypes || [];
+      }
+      saveTherapyTypes(types){
+        const data=this.getData();
+        data.therapyTypes=types;
+        this.saveData(data);
+      }
+      getQuickEvents(){ return this.getData().quickEvents || []; }
+      saveQuickEvents(events){
+        const data=this.getData();
+        data.quickEvents=events;
+        this.saveData(data);
+      }
+    }
+    const db=new AgendaDB();
+
+    // ============ UTILIDADES ============
+    function generateId(){
+      return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    function createStars(){
+      const starsContainer=document.getElementById('stars');
+      const numberOfStars=30;
+      for(let i=0;i<numberOfStars;i++){
+        const star=document.createElement('div');
+        star.className='star';
+        const size=Math.random()*6+3;
+        star.style.width=size+'px';
+        star.style.height=size+'px';
+        star.style.left=Math.random()*100+'%';
+        star.style.top=Math.random()*100+'%';
+        star.style.animationDelay=`${Math.random()*3}s`;
+        star.style.opacity=Math.random()*0.5+0.3;
+        starsContainer.appendChild(star);
+      }
+    }
+
+    function switchTab(ev, tabName){
+      document.querySelectorAll('.tab').forEach(tab=>tab.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content=>content.classList.remove('active'));
+
+      const tabEl = ev && ev.target ? ev.target.closest('.tab') : null;
+      if(tabEl) tabEl.classList.add('active');
+
+      if(tabName==='dashboard'){
+        document.getElementById('dashboardTab').classList.add('active');
+        renderDashboard();
+      }else if(tabName==='calendar'){
+        document.getElementById('calendarTab').classList.add('active');
+        requestAnimationFrame(() => renderCalendar30Days());
+      }else if(tabName==='tasks'){
+        document.getElementById('tasksTab').classList.add('active');
+        requestAnimationFrame(() => renderTasksList());
+      }
+    }
+
+    // ============ MODAL AJUSTES ============
+    function openSettingsModal(){
+      renderTherapyTypesList();
+      renderQuickEventsList();
+      document.getElementById('settingsModal').classList.add('show');
+    }
+    function closeSettingsModal(){
+      document.getElementById('settingsModal').classList.remove('show');
+    }
+
+    // ============ DASHBOARD ============
+    function renderDashboard(){
+      const events=getAllEvents();
+      const tasks=db.getTasks();
+
+      document.getElementById('totalEvents').textContent=events.length;
+
+      const pendingTasks=tasks.filter(t=>!t.completed).length;
+      document.getElementById('pendingTasks').textContent=pendingTasks;
+
+      const today=toLocalISODate(new Date());
+      const todayEvents=events.filter(e=>e.date===today);
+      document.getElementById('todayEvents').textContent=todayEvents.length;
+
+      const weekStats=getWeekStats();
+      document.getElementById('weekRelajante').textContent=weekStats.relajante;
+      document.getElementById('weekDeportiva').textContent=weekStats.deportiva;
+
+      renderUpcomingEventsCards();
+      renderDashboardTasksCards();
+    }
+
+    function getWeekStats(){
+      const events=getAllEvents();
+      const now=new Date();
+      const weekStart=new Date(now);
+      weekStart.setDate(now.getDate()-now.getDay()+1);
+      const weekEnd=new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate()+6);
+
+      const weekStartStr=toLocalISODate(weekStart);
+      const weekEndStr=toLocalISODate(weekEnd);
+
+      const weekEvents=events.filter(e=>e.date>=weekStartStr && e.date<=weekEndStr);
+
+      const therapyTypes=db.getTherapyTypes();
+      const relajanteType=therapyTypes.find(t=>t.name.toLowerCase().includes('relajante'));
+      const deportivaType=therapyTypes.find(t=>t.name.toLowerCase().includes('deportiva'));
+
+      return{
+        relajante:weekEvents.filter(e=>relajanteType && e.type===relajanteType.name).length,
+        deportiva:weekEvents.filter(e=>deportivaType && e.type===deportivaType.name).length
+      };
+    }
+
+    function normalizeClass(str){
+      return (str || '')
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, '-');
+    }
+
+    // ===== Modal acciones (Cita/Evento Supabase) =====
+    let ensActionEv = null;
+
+    function ensOpenActionModal(ev){
+      ensActionEv = ev;
+      const modal = document.getElementById("ensActionModal");
+      const titleEl = document.getElementById("ensActionTitle");
+      const infoEl  = document.getElementById("ensActionInfo");
+
+      titleEl.textContent = (ev.sbType === "appointment") ? "Acciones de cita" : "Acciones de evento";
+      let msg = `${ev.title}\nFecha: ${ev.date}\nHora: ${ev.time}\nTipo: ${ev.type}\n`;
+
+      if(ev.sbType === "appointment"){
+        const status = (ev.status || "confirmed").toString();
+        msg += `Estado: ${status}${ev.sale_id ? `\nTicket: ${ev.sale_id}` : ""}\n`;
+        if(ev.client_name) msg += `Cliente: ${ev.client_name}\n`;
+        if(ev.email) msg += `Email: ${ev.email}\n`;
+        if(ev.phone) msg += `Teléfono: ${ev.phone}\n`;
+      }
+      if(ev.details) msg += `\nDetalles: ${ev.details}\n`;
+      msg += `\n(Origen: Supabase)\n`;
+      infoEl.textContent = msg;
+
+      const isAppt = ev.sbType === "appointment";
+      document.getElementById("ensActionConfirmBtn").style.display = isAppt ? "" : "none";
+      document.getElementById("ensActionCompleteBtn").style.display = isAppt ? "" : "none";
+      document.getElementById("ensActionCancelBtn").style.display = isAppt ? "" : "none";
+      document.getElementById("ensActionTPVBtn").style.display = isAppt ? "" : "none";
+      document.getElementById("ensActionEditBtn").style.display = isAppt ? "" : "none";
+      document.getElementById("ensActionDeleteBtn").style.display = isAppt ? "none" : "";
+
+      modal.classList.add("show");
+    }
+
+    function ensCloseActionModal(){
+      const modal = document.getElementById("ensActionModal");
+      if(modal) modal.classList.remove("show");
+      ensActionEv = null;
+    }
+
+    async function ensUpdateAppointmentStatus(ev, status){
+      if(!window.sb || !ev || !ev.appointment_id) return false;
+      try{
+        const { error } = await sb.from("appointments")
+          .update({ status })
+          .eq("id", ev.appointment_id);
+        if(error) throw error;
+        return true;
+      }catch(e){
+        console.warn("No se pudo actualizar status (quizá columna status no existe o RLS):", e);
+        window.ensAlert("No se pudo actualizar el estado de la cita en Supabase.");
+        return false;
+      }
+    }
+
+    async function ensActionConfirm(){
+      const ev = ensActionEv;
+      ensCloseActionModal();
+      if(!ev) return;
+      const ok = await ensUpdateAppointmentStatus(ev, "confirmed");
+      if(ok){ await refreshSupabaseEvents(); renderCalendar30Days(); renderDashboard(); }
+    }
+
+    async function ensActionComplete(){
+      const ev = ensActionEv;
+      ensCloseActionModal();
+      if(!ev) return;
+      const ok = await ensUpdateAppointmentStatus(ev, "completed");
+      if(ok){ await refreshSupabaseEvents(); renderCalendar30Days(); renderDashboard(); }
+    }
+
+    async function ensActionCancel(){
+      const ev = ensActionEv;
+      ensCloseActionModal();
+      if(!ev) return;
+      const ok = await ensUpdateAppointmentStatus(ev, "cancelled");
+      if(ok){ await refreshSupabaseEvents(); renderCalendar30Days(); renderDashboard(); }
+    }
+
+    function ensActionTPV(){
+      const ev = ensActionEv;
+      ensCloseActionModal();
+      if(!ev) return;
+      const tpvUrl = "seccion6.html";
+      const hasTicket = !!ev.sale_id;
+      if(hasTicket){
+        window.open(`${tpvUrl}?sale_id=${encodeURIComponent(ev.sale_id)}`, "_blank");
+      }else if(ev.appointment_id){
+        window.open(`${tpvUrl}?appointment_id=${encodeURIComponent(ev.appointment_id)}`, "_blank");
+      }else{
+        window.open(tpvUrl, "_blank");
+      }
+    }
+
+    async function ensActionDelete(){
+      const ev = ensActionEv;
+      ensCloseActionModal();
+      if(!ev) return;
+      const del = await window.ensConfirm("¿Seguro que quieres eliminar este evento de Supabase?");
+      if(del){ await deleteSupabaseEvent(ev); }
+    }
+
+    window.ensEditingSupabaseAppointment = null;
+
+    function ensActionEditAll(){
+      const ev = ensActionEv;
+      ensCloseActionModal();
+      if(!ev) return;
+      if(ev.sbType !== "appointment" || !ev.appointment_id){
+        window.ensAlert("Edición completa solo disponible para citas (appointments).");
+        return;
+      }
+      window.ensEditingSupabaseAppointment = { appointment_id: ev.appointment_id, ev };
+      ensCreateMode = "session";
+      openEventModalReal();
+
+      document.getElementById("eventTitle").value = ev.title || "";
+      document.getElementById("eventDate").value = ev.date || "";
+      document.getElementById("eventTime").value = (ev.time || "").slice(0,5);
+      document.getElementById("eventType").value = ev.type || "";
+      if(document.getElementById("eventDuration") && ev.duration) document.getElementById("eventDuration").value = ev.duration;
+      if(document.getElementById("eventDetails")) document.getElementById("eventDetails").value = ev.details || "";
+
+      const delBtn = document.getElementById("deleteEventBtn");
+      if(delBtn) delBtn.style.display = "none";
+    }
+
+    async function viewSupabaseEvent(eventId){
+      const ev = supabaseEventsCache.find(e => e.id === eventId);
+      if(!ev) return;
+      ensOpenActionModal(ev);
+    }
+
+    async function deleteSupabaseEvent(ev){
+      if(!window.sb || !ev) return;
+      try{
+        if(ev.source === "supabase" && ev.sbType === "appointment" && ev.appointment_id){
+          const { error } = await sb.from("appointments").delete().eq("id", ev.appointment_id);
+          if(error) throw error;
+        }
+
+        if(ev.source === "supabase" && ev.sbType === "task"){
+          const id = (ev.id || "").replace("sb_task_","");
+          if(id){
+            const { error } = await sb.from("calendar_events").delete().eq("id", id);
+            if(error) throw error;
+          }
+        }
+
+        await refreshSupabaseEvents();
+        renderCalendar30Days();
+        renderDashboard();
+      }catch(e){
+        console.error("Error borrando en Supabase:", e);
+        window.ensAlert("No se pudo eliminar en Supabase. Revisa RLS/Policies y permisos.");
+      }
+    }
+
+    function renderUpcomingEventsCards(){
+      const container=document.getElementById('upcomingEventsCards');
+      const events=getAllEvents();
+      const therapyTypes=db.getTherapyTypes();
+      const today=toLocalISODate(new Date());
+
+      const upcoming=events
+        .filter(e=>e.date>=today)
+        .sort((a,b)=>{
+          if(a.date===b.date) return (a.time||'').localeCompare(b.time||'');
+          return a.date.localeCompare(b.date);
+        })
+        .slice(0,10);
+
+      if(upcoming.length===0){
+        container.innerHTML='<div class="empty-state">No hay eventos próximos</div>';
+        return;
+      }
+
+      container.innerHTML=upcoming.map(event=>{
+        const therapyType=therapyTypes.find(t=>t.name===event.type);
+        const icon=therapyType ? therapyType.icon : 'fa-calendar';
+        const therapyClass=normalizeClass(event.type);
+        const date=new Date(event.date+'T00:00:00');
+        const dateStr=date.toLocaleDateString('es-ES',{day:'numeric',month:'short',year:'numeric'});
+
+        const locationIcon=event.locationType==='cabin' ? 'fa-home' : 'fa-map-marker-alt';
+        const locationText=event.locationType==='cabin' ? 'En Cabina' : (event.location || 'Ubicación externa');
+
+        return `
+          <div class="event-card ${therapyClass}" onclick="${event.readOnly ? `viewSupabaseEvent('${event.id}')` : `editEvent('${event.id}')`}">
+            <div class="event-card-header">
+              <i class="fas ${icon} event-card-icon"></i>
+              <div class="event-card-date">${dateStr}</div>
+            </div>
+            <div class="event-card-title">${escapeHtml(event.title || event.type)}</div>
+            <div class="event-card-info">
+              <div class="event-card-detail">
+                <i class="fas fa-clock"></i>
+                <span>${escapeHtml(event.time || '')} (${event.duration || 60} min)</span>
+              </div>
+              <div class="event-card-detail">
+                <i class="fas ${locationIcon}"></i>
+                <span>${escapeHtml(locationText)}</span>
+              </div>
+              <div class="event-card-detail">
+                <i class="fas fa-tag"></i>
+                <span>${escapeHtml(event.type)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDashboardTasksCards(){
+      const container=document.getElementById('dashboardTasksCards');
+      const tasks=db.getTasks();
+      const pending=tasks.filter(t=>!t.completed).slice(0,10);
+
+      if(pending.length===0){
+        container.innerHTML='<div class="empty-state">¡No hay tareas pendientes!</div>';
+        return;
+      }
+
+      container.innerHTML=pending.map(task=>{
+        const dateInfo = task.dueDate
+          ? `<span><i class="fas fa-calendar"></i>${new Date(task.dueDate+'T00:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short'})}</span>`
+          : '';
+        const reminderInfo = task.reminderTime
+          ? `<span><i class="fas fa-bell"></i>Recordatorio activo</span>`
+          : '';
+
+        return `
+          <div class="task-card ${task.completed ? 'completed' : ''}">
+            <input type="checkbox" class="task-card-checkbox" ${task.completed ? 'checked' : ''}
+              onchange="toggleTaskQuick('${task.id}')" onclick="event.stopPropagation()" />
+            <div class="task-card-content" onclick="editTask('${task.id}')">
+              <div class="task-card-text">${escapeHtml(task.text)}</div>
+              <div class="task-card-meta">
+                ${dateInfo}
+                ${reminderInfo}
+              </div>
+            </div>
+            <button class="task-card-delete" onclick="event.stopPropagation(); deleteTaskQuick('${task.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleTaskQuick(taskId){
+      const tasks=db.getTasks();
+      const task=tasks.find(t=>t.id===taskId);
+      if(task){
+        task.completed=!task.completed;
+        db.saveTasks(tasks);
+        renderDashboard();
+        renderTasksList();
+      }
+    }
+
+    async function deleteTaskQuick(taskId){
+      if(await ensConfirm('¿Eliminar esta tarea?')){
+        const tasks=db.getTasks();
+        const filtered=tasks.filter(t=>t.id!==taskId);
+        db.saveTasks(filtered);
+        renderDashboard();
+        renderTasksList();
+      }
+    }
+
+    // ============ CALENDARIO 30 DÍAS ============
+    function renderCalendar30Days(){
+      const container=document.getElementById('calendar30Days');
+      if(!container) return;
+
+      const events=getAllEvents();
+      const today=new Date();
+      today.setHours(0,0,0,0);
+
+      const anchor = new Date(currentStartDate);
+      anchor.setHours(0,0,0,0);
+
+      const days=[];
+      for(let i=0;i<30;i++){
+        const date=new Date(anchor);
+        date.setDate(anchor.getDate()+i);
+        days.push(date);
+      }
+
+      const monthNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      const firstDay=days[0];
+      const lastDay=days[29];
+
+      let monthTitle;
+      if(firstDay.getMonth()===lastDay.getMonth()){
+        monthTitle=`${monthNames[firstDay.getMonth()]} ${firstDay.getFullYear()}`;
+      }else{
+        monthTitle=`${monthNames[firstDay.getMonth()]} - ${monthNames[lastDay.getMonth()]} ${lastDay.getFullYear()}`;
+      }
+      document.getElementById('currentMonth').textContent=monthTitle;
+
+      container.innerHTML=days.map(date=>{
+        const dateStr=toLocalISODate(date);
+        const dayEvents=events.filter(e=>e.date===dateStr);
+        const isToday=date.toDateString()===today.toDateString();
+
+        const dayNames=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+        const dayName=dayNames[date.getDay()];
+
+        const eventsHtml=dayEvents.slice(0,3).map(ev=>{
+          const therapyClass=normalizeClass(ev.type);
+          return `
+            <div class="calendar-mini-event ${therapyClass}" onclick="event.stopPropagation(); ${ev.readOnly ? `viewSupabaseEvent('${ev.id}')` : `editEvent('${ev.id}')`}">
+              <div class="mini-event-time">${escapeHtml(ev.time || '')}</div>
+              <div class="mini-event-title">${escapeHtml(ev.title || ev.type)}</div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="calendar-day-30 ${isToday ? 'today' : ''} ${dayEvents.length>0 ? 'has-events' : ''}"
+               onclick="openEventModalForDate('${dateStr}')">
+            <div class="calendar-day-header">
+              <div class="calendar-day-number">${date.getDate()}</div>
+              <div class="calendar-day-name">${dayName}</div>
+            </div>
+            <div class="calendar-day-events">
+              ${eventsHtml}
+              ${dayEvents.length>3 ? `<div style="text-align:center; color: rgba(212,175,55,.7); font-size:.8em; margin-top:5px;">+${dayEvents.length-3} más</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openEventModalForDate(dateStr){
+      openEventModal();
+      window.__ensForcedDate = dateStr;
+    }
+
+    async function moveCalendar(days){
+      currentStartDate.setDate(currentStartDate.getDate()+days);
+      await refreshSupabaseEvents();
+      renderCalendar30Days();
+      renderDashboard();
+    }
+
+    async function goToToday(){
+      currentStartDate=new Date();
+      await refreshSupabaseEvents();
+      renderCalendar30Days();
+      renderDashboard();
+    }
+
+    // ============ EVENTOS (CREAR / EDITAR / BORRAR) ============
+    function openEventModal(prefillTitle){
+      ensPrefillTitle = (prefillTitle || "").toString();
+      ensCreateMode = null;
+      document.getElementById("ensCreateChooser").classList.add("show");
+    }
+
+    function ensStartCreate(mode){
+      ensCreateMode = mode;
+      document.getElementById("ensCreateChooser").classList.remove("show");
+      openEventModalReal(ensPrefillTitle);
+      ensEnsureSessionFields();
+      ensSetModeUI();
+    }
+
+    function openEventModalReal(prefillTitle){
+      editingEventId=null;
+      document.getElementById('eventModalTitle').textContent='Nueva Sesión';
+      document.getElementById('deleteEventBtn').style.display='none';
+
+      const today=toLocalISODate(new Date());
+      const forced = window.__ensForcedDate;
+      window.__ensForcedDate = null;
+
+      document.getElementById('eventTitle').value = (prefillTitle || '').trim();
+      document.getElementById('eventDate').value = forced || today;
+      document.getElementById('eventTime').value='';
+      document.getElementById('eventDuration').value='60';
+
+      const therapyTypes=db.getTherapyTypes();
+      const selectElement=document.getElementById('eventType');
+      selectElement.innerHTML=(therapyTypes||[]).map(t=>{
+        const label = (t && t.price != null) ? `${t.name} — ${ensFormatPriceEUR(t.price)}` : (t ? t.name : '');
+        return `<option value="${escapeAttr(t.name)}">${escapeHtml(label)}</option>`;
+      }).join('');
+
+      ensEnsureTherapyMetaBox();
+      selectElement.onchange = () => ensApplyTherapyToForm(selectElement.value);
+      ensApplyTherapyToForm(selectElement.value);
+
+      if(prefillTitle){
+        const match=therapyTypes.find(t=>t.name.toLowerCase()===prefillTitle.toLowerCase());
+        if(match) selectElement.value=match.name;
+      }
+
+      ensApplyTherapyToForm(selectElement.value);
+
+      selectedLocationType='cabin';
+      document.getElementById('locationCabin').classList.add('active');
+      document.getElementById('locationExternal').classList.remove('active');
+      document.getElementById('eventLocation').style.display='none';
+      document.getElementById('eventLocation').value='';
+
+      document.getElementById('notify15').checked=false;
+      document.getElementById('notify30').checked=false;
+      document.getElementById('notify1h').checked=false;
+      document.getElementById('notify1day').checked=false;
+
+      const nameEl = document.getElementById("ensApptName");
+      const emailEl = document.getElementById("ensApptEmail");
+      const phoneEl = document.getElementById("ensApptPhone");
+      const notesEl = document.getElementById("ensApptNotes");
+      const stEl = document.getElementById("ensApptStatus");
+      if(nameEl) nameEl.value = "";
+      if(emailEl) emailEl.value = "";
+      if(phoneEl) phoneEl.value = "";
+      if(notesEl) notesEl.value = "";
+      if(stEl) stEl.value = "confirmed";
+
+      document.getElementById('eventModal').classList.add('show');
+    }
+
+    function editEvent(eventId){
+      const events=db.getEvents();
+      const ev=events.find(e=>e.id===eventId);
+      if(!ev) return;
+
+      editingEventId=eventId;
+      document.getElementById('eventModalTitle').textContent='Editar Evento';
+      document.getElementById('deleteEventBtn').style.display='inline-block';
+
+      document.getElementById('eventTitle').value=ev.title || '';
+      document.getElementById('eventDate').value=ev.date;
+      document.getElementById('eventTime').value=ev.time || '';
+      document.getElementById('eventDuration').value=ev.duration || 60;
+
+      const therapyTypes=db.getTherapyTypes();
+      const selectElement=document.getElementById('eventType');
+      selectElement.innerHTML=(therapyTypes||[]).map(t=>{
+        const label = (t && t.price != null) ? `${t.name} — ${ensFormatPriceEUR(t.price)}` : (t ? t.name : '');
+        const selected = (t && t.name===ev.type) ? 'selected' : '';
+        return `<option value="${escapeAttr(t.name)}" ${selected}>${escapeHtml(label)}</option>`;
+      }).join('');
+
+      ensEnsureTherapyMetaBox();
+      selectElement.onchange = () => ensApplyTherapyToForm(selectElement.value);
+
+      selectedLocationType=ev.locationType || 'cabin';
+      if(selectedLocationType==='cabin'){
+        document.getElementById('locationCabin').classList.add('active');
+        document.getElementById('locationExternal').classList.remove('active');
+        document.getElementById('eventLocation').style.display='none';
+        document.getElementById('eventLocation').value='';
+      }else{
+        document.getElementById('locationCabin').classList.remove('active');
+        document.getElementById('locationExternal').classList.add('active');
+        document.getElementById('eventLocation').style.display='block';
+        document.getElementById('eventLocation').value=ev.location || '';
+      }
+
+      const notifications=ev.notifications || {};
+      document.getElementById('notify15').checked=!!notifications.min15;
+      document.getElementById('notify30').checked=!!notifications.min30;
+      document.getElementById('notify1h').checked=!!notifications.hour1;
+      document.getElementById('notify1day').checked=!!notifications.day1;
+
+      ensCreateMode = "event";
+      ensEnsureSessionFields();
+      ensSetModeUI();
+
+      document.getElementById('eventModal').classList.add('show');
+    }
+
+    function selectLocation(type){
+      selectedLocationType=type;
+      if(type==='cabin'){
+        document.getElementById('locationCabin').classList.add('active');
+        document.getElementById('locationExternal').classList.remove('active');
+        document.getElementById('eventLocation').style.display='none';
+        document.getElementById('eventLocation').value='';
+      }else{
+        document.getElementById('locationCabin').classList.remove('active');
+        document.getElementById('locationExternal').classList.add('active');
+        document.getElementById('eventLocation').style.display='block';
+      }
+    }
+
+    function closeEventModal(){
+      document.getElementById('eventModal').classList.remove('show');
+      editingEventId=null;
+    }
+
+    async function saveEvent(){
+      if(window.ensEditingSupabaseAppointment && window.sb){
+        try{
+          const apptId = window.ensEditingSupabaseAppointment.appointment_id;
+          const title = document.getElementById('eventTitle').value.trim();
+          const date  = document.getElementById('eventDate').value;
+          const time  = document.getElementById('eventTime').value;
+          const type  = document.getElementById('eventType').value;
+          const details = (document.getElementById('eventDetails') ? document.getElementById('eventDetails').value.trim() : null);
+          const status = "confirmed";
+
+          const payloadB = {
+            therapy_type: type || null,
+            date,
+            time: (time || "00:00") + ":00",
+            notes: details || null,
+            status
+          };
+
+          let upd = await sb.from("appointments").update(payloadB).eq("id", apptId).select().single();
+          if(upd.error){
+            const payloadA = {
+              therapy_type: type || null,
+              date,
+              time: (time || "00:00") + ":00",
+              status
+            };
+            upd = await sb.from("appointments").update(payloadA).eq("id", apptId).select().single();
+            if(upd.error) throw upd.error;
+          }
+
+          window.ensEditingSupabaseAppointment = null;
+          closeEventModal();
+          await refreshSupabaseEvents();
+          renderCalendar30Days();
+          renderDashboard();
+          window.ensAlert("Cita actualizada en Supabase.");
+          return;
+        }catch(e){
+          console.error("UPDATE appointment error:", e);
+          window.ensAlert("No se pudo actualizar la cita en Supabase.");
+          return;
+        }
+      }
+
+      const title=document.getElementById('eventTitle').value.trim();
+      const date=document.getElementById('eventDate').value;
+      const time=document.getElementById('eventTime').value;
+      const type=document.getElementById('eventType').value;
+      const duration=parseInt(document.getElementById('eventDuration').value, 10) || 60;
+
+      if(!date || !time || !type){
+        ensAlert('Por favor completa fecha, hora y tipo de terapia');
+        return;
+      }
+
+      const location = selectedLocationType==='external'
+        ? document.getElementById('eventLocation').value.trim()
+        : '';
+
+      const notifications={
+        min15:document.getElementById('notify15').checked,
+        min30:document.getElementById('notify30').checked,
+        hour1:document.getElementById('notify1h').checked,
+        day1:document.getElementById('notify1day').checked
+      };
+
+      const events=db.getEvents();
+
+      if(editingEventId){
+        const index=events.findIndex(e=>e.id===editingEventId);
+        if(index!==-1){
+          events[index]={
+            ...events[index],
+            title, date, time, type, duration,
+            locationType:selectedLocationType,
+            location,
+            notifications
+          };
+        }
+        db.saveEvents(events);
+        closeEventModal();
+        renderCalendar30Days();
+        renderDashboard();
+        return;
+      }
+
+      const localId = generateId();
+      events.push({
+        id: localId,
+        title, date, time, type, duration,
+        locationType:selectedLocationType,
+        location,
+        notifications,
+        createdAt:new Date().toISOString()
+      });
+      db.saveEvents(events);
+
+      syncNewLocalEventToSupabase(localId).finally(()=>{
+        closeEventModal();
+        renderCalendar30Days();
+        renderDashboard();
+      });
+    }
+
+    async function syncNewLocalEventToSupabase(localId){
+      const events = db.getEvents();
+      const ev = events.find(e => e.id === localId);
+      if(!ev) return;
+
+      if(!window.sb){
+        console.warn("No hay cliente Supabase: evento queda en local.");
+        return;
+      }
+
+      const mode = ensCreateMode || "session";
+
+      if(mode === "session"){
+        const appt = await ensInsertAppointment(ev);
+        if(appt){
+          db.saveEvents(events.filter(e => e.id !== localId));
+          await refreshSupabaseEvents();
+        }
+      }else{
+        const cal = await ensInsertCalendarEvent(ev);
+        if(cal){
+          db.saveEvents(events.filter(e => e.id !== localId));
+          await refreshSupabaseEvents();
+        }
+      }
+    }
+
+    async function deleteCurrentEvent(){
+      if(!editingEventId) return;
+      if(!(await ensConfirm('¿Eliminar este evento?'))) return;
+
+      const events=db.getEvents();
+      const filtered=events.filter(e=>e.id!==editingEventId);
+      db.saveEvents(filtered);
+
+      closeEventModal();
+      renderCalendar30Days();
+      renderDashboard();
+    }
+
+    // ============ TAREAS ============
+    function openTaskModal(){
+      editingTaskId=null;
+      document.getElementById('taskModalTitle').textContent='Nueva Tarea';
+      document.getElementById('deleteTaskBtn').style.display='none';
+
+      document.getElementById('taskText').value='';
+      document.getElementById('taskDate').value='';
+      document.getElementById('taskNotify').checked=false;
+      document.getElementById('taskReminderTime').style.display='none';
+      document.getElementById('taskReminderTime').value='';
+
+      document.getElementById('taskModal').classList.add('show');
+    }
+
+    function editTask(taskId){
+      const tasks=db.getTasks();
+      const task=tasks.find(t=>t.id===taskId);
+      if(!task) return;
+
+      editingTaskId=taskId;
+      document.getElementById('taskModalTitle').textContent='Editar Tarea';
+      document.getElementById('deleteTaskBtn').style.display='inline-block';
+
+      document.getElementById('taskText').value=task.text;
+      document.getElementById('taskDate').value=task.dueDate || '';
+
+      if(task.reminderTime){
+        document.getElementById('taskNotify').checked=true;
+        document.getElementById('taskReminderTime').style.display='block';
+        document.getElementById('taskReminderTime').value=task.reminderTime;
+      }else{
+        document.getElementById('taskNotify').checked=false;
+        document.getElementById('taskReminderTime').style.display='none';
+        document.getElementById('taskReminderTime').value='';
+      }
+
+      document.getElementById('taskModal').classList.add('show');
+    }
+
+    function closeTaskModal(){
+      document.getElementById('taskModal').classList.remove('show');
+      editingTaskId=null;
+    }
+
+    function saveTask(){
+      const text=document.getElementById('taskText').value.trim();
+      const dueDate=document.getElementById('taskDate').value;
+      const hasReminder=document.getElementById('taskNotify').checked;
+      const reminderTime=hasReminder ? document.getElementById('taskReminderTime').value : null;
+
+      if(!text){
+        ensAlert('Por favor escribe una descripción para la tarea');
+        return;
+      }
+
+      const tasks=db.getTasks();
+
+      if(editingTaskId){
+        const index=tasks.findIndex(t=>t.id===editingTaskId);
+        if(index!==-1){
+          tasks[index]={ ...tasks[index], text, dueDate, reminderTime };
+        }
+      }else{
+        tasks.push({
+          id:generateId(),
+          text,
+          dueDate,
+          reminderTime,
+          completed:false,
+          createdAt:new Date().toISOString()
+        });
+      }
+
+      db.saveTasks(tasks);
+      closeTaskModal();
+      renderTasksList();
+      renderDashboard();
+    }
+
+    async function deleteCurrentTask(){
+      if(!editingTaskId) return;
+      if(!(await ensConfirm('¿Eliminar esta tarea?'))) return;
+
+      const tasks=db.getTasks();
+      const filtered=tasks.filter(t=>t.id!==editingTaskId);
+      db.saveTasks(filtered);
+
+      closeTaskModal();
+      renderTasksList();
+      renderDashboard();
+    }
+
+    function renderTasksList(){
+      const tasks=db.getTasks();
+      const tasksList=document.getElementById('tasksList');
+
+      if(tasks.length===0){
+        tasksList.innerHTML='<div class="empty-state"><i class="fas fa-clipboard-check"></i><div>No hay tareas registradas</div></div>';
+        return;
+      }
+
+      tasksList.innerHTML=tasks.map(task=>{
+        const dateInfo = task.dueDate
+          ? `<span><i class="fas fa-calendar"></i>${new Date(task.dueDate+'T00:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short'})}</span>`
+          : '';
+        const reminderInfo = task.reminderTime
+          ? `<span><i class="fas fa-bell"></i>Recordatorio</span>`
+          : '';
+
+        return `
+          <div class="task-card ${task.completed ? 'completed' : ''}">
+            <input type="checkbox" class="task-card-checkbox" ${task.completed ? 'checked' : ''}
+              onchange="toggleTaskQuick('${task.id}')" onclick="event.stopPropagation()" />
+            <div class="task-card-content" onclick="editTask('${task.id}')">
+              <div class="task-card-text">${escapeHtml(task.text)}</div>
+              <div class="task-card-meta">
+                ${dateInfo}
+                ${reminderInfo}
+              </div>
+            </div>
+            <button class="task-card-delete" onclick="event.stopPropagation(); deleteTaskQuick('${task.id}')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const taskNotifyCheckbox=document.getElementById('taskNotify');
+      const taskReminderTime=document.getElementById('taskReminderTime');
+      if(taskNotifyCheckbox){
+        taskNotifyCheckbox.addEventListener('change', (e)=>{
+          if(e.target.checked){
+            taskReminderTime.style.display='block';
+          }else{
+            taskReminderTime.style.display='none';
+            taskReminderTime.value='';
+          }
+        });
+      }
+    });
+
+    // ============ EVENTOS RÁPIDOS ============
+    function renderQuickActions(){
+      const container=document.getElementById('quickActionsContainer');
+      const quickEvents=db.getQuickEvents();
+
+      container.innerHTML=quickEvents.map(evTitle=>`
+        <button class="quick-action-btn" onclick="openEventModal('${escapeAttr(evTitle)}')">
+          <i class="fas fa-plus-circle"></i>
+          <span>${escapeHtml(evTitle)}</span>
+        </button>
+      `).join('');
+    }
+
+    // ============ AJUSTES (TIPOS + QUICK EVENTS) ============
+    function renderTherapyTypesList(){
+      const types=db.getTherapyTypes();
+      const container=document.getElementById('therapyTypesList');
+
+      if(!types.length){
+        container.innerHTML='<div class="empty-state" style="padding:15px 10px;">No hay tipos. Añade el primero.</div>';
+        return;
+      }
+
+      container.innerHTML=types.map((type,index)=>`
+        <div class="config-item">
+          <div class="config-item-left">
+            <i class="fas ${escapeAttr(type.icon)} config-item-icon"></i>
+            <span class="config-item-name">${escapeHtml(type.name)}</span>
+          </div>
+          <button class="config-item-delete" onclick="deleteTherapyType(${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function openAddTherapyModal(){
+      selectedIconForTherapy='fa-spa';
+      document.getElementById('newTherapyType').value='';
+      const pEl=document.getElementById('newTherapyPrice'); if(pEl) pEl.value='';
+      const dEl=document.getElementById('newTherapyDuration'); if(dEl) dEl.value='';
+
+      const iconPicker=document.getElementById('iconPicker');
+      iconPicker.innerHTML=availableIcons.map(icon=>`
+        <div class="icon-option ${icon===selectedIconForTherapy ? 'selected' : ''}" onclick="selectTherapyIcon(event,'${escapeAttr(icon)}')">
+          <i class="fas ${escapeAttr(icon)}"></i>
+        </div>
+      `).join('');
+
+      document.getElementById('addTherapyModal').classList.add('show');
+    }
+
+    function closeAddTherapyModal(){
+      document.getElementById('addTherapyModal').classList.remove('show');
+    }
+
+    function selectTherapyIcon(ev, icon){
+      selectedIconForTherapy=icon;
+      document.querySelectorAll('.icon-option').forEach(el=>el.classList.remove('selected'));
+      const opt = ev && ev.target ? ev.target.closest('.icon-option') : null;
+      if(opt) opt.classList.add('selected');
+    }
+
+    async function saveTherapyType(){
+      const name=document.getElementById('newTherapyType').value.trim();
+      if(!name){
+        ensAlert('Por favor escribe un nombre');
+        return;
+      }
+
+      const types=db.getTherapyTypes();
+      if(types.find(t=>t.name.toLowerCase()===name.toLowerCase())){
+        ensAlert('Este tipo de terapia ya existe');
+        return;
+      }
+
+      const priceRaw = document.getElementById('newTherapyPrice')?.value;
+      const durationRaw = document.getElementById('newTherapyDuration')?.value;
+      const price = (priceRaw!=null && priceRaw!=='') ? Number(priceRaw) : null;
+      const durationMin = (durationRaw!=null && durationRaw!=='') ? parseInt(durationRaw,10) : null;
+      const durationLabel = durationMin ? `${durationMin} min` : '';
+
+      types.push({ name, icon:selectedIconForTherapy, price: (Number.isFinite(price)?price:null), durationMin: (Number.isFinite(durationMin)?durationMin:null), durationLabel, source:'local' });
+
+      db.saveTherapyTypes(types);
+
+      if(window.sb){
+        try{
+          const payload = {
+            title: name,
+            price: Number.isFinite(price) ? price : null,
+            duration: durationLabel || null,
+            image_url: null
+          };
+          const up = await sb.from('therapies').upsert([payload], { onConflict: 'title' }).select();
+          if(up.error){
+            console.warn('Upsert therapies falló (posible falta de unique index en title):', up.error);
+          }else{
+            await ensRefreshTherapiesFromSupabase();
+          }
+        }catch(e){
+          console.warn('No se pudo sincronizar therapies:', e);
+        }
+      }
+
+      closeAddTherapyModal();
+
+      renderTherapyTypesList();
+      renderQuickActions();
+      renderCalendar30Days();
+      renderDashboard();
+    }
+
+    async function deleteTherapyType(index){
+      if(!(await ensConfirm('¿Eliminar este tipo de terapia?'))) return;
+
+      const types=db.getTherapyTypes();
+      types.splice(index, 1);
+      db.saveTherapyTypes(types);
+
+      renderTherapyTypesList();
+      renderCalendar30Days();
+      renderDashboard();
+    }
+
+    function renderQuickEventsList(){
+      const events=db.getQuickEvents();
+      const container=document.getElementById('quickEventsList');
+
+      if(!events.length){
+        container.innerHTML='<div class="empty-state" style="padding:15px 10px;">No hay eventos rápidos. Añade el primero.</div>';
+        return;
+      }
+
+      container.innerHTML=events.map((evTitle,index)=>`
+        <div class="config-item">
+          <div class="config-item-left">
+            <span class="config-item-name">${escapeHtml(evTitle)}</span>
+          </div>
+          <button class="config-item-delete" onclick="deleteQuickEvent(${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addQuickEvent(){
+      const input=document.getElementById('newQuickEvent');
+      const evTitle=input.value.trim();
+      if(!evTitle) return;
+
+      const events=db.getQuickEvents();
+      if(events.find(e=>e.toLowerCase()===evTitle.toLowerCase())){
+        ensAlert('Este evento rápido ya existe');
+        return;
+      }
+
+      events.push(evTitle);
+      db.saveQuickEvents(events);
+
+      input.value='';
+      renderQuickEventsList();
+      renderQuickActions();
+    }
+
+    async function deleteQuickEvent(index){
+      if(!(await ensConfirm('¿Eliminar este evento rápido?'))) return;
+
+      const events=db.getQuickEvents();
+      events.splice(index, 1);
+      db.saveQuickEvents(events);
+
+      renderQuickEventsList();
+      renderQuickActions();
+    }
+
+    // ============ HELPERS: escape ============
+    function escapeHtml(str){
+      return String(str ?? '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+    function escapeAttr(str){
+      return escapeHtml(str).replace(/`/g,'&#096;');
+    }
+
+    // ============ CAMPOS SESIÓN (opcionales) ============
+    function ensEnsureSessionFields(){
+      const modal = document.getElementById("eventModal");
+      if(!modal) return;
+      if(document.getElementById("ensSessionFields")) return;
+
+      const notifyGroup = document.querySelector("#eventModal .notification-settings")?.closest(".form-group");
+      const wrap = document.createElement("div");
+      wrap.id = "ensSessionFields";
+      wrap.style.marginTop = "10px";
+      wrap.innerHTML = `
+        <div class="settings-block-title" style="margin-top:10px;">Datos de Sesión (opcionales)</div>
+        <div class="settings-subtitle">Estos datos se guardan en <b>appointments</b> para que aparezca en Admin/TPV.</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nombre (opcional)</label>
+            <input type="text" class="form-input" id="ensApptName" placeholder="Nombre del cliente (opcional)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estado</label>
+            <select class="form-select" id="ensApptStatus">
+              <option value="confirmed">confirmed</option>
+              <option value="pending">pending</option>
+              <option value="completed">completed</option>
+              <option value="cancelled">cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Email (opcional)</label>
+            <input type="email" class="form-input" id="ensApptEmail" placeholder="email (opcional)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teléfono (opcional)</label>
+            <input type="text" class="form-input" id="ensApptPhone" placeholder="teléfono (opcional)" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Notas (opcional)</label>
+          <textarea class="form-textarea" id="ensApptNotes" placeholder="Notas internas (opcional)"></textarea>
+        </div>
+      `;
+
+      if(notifyGroup && notifyGroup.parentElement){
+        notifyGroup.parentElement.insertBefore(wrap, notifyGroup);
+      }else{
+        modal.querySelector(".modal-buttons")?.parentElement?.insertBefore(wrap, modal.querySelector(".modal-buttons"));
+      }
+    }
+
+    function ensSetModeUI(){
+      const titleEl = document.getElementById("eventModalTitle");
+      const sessionFields = document.getElementById("ensSessionFields");
+
+      if(ensCreateMode === "session"){
+        if(titleEl) titleEl.textContent = "Nueva Sesión (Cita)";
+        if(sessionFields) sessionFields.style.display = "block";
+      }else{
+        if(titleEl) titleEl.textContent = "Nuevo Evento (Interno)";
+        if(sessionFields) sessionFields.style.display = "none";
+      }
+    }
+
+    // ============ SUPABASE INSERTS ============
+    async function ensInsertAppointment(ev){
+      if(!window.sb) return null;
+      try{
+        const name = (document.getElementById("ensApptName")?.value || "").trim();
+        const email = (document.getElementById("ensApptEmail")?.value || "").trim();
+        const phone = (document.getElementById("ensApptPhone")?.value || "").trim();
+        const notes = (document.getElementById("ensApptNotes")?.value || "").trim();
+        const status = (document.getElementById("ensApptStatus")?.value || "confirmed").trim();
+
+        const payloadB = {
+          name: name || null,
+          email: email || null,
+          phone: phone || null,
+          therapy_type: ev.type || null,
+          date: ev.date,
+          time: (ev.time || "00:00") + ":00",
+          notes: notes || null,
+          status: status || "confirmed"
+        };
+
+        let ins = await sb.from("appointments").insert([payloadB]).select().single();
+        if(!ins.error) return ins.data;
+
+        const payloadA = {
+          client_name: name || null,
+          client_id: null,
+          therapy_type: ev.type || null,
+          date: ev.date,
+          time: (ev.time || "00:00") + ":00",
+          status: status || "confirmed",
+          sale_id: null
+        };
+
+        ins = await sb.from("appointments").insert([payloadA]).select().single();
+        if(ins.error) throw ins.error;
+        return ins.data;
+      }catch(e){
+        console.error("Supabase INSERT appointments error:", e);
+        return null;
+      }
+    }
+
+    async function ensInsertCalendarEvent(ev){
+      if(!window.sb) return null;
+      try{
+        const startISO = new Date(`${ev.date}T${ev.time}:00`).toISOString();
+        const endDate = new Date(startISO);
+        endDate.setMinutes(endDate.getMinutes() + (ev.duration || 60));
+        const endISO = endDate.toISOString();
+
+        const { data, error } = await sb
+          .from("calendar_events")
+          .insert([{
+            title: ev.title || ev.type || "Evento",
+            start_time: startISO,
+            end_time: endISO,
+            type: ev.type || "Evento",
+            description: ev.locationType === "external" ? (ev.location || "") : "Sesión en cabina",
+            source: "agenda_seccion5"
+          }])
+          .select()
+          .single();
+
+        if(error) throw error;
+        return data;
+      }catch(e){
+        console.error("Supabase INSERT calendar_events error:", e);
+        return null;
+      }
+    }
+
+    // ============ REFRESH SUPABASE (LECTURA UNIFICADA) ============
+    async function refreshSupabaseEvents(){
+      if(!window.sb){
+        supabaseEventsCache = [];
+        return;
+      }
+      try{
+        supabaseEventsCache = await fetchSupabaseForVisibleRange();
+      }catch(e){
+        console.warn("No se pudo refrescar Supabase events:", e);
+        supabaseEventsCache = [];
+      }
+    }
+
+    // ============ INICIALIZACIÓN FINAL ============
+    (async function boot(){
+      try{
+        createStars();
+        initSupabase();
+        await ensRefreshTherapiesFromSupabase();
+        await refreshSupabaseEvents();
+        renderQuickActions();
+        renderDashboard();
+        renderCalendar30Days();
+        renderTasksList();
+      }catch(e){
+        console.error("Error en boot inicial:", e);
+      }
+    })();
+</script>
+
+</body>
+</html>

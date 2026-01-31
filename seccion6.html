@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>TPV Ensanbliss - Caja + Ventas (integrado)</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --line:rgba(212,175,55,.18);
+      --gold:#d4af37;
+      --text:#f4e4c1;
+      --muted:rgba(244,228,193,.70);
+      --muted2:rgba(244,228,193,.55);
+      --danger:#ff5a5f;
+      --ok:#2bd576;
+      --shadow:0 12px 44px rgba(0,0,0,.55);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 900px at 40% -10%, rgba(212,175,55,.18), transparent 60%),
+        radial-gradient(900px 700px at 110% 10%, rgba(212,175,55,.10), transparent 55%),
+        linear-gradient(180deg,#0b0908,#120e0c 35%, #0b0908);
+      color:var(--text);
+      min-height:100vh;
+      overflow:hidden;
+    }
+
+    .top{
+      height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(90deg, rgba(26,20,16,.92), rgba(21,17,15,.92));
+      box-shadow:0 6px 22px rgba(0,0,0,.4);
+      gap:12px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:420px}
+    .brand .logo{
+      width:46px;height:46px;border-radius:16px;
+      border:1px solid rgba(212,175,55,.25);
+      background:rgba(0,0,0,.25);
+      display:grid;place-items:center;
+      box-shadow:0 8px 24px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .brand .logo img{width:100%;height:100%;object-fit:cover;opacity:.95}
+    .brand .title{display:flex;flex-direction:column;line-height:1.05}
+    .brand .title h1{
+      margin:0;
+      font-family:Allura,cursive;
+      font-size:36px;
+      color:var(--gold);
+      letter-spacing:1px;
+      text-shadow:0 0 18px rgba(212,175,55,.35);
+    }
+    .brand .title span{font-size:12px;color:var(--muted)}
+
+    .tabs{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .tabBtn{
+      text-decoration:none;
+      color:var(--text);
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      padding:11px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:12px;
+      transition:.18s ease;
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
+    .tabBtn:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.35)}
+    .tabBtn.active{
+      background:rgba(212,175,55,.14);
+      border-color:rgba(212,175,55,.45);
+      color:var(--gold);
+    }
+
+    .actionsTop{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+    .pillBtn{
+      padding:11px 13px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.20);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+    .pillBtn:hover{border-color:rgba(212,175,55,.38);transform:translateY(-1px)}
+    .pillBtn.primary{
+      background:linear-gradient(180deg, var(--gold), #f1d889);
+      color:#18120e;border:none;
+    }
+    .pillBtn.primary:hover{filter:brightness(1.05)}
+    .status-pill{
+      display:flex;align-items:center;gap:8px;
+      padding:11px 13px;border-radius:14px;
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      font-size:12px;color:var(--muted);
+      min-width:240px;justify-content:flex-end;
+    }
+    .dot{width:10px;height:10px;border-radius:99px;background:#888}
+    .dot.ok{background:var(--ok);box-shadow:0 0 12px rgba(43,213,118,.35)}
+    .dot.bad{background:var(--danger);box-shadow:0 0 12px rgba(255,90,95,.35)}
+
+    .view{
+      height:calc(100vh - 76px);
+      padding:14px;
+      display:none;
+    }
+    .view.active{display:block}
+    .gridTPV{
+      height:100%;
+      display:grid;
+      grid-template-columns: 1.35fr .95fr;
+      gap:14px;
+      min-height:0;
+    }
+    .panel{
+      background:linear-gradient(180deg, rgba(21,17,15,.88), rgba(15,12,10,.92));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .panel-header{
+      padding:14px 14px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background:linear-gradient(180deg, rgba(26,20,16,.92), rgba(21,17,15,.92));
+    }
+    .panel-header h2{margin:0;font-size:13px;letter-spacing:.4px;color:rgba(244,228,193,.92)}
+    .panel-header small{color:var(--muted)}
+    .panel-body{padding:14px;overflow:auto;min-height:0;}
+
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.30);
+      color:var(--text);
+      outline:none;
+      font-weight:700;
+    }
+    .input::placeholder{color:rgba(244,228,193,.5)}
+    label{display:block;margin:10px 0 7px;color:rgba(244,228,193,.85);font-size:12px;font-weight:900}
+
+    .sectionTitle{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px;}
+    .sectionTitle h3{margin:0;font-size:12px;color:rgba(244,228,193,.9);letter-spacing:.4px}
+    .sectionTitle .hint{font-size:11px;color:rgba(244,228,193,.55)}
+
+    .btnGrid{display:grid;grid-template-columns: repeat(4, 1fr);gap:10px;}
+
+    .btnCard{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:12px;
+      cursor:pointer;
+      transition:.18s ease;
+      display:flex;flex-direction:column;gap:8px;
+      min-height:78px;
+      overflow:hidden;
+    }
+    .btnCard:hover{transform:translateY(-2px);border-color:rgba(212,175,55,.35);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .btnCard .name{font-weight:900;font-size:12px;color:rgba(244,228,193,.95)}
+    .btnCard .price{font-weight:900;font-size:12px;color:var(--gold)}
+    .btnCard .meta{font-size:11px;color:rgba(244,228,193,.55)}
+
+    .btnCard .thumb{
+      width:100%;
+      height:110px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      overflow:hidden;
+      background:rgba(0,0,0,.22);
+    }
+    .btnCard .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      opacity:.95;
+    }
+
+    .extrasGrid{display:grid;grid-template-columns: repeat(2, 1fr);gap:10px;}
+    .extraLine{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .extraLine .left{display:flex;flex-direction:column;gap:4px}
+    .extraLine .left b{font-size:12px}
+    .extraLine .left span{font-size:11px;color:rgba(244,228,193,.55)}
+    .extraLine .right{display:flex;align-items:center;gap:8px}
+    .mini{
+      width:120px;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.30);
+      color:var(--text);
+      font-weight:900;
+    }
+
+    .ticket{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
+      border:1px dashed rgba(212,175,55,.25);
+      border-radius:16px;
+      padding:12px;
+      box-shadow:0 10px 32px rgba(0,0,0,.35);
+    }
+    .ticket h3{
+      margin:0 0 10px;
+      font-family:Allura,cursive;
+      font-size:30px;
+      color:var(--gold);
+      text-align:center;
+      text-shadow:0 0 14px rgba(212,175,55,.25);
+    }
+    .ticket .sub{text-align:center;color:rgba(244,228,193,.65);font-size:11px;margin-bottom:10px}
+    .ticket .row{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      padding:9px 0;
+      border-bottom:1px dashed rgba(212,175,55,.18);
+      align-items:start;
+    }
+    .ticket .row:last-child{border-bottom:none}
+    .itemName{font-weight:900;font-size:12px;color:rgba(244,228,193,.95)}
+    .itemMeta{font-size:11px;color:rgba(244,228,193,.55);margin-top:3px}
+    .priceVal{font-weight:900;color:var(--gold);font-size:12px;white-space:nowrap}
+
+    .qtyCtrls{display:flex;gap:6px;margin-top:8px;align-items:center}
+    .qtyBtn{
+      width:26px;height:26px;border-radius:10px;
+      border:1px solid rgba(212,175,55,.22);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+    }
+    .qtyBtn:hover{border-color:rgba(212,175,55,.40)}
+    .removeBtn{
+      margin-left:auto;
+      padding:6px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,90,95,.35);
+      background:rgba(255,90,95,.10);
+      color:#ffb2b5;
+      cursor:pointer;
+      font-weight:900;
+      font-size:11px;
+    }
+
+    .totals{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(212,175,55,.22)}
+    .totals .line{display:flex;justify-content:space-between;gap:12px;margin:7px 0;font-size:12px;color:rgba(244,228,193,.82)}
+    .totals .grand{margin-top:10px;font-size:15px;font-weight:1000;color:var(--gold)}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .btn{
+      padding:12px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.22);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.36)}
+    .btn.primary{background:linear-gradient(180deg, var(--gold), #f1d889);color:#18120e;border:none}
+    .btn.primary:hover{filter:brightness(1.05)}
+    .btn.danger{border-color:rgba(255,90,95,.35);background:rgba(255,90,95,.10);color:#ffb2b5}
+
+    .note{color:rgba(244,228,193,.65);font-size:11px;line-height:1.35em}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;}
+
+    .salesWrap{
+      height:100%;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+      max-width:1300px;
+      margin:0 auto;
+      min-height:0;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.15);
+      background:rgba(0,0,0,.18);
+    }
+    th,td{padding:12px 10px;border-bottom:1px solid rgba(212,175,55,.10);font-size:12px}
+    th{color:rgba(244,228,193,.85);text-align:left;background:rgba(0,0,0,.25)}
+    tr:hover td{background:rgba(255,255,255,.03)}
+    tr.clickable{cursor:pointer}
+    .pill{
+      display:inline-block;padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(212,175,55,.10);
+      color:var(--gold);
+      font-weight:900;
+      font-size:11px;
+    }
+    .pill.gray{color:rgba(244,228,193,.75);background:rgba(255,255,255,.04);border-color:rgba(212,175,55,.10)}
+    .btnSmall{
+      padding:9px 10px;border-radius:12px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      font-size:11px;
+      margin-right:6px;
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+    .btnSmall:hover{border-color:rgba(212,175,55,.35);transform:translateY(-1px)}
+    .btnSmall.danger{border-color:rgba(255,90,95,.35);background:rgba(255,90,95,.10);color:#ffb2b5}
+    .btnSmall.ok{border-color:rgba(43,213,118,.35);background:rgba(43,213,118,.10);color:#bff7d6}
+
+    .search{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      outline:none;
+      width:360px;
+      font-weight:800;
+    }
+    .rowFlex{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .spacer{flex:1}
+
+    .modal{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.66);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:99;
+    }
+    .modal.open{display:flex}
+    .modalCard{
+      width:min(980px, 96vw);
+      border-radius:22px;
+      border:1px solid rgba(212,175,55,.22);
+      background:linear-gradient(180deg, rgba(26,20,16,.96), rgba(15,12,10,.96));
+      box-shadow:0 20px 70px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding:14px 16px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid rgba(212,175,55,.18);
+      background:linear-gradient(180deg, rgba(26,20,16,.96), rgba(21,17,15,.96));
+      gap:10px;
+    }
+    .modalHead b{letter-spacing:.4px}
+    .closeX{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .modalBody{
+      padding:16px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    .payMethod{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:18px;
+      padding:14px;
+    }
+    .payMethod h4{margin:0 0 10px;font-size:12px;color:rgba(244,228,193,.9)}
+    .methodGrid{display:grid;grid-template-columns: 1fr 1fr;gap:10px}
+    .methodBtn{
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(212,175,55,.22);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:1000;
+      display:flex;align-items:center;justify-content:space-between;
+      transition:.18s ease;
+    }
+    .methodBtn:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.38)}
+    .methodBtn.active{
+      background:rgba(212,175,55,.16);
+      border-color:rgba(212,175,55,.45);
+      color:var(--gold);
+    }
+    .qrBox{
+      display:none;
+      margin-top:12px;
+      border:1px dashed rgba(212,175,55,.25);
+      border-radius:18px;
+      padding:12px;
+      text-align:center;
+      background:rgba(0,0,0,.20);
+    }
+    .qrBox.show{display:block}
+    .qrBox img{
+      max-width:320px;width:100%;
+      border-radius:16px;
+      border:1px solid rgba(212,175,55,.18);
+      box-shadow:0 12px 28px rgba(0,0,0,.4);
+      background:#fff;
+      padding:10px;
+    }
+    .qrBox p{margin:10px 0 0;color:rgba(244,228,193,.75);font-size:12px}
+    .modalFoot{
+      padding:14px 16px;
+      border-top:1px solid rgba(212,175,55,.18);
+      display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;
+      background:linear-gradient(180deg, rgba(21,17,15,.96), rgba(15,12,10,.96));
+    }
+
+    .modalBodyFull{
+      padding:16px;
+    }
+    .ticketViewMeta{
+      display:flex;gap:10px;flex-wrap:wrap;
+      color:rgba(244,228,193,.75);
+      font-size:12px;
+      margin-bottom:10px;
+    }
+    .ticketLines{
+      border:1px dashed rgba(212,175,55,.22);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(0,0,0,.20);
+    }
+    .tLine{
+      display:flex;justify-content:space-between;gap:12px;
+      padding:9px 0;border-bottom:1px dashed rgba(212,175,55,.16);
+    }
+    .tLine:last-child{border-bottom:none}
+    .tLeft b{font-size:12px;color:rgba(244,228,193,.95)}
+    .tLeft div{font-size:11px;color:rgba(244,228,193,.55);margin-top:3px}
+    .tRight{font-weight:900;color:var(--gold);font-size:12px;white-space:nowrap}
+    .tTotals{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(212,175,55,.22)}
+    .tTotals .line{display:flex;justify-content:space-between;margin:6px 0;color:rgba(244,228,193,.85);font-size:12px}
+    .tTotals .grand{font-size:15px;color:var(--gold);font-weight:1000;margin-top:10px}
+
+    /* ========================================
+       CUSTOM DIALOG SYSTEM (alert/confirm/prompt)
+    ======================================== */
+    #customDialog {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+    #customDialog.show {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .dialog-box {
+      width: min(540px, 92vw);
+      border-radius: 22px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      background: linear-gradient(180deg, rgba(26, 20, 16, 0.98), rgba(15, 12, 10, 0.98));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.75);
+      overflow: hidden;
+      animation: slideUp 0.3s ease;
+    }
+    .dialog-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      background: linear-gradient(180deg, rgba(26, 20, 16, 0.96), rgba(21, 17, 15, 0.96));
+    }
+    .dialog-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      color: var(--gold);
+      text-shadow: 0 0 14px rgba(212, 175, 55, 0.3);
+    }
+    .dialog-body {
+      padding: 24px 20px;
+    }
+    .dialog-message {
+      color: rgba(244, 228, 193, 0.92);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 0;
+      white-space: pre-wrap;
+    }
+    .dialog-input {
+      width: 100%;
+      padding: 12px 14px;
+      margin-top: 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      outline: none;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+    }
+    .dialog-input:focus {
+      border-color: rgba(212, 175, 55, 0.45);
+      background: rgba(0, 0, 0, 0.45);
+    }
+    .dialog-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(212, 175, 55, 0.18);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      background: linear-gradient(180deg, rgba(21, 17, 15, 0.96), rgba(15, 12, 10, 0.96));
+    }
+    .dialog-btn {
+      padding: 11px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text);
+      font-weight: 900;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+    }
+    .dialog-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212, 175, 55, 0.40);
+    }
+    .dialog-btn.primary {
+      background: linear-gradient(180deg, var(--gold), #f1d889);
+      color: #18120e;
+      border: none;
+    }
+    .dialog-btn.primary:hover {
+      filter: brightness(1.08);
+    }
+    .dialog-btn.danger {
+      border-color: rgba(255, 90, 95, 0.4);
+      background: rgba(255, 90, 95, 0.12);
+      color: #ffb2b5;
+    }
+    .dialog-btn.danger:hover {
+      border-color: rgba(255, 90, 95, 0.6);
+      background: rgba(255, 90, 95, 0.18);
+    }
+
+    @media (max-width: 1100px){
+      .gridTPV{grid-template-columns:1fr}
+      .brand{min-width:auto}
+      .status-pill{min-width:auto}
+      .btnGrid{grid-template-columns: repeat(2, 1fr);}
+      .extrasGrid{grid-template-columns: 1fr;}
+      .modalBody{grid-template-columns:1fr}
+      .search{width:min(92vw,360px)}
+    }
+  </style>
+</head>
+
+<body>
+<!-- CUSTOM DIALOG OVERLAY -->
+<div id="customDialog">
+  <div class="dialog-box">
+    <div class="dialog-header">
+      <h3 id="dialogTitle">Mensaje</h3>
+    </div>
+    <div class="dialog-body">
+      <p class="dialog-message" id="dialogMessage"></p>
+      <input type="text" class="dialog-input" id="dialogInput" style="display:none;" />
+    </div>
+    <div class="dialog-footer" id="dialogFooter">
+      <!-- Buttons dynamically inserted -->
+    </div>
+  </div>
+</div>
+
+<div class="top">
+  <div class="brand">
+    <div class="logo">
+      <img alt="Ensanbliss" src="https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/refs/heads/main/Negro.png">
+    </div>
+    <div class="title">
+      <h1> Ensanbliss</h1>
+      <span>Caja registradora • Ticket • Ventas • Finanzas vía transactions</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tabBtn active" id="tabTPV">TPV</button>
+    <button class="tabBtn" id="tabSales">Ventas</button>
+  </div>
+
+  <div class="actionsTop">
+    <button class="pillBtn" id="btnReload">Recargar catálogo</button>
+    <button class="pillBtn primary" id="btnNewSale">Nueva venta</button>
+    <div class="status-pill">
+      <span class="dot" id="sbDot"></span>
+      <span id="sbText">Conectando a Supabase...</span>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW: TPV -->
+<div class="view active" id="viewTPV">
+  <div class="gridTPV">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Catálogo y ajustes</h2>
+          <small>Botonera para añadir ítems al ticket</small>
+        </div>
+        <div class="rowFlex">
+          <span class="note" id="saleIdLabel">Venta: —</span>
+          <span class="pill gray" id="saleStatusLabel">Estado: new</span>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div class="grid2">
+          <div>
+            <label>Cliente (opcional)</label>
+            <input class="input" id="clientName" placeholder="Nombre del cliente" />
+          </div>
+          <div>
+            <label>Notas (opcional)</label>
+            <input class="input" id="notes" placeholder="Ej: pack, observaciones..." />
+          </div>
+        </div>
+
+        <div class="sectionTitle" style="margin-top:14px;">
+          <h3>Terapias</h3>
+          <div class="hint">Pulsa para añadir al ticket</div>
+        </div>
+        <div class="btnGrid" id="therapyGrid"></div>
+
+        <div class="sectionTitle" style="margin-top:18px;">
+          <h3>Extras (importe editable)</h3>
+          <div class="hint">Define el precio y pulsa "Añadir"</div>
+        </div>
+        <div class="extrasGrid" id="extrasGrid"></div>
+
+        <div class="sectionTitle" style="margin-top:18px;">
+          <h3>Descuento / Incremento</h3>
+          <div class="hint">Negativo = descuento • Positivo = suplemento</div>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <label>Concepto ajuste</label>
+            <input class="input" id="adjName" placeholder="Ej: descuento, suplemento..." value="Ajuste" />
+          </div>
+          <div>
+            <label>Importe (€)</label>
+            <input class="input" id="adjAmount" type="number" step="0.01" value="0" />
+          </div>
+        </div>
+
+        <div class="rowFlex" style="margin-top:12px;">
+          <button class="pillBtn" id="btnAddAdj">Añadir ajuste</button>
+          <button class="pillBtn" id="btnAddCustom">Ítem personalizado</button>
+          <div class="spacer"></div>
+          <button class="pillBtn" id="btnSaveDraft">Guardar en espera</button>
+          <button class="pillBtn" id="btnLoadDraftPicker">Cargar en espera</button>
+        </div>
+
+        <div class="note" style="margin-top:12px;">
+          Después de cobrar, el TPV se vacía automáticamente. El ticket cobrado queda disponible en la pestaña "Ventas".
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Ticket</h2>
+          <small>Vista de caja • líneas • cantidades</small>
+        </div>
+        <div class="rowFlex">
+          <span class="pill gray" id="ticketItemsCount">0 ítems</span>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div class="ticket">
+          <h3>Ensanbliss</h3>
+          <div class="sub" id="ticketMeta">—</div>
+
+          <div id="ticketLines"></div>
+
+          <div class="totals">
+            <div class="line"><span>Subtotal</span><b id="subTotal">€0.00</b></div>
+            <div class="line"><span>Ajustes</span><b id="adjTotal">€0.00</b></div>
+            <div class="line grand"><span>TOTAL</span><span id="grandTotal">€0.00</span></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn danger" id="btnClear">Vaciar</button>
+            <button class="btn" id="btnHold">Dejar en espera</button>
+            <button class="btn primary" id="btnPay">Pagar</button>
+            <button class="btn" id="btnPrint">Imprimir (demo)</button>
+          </div>
+
+          <div class="note" style="margin-top:10px;" id="debugBox">Listo.</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- VIEW: SALES -->
+<div class="view" id="viewSales">
+  <div class="salesWrap">
+    <section class="panel" style="height:100%;">
+      <div class="panel-header">
+        <div class="rowFlex" style="width:100%;">
+          <div class="rowFlex">
+            <button class="tabBtn active" id="salesDraft">En espera</button>
+            <button class="tabBtn" id="salesPaid">Pagadas</button>
+            <button class="tabBtn" id="salesCancelled">Anuladas</button>
+          </div>
+          <div class="spacer"></div>
+          <input class="search" id="salesSearch" placeholder="Buscar por cliente / notas / id..." />
+          <span class="pill gray" id="salesCount">0</span>
+          <button class="pillBtn" id="btnSalesRefresh">Actualizar</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <table>
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Método</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody id="salesRows"></tbody>
+        </table>
+
+        <div class="note" style="margin-top:10px;">
+          Puedes ver el ticket de cualquier venta haciendo clic en la fila o usando "Ver ticket".
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- MODAL: PAYMENT -->
+<div class="modal" id="payModal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <b>Pago</b>
+      <button class="closeX" id="payClose">Cerrar</button>
+    </div>
+
+    <div class="modalBody">
+      <div class="payMethod">
+        <h4>Selecciona método</h4>
+        <div class="methodGrid">
+          <button class="methodBtn" data-method="cash">Efectivo <span>✓</span></button>
+          <button class="methodBtn" data-method="bizum">Bizum <span>✓</span></button>
+          <button class="methodBtn" data-method="paypal">PayPal <span>QR</span></button>
+          <button class="methodBtn" data-method="card">Tarjeta <span>—</span></button>
+        </div>
+
+        <div class="qrBox" id="paypalQR">
+          <img alt="PayPal QR" src="https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/main/qrcode.png">
+          <p>Escanea el QR para pagar por PayPal y luego confirma abajo.</p>
+        </div>
+
+        <div class="note" style="margin-top:12px;">
+          Este TPV registra el pago en la tabla <span class="mono">transactions</span> (tu panel financiero).
+        </div>
+      </div>
+
+      <div class="payMethod">
+        <h4>Resumen</h4>
+        <div class="ticket" style="margin:0">
+          <div class="sub" id="paySummary">—</div>
+          <div class="totals" style="margin-top:0">
+            <div class="line"><span>Total</span><b id="payTotal">€0.00</b></div>
+          </div>
+          <div style="margin-top:10px">
+            <label>Importe recibido (opcional)</label>
+            <input class="input" id="received" type="number" step="0.01" placeholder="Solo si quieres calcular cambio" />
+            <div class="note" style="margin-top:8px" id="changeBox"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modalFoot">
+      <button class="btn" id="btnConfirmHold">Guardar en espera</button>
+      <button class="btn primary" id="btnConfirmPay">Confirmar pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VIEW TICKET -->
+<div class="modal" id="ticketModal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <b id="ticketModalTitle">Ticket</b>
+      <div class="rowFlex" style="margin-left:auto;">
+        <button class="pillBtn" id="btnTicketLoadTPV">Cargar al TPV</button>
+        <button class="pillBtn" id="btnTicketReopenDraft" style="display:none;">Pasar a espera</button>
+        <button class="closeX" id="ticketClose">Cerrar</button>
+      </div>
+    </div>
+    <div class="modalBodyFull">
+      <div class="ticketViewMeta" id="ticketViewMeta">—</div>
+      <div class="ticketLines" id="ticketViewLines"></div>
+      <div class="tTotals" id="ticketViewTotals"></div>
+    </div>
+    <div class="modalFoot">
+      <button class="btn" id="btnTicketPrint">Imprimir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* =========================
+     CUSTOM DIALOG SYSTEM
+  ========================= */
+  const Dialog = {
+    el: null,
+    title: null,
+    message: null,
+    input: null,
+    footer: null,
+    resolve: null,
+
+    init() {
+      this.el = document.getElementById('customDialog');
+      this.title = document.getElementById('dialogTitle');
+      this.message = document.getElementById('dialogMessage');
+      this.input = document.getElementById('dialogInput');
+      this.footer = document.getElementById('dialogFooter');
+    },
+
+    show() {
+      this.el.classList.add('show');
+    },
+
+    hide() {
+      this.el.classList.remove('show');
+      this.input.style.display = 'none';
+      this.input.value = '';
+    },
+
+    alert(message, title = 'Aviso') {
+      return new Promise(resolve => {
+        this.resolve = resolve;
+        this.title.textContent = title;
+        this.message.textContent = message;
+        this.input.style.display = 'none';
+
+        this.footer.innerHTML = `
+          <button class="dialog-btn primary" onclick="Dialog.resolveOk()">Aceptar</button>
+        `;
+
+        this.show();
+      });
+    },
+
+    confirm(message, title = 'Confirmar', options = {}) {
+      return new Promise(resolve => {
+        this.resolve = resolve;
+        this.title.textContent = title;
+        this.message.textContent = message;
+        this.input.style.display = 'none';
+
+        const confirmClass = options.danger ? 'danger' : 'primary';
+        const confirmText = options.confirmText || 'Aceptar';
+        const cancelText = options.cancelText || 'Cancelar';
+
+        this.footer.innerHTML = `
+          <button class="dialog-btn" onclick="Dialog.resolveCancel()">${cancelText}</button>
+          <button class="dialog-btn ${confirmClass}" onclick="Dialog.resolveOk()">${confirmText}</button>
+        `;
+
+        this.show();
+      });
+    },
+
+    prompt(message, defaultValue = '', title = 'Ingrese valor') {
+      return new Promise(resolve => {
+        this.resolve = resolve;
+        this.title.textContent = title;
+        this.message.textContent = message;
+        this.input.style.display = 'block';
+        this.input.value = defaultValue;
+
+        this.footer.innerHTML = `
+          <button class="dialog-btn" onclick="Dialog.resolveCancel()">Cancelar</button>
+          <button class="dialog-btn primary" onclick="Dialog.resolvePrompt()">Aceptar</button>
+        `;
+
+        this.show();
+        setTimeout(() => this.input.focus(), 100);
+
+        // Allow Enter key
+        this.input.onkeydown = (e) => {
+          if (e.key === 'Enter') this.resolvePrompt();
+          if (e.key === 'Escape') this.resolveCancel();
+        };
+      });
+    },
+
+    resolveOk() {
+      this.hide();
+      if (this.resolve) this.resolve(true);
+    },
+
+    resolveCancel() {
+      this.hide();
+      if (this.resolve) this.resolve(false);
+    },
+
+    resolvePrompt() {
+      const val = this.input.value.trim();
+      this.hide();
+      if (this.resolve) this.resolve(val || null);
+    }
+  };
+
+  // Initialize on load
+  Dialog.init();
+
+  /* =========================
+     SUPABASE
+  ========================= */
+  const SUPABASE_URL = "https://lywjxvrvvpmthmavueyq.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_SeLWhzg88bK4tmD_ODovrg_yD43dfkw";
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  /* =========================
+     Deep-link support
+  ========================= */
+  function getParam(name) {
+    try {
+      return new URLSearchParams(window.location.search).get(name);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function loadAppointmentIntoTPV(appointmentId) {
+    if (!appointmentId) return;
+    try {
+      const { data: apt, error } = await sb
+        .from("appointments")
+        .select("id, client_id, client_name, therapy_type, final_price, status, sale_id, date, time")
+        .eq("id", appointmentId)
+        .single();
+      if (error) throw error;
+      if (!apt) return;
+
+      linkedAppointmentId = apt.id;
+      selectedClientId = apt.client_id || null;
+
+      if (apt.sale_id) {
+        await loadSaleIntoTPV(apt.sale_id);
+        log(`Cita ya facturada. Ticket ${apt.sale_id} cargado.`);
+        return;
+      }
+
+      ui.clientName.value = (apt.client_name || "").trim();
+      ui.notes.value = `Cita ${apt.date || ""} ${apt.time || ""}`.trim();
+
+      cart = [];
+      const therapyTitle = (apt.therapy_type || "").trim();
+      let price = apt.final_price ? Number(apt.final_price) : null;
+
+      if (!price && therapyTitle) {
+        const { data: th, error: thErr } = await sb
+          .from("therapies")
+          .select("title, price")
+          .eq("title", therapyTitle)
+          .maybeSingle();
+        if (!thErr && th?.price != null) price = Number(th.price);
+      }
+      if (!price) price = 0;
+
+      if (therapyTitle) {
+        cart.push({ id: "apt-therapy", type: "therapy", refId: null, name: therapyTitle, unit: price, qty: 1 });
+      }
+
+      renderTicket();
+      log(`Cita cargada en TPV: ${therapyTitle || "sin terapia"}.`);
+    } catch (err) {
+      console.error(err);
+      log(`No se pudo cargar la cita: ${err.message || err}`);
+    }
+  }
+
+  /* =========================
+     UI refs
+  ========================= */
+  const ui = {
+    tabTPV: document.getElementById("tabTPV"),
+    tabSales: document.getElementById("tabSales"),
+    viewTPV: document.getElementById("viewTPV"),
+    viewSales: document.getElementById("viewSales"),
+
+    sbDot: document.getElementById("sbDot"),
+    sbText: document.getElementById("sbText"),
+    btnReload: document.getElementById("btnReload"),
+    btnNewSale: document.getElementById("btnNewSale"),
+
+    saleIdLabel: document.getElementById("saleIdLabel"),
+    saleStatusLabel: document.getElementById("saleStatusLabel"),
+    clientName: document.getElementById("clientName"),
+    notes: document.getElementById("notes"),
+    therapyGrid: document.getElementById("therapyGrid"),
+    extrasGrid: document.getElementById("extrasGrid"),
+    adjName: document.getElementById("adjName"),
+    adjAmount: document.getElementById("adjAmount"),
+    btnAddAdj: document.getElementById("btnAddAdj"),
+    btnAddCustom: document.getElementById("btnAddCustom"),
+    btnSaveDraft: document.getElementById("btnSaveDraft"),
+    btnLoadDraftPicker: document.getElementById("btnLoadDraftPicker"),
+
+    ticketLines: document.getElementById("ticketLines"),
+    subTotal: document.getElementById("subTotal"),
+    adjTotal: document.getElementById("adjTotal"),
+    grandTotal: document.getElementById("grandTotal"),
+    ticketMeta: document.getElementById("ticketMeta"),
+    ticketItemsCount: document.getElementById("ticketItemsCount"),
+    debugBox: document.getElementById("debugBox"),
+    btnClear: document.getElementById("btnClear"),
+    btnHold: document.getElementById("btnHold"),
+    btnPay: document.getElementById("btnPay"),
+    btnPrint: document.getElementById("btnPrint"),
+
+    payModal: document.getElementById("payModal"),
+    payClose: document.getElementById("payClose"),
+    paypalQR: document.getElementById("paypalQR"),
+    methodBtns: Array.from(document.querySelectorAll(".methodBtn")),
+    paySummary: document.getElementById("paySummary"),
+    payTotal: document.getElementById("payTotal"),
+    received: document.getElementById("received"),
+    changeBox: document.getElementById("changeBox"),
+    btnConfirmHold: document.getElementById("btnConfirmHold"),
+    btnConfirmPay: document.getElementById("btnConfirmPay"),
+
+    salesDraft: document.getElementById("salesDraft"),
+    salesPaid: document.getElementById("salesPaid"),
+    salesCancelled: document.getElementById("salesCancelled"),
+    salesSearch: document.getElementById("salesSearch"),
+    salesCount: document.getElementById("salesCount"),
+    salesRows: document.getElementById("salesRows"),
+    btnSalesRefresh: document.getElementById("btnSalesRefresh"),
+
+    ticketModal: document.getElementById("ticketModal"),
+    ticketClose: document.getElementById("ticketClose"),
+    ticketModalTitle: document.getElementById("ticketModalTitle"),
+    ticketViewMeta: document.getElementById("ticketViewMeta"),
+    ticketViewLines: document.getElementById("ticketViewLines"),
+    ticketViewTotals: document.getElementById("ticketViewTotals"),
+    btnTicketLoadTPV: document.getElementById("btnTicketLoadTPV"),
+    btnTicketReopenDraft: document.getElementById("btnTicketReopenDraft"),
+    btnTicketPrint: document.getElementById("btnTicketPrint"),
+  };
+
+  /* =========================
+     Helpers
+  ========================= */
+  function money(n) {
+    return "€" + Number(n || 0).toFixed(2);
+  }
+
+  function nowStr() {
+    return new Date().toLocaleString();
+  }
+
+  function isoDate() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[m]));
+  }
+
+  function log(msg) {
+    ui.debugBox.textContent = msg;
+  }
+
+  /* =========================
+     State
+  ========================= */
+  let therapies = [];
+  let extras = [
+    { key: "transport", title: "Transporte", desc: "Desplazamiento", price: 0 },
+    { key: "materials", title: "Materiales", desc: "Consumibles/desechables", price: 0 },
+    { key: "infrared", title: "Infrarrojos", desc: "Extra de sesión", price: 0 },
+    { key: "volcanic", title: "Piedra volcánica", desc: "Extra de sesión", price: 0 },
+  ];
+
+  let cart = [];
+  let currentSaleId = null;
+  let currentStatus = "new";
+  let selectedPayMethod = "cash";
+  let linkedAppointmentId = null;
+  let selectedClientId = null;
+
+  let salesStatus = "draft";
+  let salesAll = [];
+
+  let modalSaleId = null;
+  let modalSaleStatus = null;
+
+  /* =========================
+     View routing
+  ========================= */
+  function showView(which) {
+    const isTPV = which === "tpv";
+    ui.viewTPV.classList.toggle("active", isTPV);
+    ui.viewSales.classList.toggle("active", !isTPV);
+    ui.tabTPV.classList.toggle("active", isTPV);
+    ui.tabSales.classList.toggle("active", !isTPV);
+  }
+
+  ui.tabTPV.addEventListener("click", () => showView("tpv"));
+  ui.tabSales.addEventListener("click", async () => {
+    showView("sales");
+    await refreshSales();
+  });
+
+  /* =========================
+     Supabase connectivity
+  ========================= */
+  async function pingSupabase() {
+    try {
+      const { error } = await sb.from("therapies").select("id").limit(1);
+      if (error) throw error;
+      ui.sbDot.className = "dot ok";
+      ui.sbText.textContent = "Supabase OK";
+    } catch (e) {
+      ui.sbDot.className = "dot bad";
+      ui.sbText.textContent = "Supabase ERROR";
+      log("Supabase: " + (e?.message || e));
+    }
+  }
+
+  /* =========================
+     Catalog rendering
+  ========================= */
+  function renderTherapies() {
+    ui.therapyGrid.innerHTML = "";
+    therapies.forEach(t => {
+      const btn = document.createElement("div");
+      btn.className = "btnCard";
+
+      const safeTitle = escapeHtml(t.title);
+      const safeImg = escapeHtml(t.image_url || "");
+      const meta = (t.duration ? escapeHtml(t.duration) : "Añadir al ticket");
+
+      btn.innerHTML = `
+        <div class="thumb">
+          ${safeImg ? `<img src="${safeImg}" alt="${safeTitle}" onerror="this.style.display='none'">` : ``}
+        </div>
+        <div class="name">${safeTitle}</div>
+        <div class="price">${money(t.price)}</div>
+        <div class="meta">${meta}</div>
+      `;
+
+      btn.addEventListener("click", () => addLine({
+        type: "therapy",
+        refId: t.id,
+        name: t.title,
+        unit: Number(t.price || 0),
+        qty: 1
+      }));
+      ui.therapyGrid.appendChild(btn);
+    });
+  }
+
+  function renderExtras() {
+    ui.extrasGrid.innerHTML = "";
+    extras.forEach(ex => {
+      const row = document.createElement("div");
+      row.className = "extraLine";
+      row.innerHTML = `
+        <div class="left">
+          <b>${escapeHtml(ex.title)}</b>
+          <span>${escapeHtml(ex.desc)}</span>
+        </div>
+        <div class="right">
+          <input class="mini" type="number" step="0.01" value="${Number(ex.price || 0).toFixed(2)}" />
+          <button class="pillBtn">Añadir</button>
+        </div>
+      `;
+      const inp = row.querySelector("input");
+      const addBtn = row.querySelector("button");
+      inp.addEventListener("input", () => ex.price = Number(inp.value || 0));
+      addBtn.addEventListener("click", () => {
+        const price = Number(inp.value || 0);
+        addLine({
+          type: "extra",
+          refId: ex.key,
+          name: ex.title,
+          unit: price,
+          qty: 1
+        });
+      });
+      ui.extrasGrid.appendChild(row);
+    });
+  }
+
+  /* =========================
+     Ticket: cart ops
+  ========================= */
+  function addLine({ type, refId, name, unit, qty }) {
+    cart.push({
+      id: crypto.randomUUID(),
+      type,
+      refId: refId ?? null,
+      name,
+      unit: Number(unit || 0),
+      qty: Math.max(1, parseInt(qty || 1, 10)),
+    });
+    renderTicket();
+  }
+
+  function removeLine(id) {
+    cart = cart.filter(x => x.id !== id);
+    renderTicket();
+  }
+
+  function setQty(id, delta) {
+    const line = cart.find(x => x.id === id);
+    if (!line) return;
+    line.qty = Math.max(1, line.qty + delta);
+    renderTicket();
+  }
+
+  function totals() {
+    const subtotal = cart
+      .filter(x => x.type !== "adjustment")
+      .reduce((acc, x) => acc + (Number(x.unit || 0) * Number(x.qty || 1)), 0);
+
+    const adj = cart
+      .filter(x => x.type === "adjustment")
+      .reduce((acc, x) => acc + (Number(x.unit || 0) * Number(x.qty || 1)), 0);
+
+    const total = Math.max(0, subtotal + adj);
+    return { subtotal, adj, total };
+  }
+
+  function renderTicket() {
+    ui.ticketLines.innerHTML = "";
+    ui.ticketMeta.textContent = `${nowStr()} • ${cart.length} ítem(s)`;
+    ui.ticketItemsCount.textContent = `${cart.length} ítems`;
+
+    cart.forEach(line => {
+      const lineTotal = Number(line.unit || 0) * Number(line.qty || 1);
+
+      const row = document.createElement("div");
+      row.className = "row";
+
+      const left = document.createElement("div");
+      left.innerHTML = `
+        <div class="itemName">${escapeHtml(line.name)}</div>
+        <div class="itemMeta">${escapeHtml(line.type.toUpperCase())} • ${money(line.unit)} x ${line.qty}</div>
+        <div class="qtyCtrls">
+          <button class="qtyBtn" data-act="minus">-</button>
+          <button class="qtyBtn" data-act="plus">+</button>
+          <button class="removeBtn">Eliminar</button>
+        </div>
+      `;
+      const right = document.createElement("div");
+      right.className = "priceVal";
+      right.textContent = money(lineTotal);
+
+      row.appendChild(left);
+      row.appendChild(right);
+
+      left.querySelector('[data-act="minus"]').addEventListener("click", () => setQty(line.id, -1));
+      left.querySelector('[data-act="plus"]').addEventListener("click", () => setQty(line.id, +1));
+      left.querySelector(".removeBtn").addEventListener("click", () => removeLine(line.id));
+
+      ui.ticketLines.appendChild(row);
+    });
+
+    const t = totals();
+    ui.subTotal.textContent = money(t.subtotal);
+    ui.adjTotal.textContent = money(t.adj);
+    ui.grandTotal.textContent = money(t.total);
+
+    ui.saleIdLabel.textContent = `Venta: ${currentSaleId ? currentSaleId : "Sin guardar"}`;
+    ui.saleStatusLabel.textContent = `Estado: ${currentStatus}`;
+  }
+
+  /* =========================
+     TPV actions
+  ========================= */
+  ui.btnAddAdj.addEventListener("click", () => {
+    const name = (ui.adjName.value || "Ajuste").trim();
+    const amt = Number(ui.adjAmount.value || 0);
+    if (!amt) {
+      log("Indica un importe de ajuste (negativo=descuento).");
+      return;
+    }
+    addLine({ type: "adjustment", refId: null, name, unit: amt, qty: 1 });
+    ui.adjAmount.value = "0";
+  });
+
+  ui.btnAddCustom.addEventListener("click", async () => {
+    const name = await Dialog.prompt("Nombre del ítem personalizado:", "Ítem personalizado", "Ítem personalizado");
+    if (!name) return;
+    const val = await Dialog.prompt("Precio unitario (€):", "0", "Precio del ítem");
+    if (val === null) return;
+    const price = Number(val || 0);
+    addLine({ type: "custom", refId: null, name, unit: price, qty: 1 });
+  });
+
+  ui.btnClear.addEventListener("click", async () => {
+    const confirmed = await Dialog.confirm("¿Vaciar el ticket actual?", "Vaciar ticket", { danger: true, confirmText: "Vaciar" });
+    if (!confirmed) return;
+    cart = [];
+    renderTicket();
+  });
+
+  /* =========================
+     Sale persistence
+  ========================= */
+  async function upsertSale(status) {
+    if (cart.length === 0) {
+      log("No hay ítems en el ticket.");
+      return null;
+    }
+
+    const { subtotal, total } = totals();
+    const client_name = (ui.clientName.value || "").trim() || null;
+    const notes = (ui.notes.value || "").trim() || null;
+
+    let saleId = currentSaleId;
+
+    if (!saleId) {
+      const { data, error } = await sb.from("sales")
+        .insert([{
+          status,
+          payment_method: null,
+          currency: "EUR",
+          subtotal,
+          total,
+          client_name,
+          notes,
+          source: "web",
+          appointment_id: linkedAppointmentId,
+          client_id: selectedClientId
+        }]).select("id, status").single();
+      if (error) throw error;
+      saleId = data.id;
+      currentSaleId = saleId;
+      currentStatus = data.status;
+    } else {
+      const { error } = await sb.from("sales")
+        .update({ status, subtotal, total, client_name, notes, appointment_id: linkedAppointmentId, client_id: selectedClientId })
+        .eq("id", saleId);
+      if (error) throw error;
+
+      const { error: delErr } = await sb.from("sale_items").delete().eq("sale_id", saleId);
+      if (delErr) throw delErr;
+
+      currentStatus = status;
+    }
+
+    const items = cart.map(line => {
+      const lt = Number(line.unit || 0) * Number(line.qty || 1);
+      let itemType = line.type;
+      if (line.type === "adjustment") itemType = "custom";
+      if (line.type !== "therapy" && line.type !== "extra") itemType = "custom";
+
+      return {
+        sale_id: saleId,
+        item_type: itemType,
+        item_ref_id: null,
+        name: line.name,
+        qty: line.qty,
+        unit_price: line.unit,
+        line_total: lt
+      };
+    });
+
+    const { error: insErr } = await sb.from("sale_items").insert(items);
+    if (insErr) throw insErr;
+
+    renderTicket();
+    return saleId;
+  }
+
+  ui.btnSaveDraft.addEventListener("click", async () => {
+    try {
+      log("Guardando venta en espera...");
+      const id = await upsertSale("draft");
+      log("OK. Venta guardada: " + id);
+    } catch (e) {
+      log("Error guardando: " + (e?.message || e));
+    }
+  });
+
+  ui.btnHold.addEventListener("click", async () => {
+    try {
+      log("Dejando en espera...");
+      const id = await upsertSale("draft");
+      log("OK. En espera: " + id);
+    } catch (e) {
+      log("Error: " + (e?.message || e));
+    }
+  });
+
+  ui.btnNewSale.addEventListener("click", async () => {
+    if (cart.length) {
+      const confirmed = await Dialog.confirm(
+        "¿Crear nueva venta y perder el ticket actual (si no está guardado)?",
+        "Nueva venta",
+        { danger: true }
+      );
+      if (!confirmed) return;
+    }
+    resetTPV();
+    log("Nueva venta lista.");
+  });
+
+  function resetTPV() {
+    currentSaleId = null;
+    currentStatus = "new";
+    cart = [];
+    ui.clientName.value = "";
+    ui.notes.value = "";
+    renderTicket();
+  }
+
+  /* =========================
+     Load draft picker
+  ========================= */
+  async function pickDraftId() {
+    const { data, error } = await sb.from("sales")
+      .select("id, created_at, total, client_name, notes")
+      .eq("status", "draft")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (error) throw error;
+    const list = (data || []).map((s, i) => `${i + 1}) ${s.id} • €${Number(s.total || 0).toFixed(2)} • ${new Date(s.created_at).toLocaleString()} • ${s.client_name || "—"}`).join("\n");
+
+    const choice = await Dialog.prompt(
+      "Ventas en espera (elige número):\n\n" + (list || "No hay ventas en espera."),
+      "1",
+      "Cargar venta en espera"
+    );
+
+    if (!choice) return null;
+    const idx = parseInt(choice, 10) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= data.length) return null;
+    return data[idx].id;
+  }
+
+  async function loadSaleIntoTPV(saleId) {
+    log("Cargando venta " + saleId + "...");
+    const { data: sale, error: saleErr } = await sb.from("sales")
+      .select("id, status, client_name, notes")
+      .eq("id", saleId).single();
+    if (saleErr) throw saleErr;
+
+    const { data: items, error: itemsErr } = await sb.from("sale_items")
+      .select("name, qty, unit_price, item_type")
+      .eq("sale_id", saleId);
+    if (itemsErr) throw itemsErr;
+
+    currentSaleId = sale.id;
+    currentStatus = sale.status;
+    ui.clientName.value = sale.client_name || "";
+    ui.notes.value = sale.notes || "";
+
+    cart = (items || []).map(it => ({
+      id: crypto.randomUUID(),
+      type: (it.item_type === "therapy" ? "therapy" : it.item_type === "extra" ? "extra" : "custom"),
+      refId: null,
+      name: it.name,
+      qty: Number(it.qty || 1),
+      unit: Number(it.unit_price || 0),
+    }));
+
+    renderTicket();
+    showView("tpv");
+    log("Venta cargada. Puedes modificarla, guardarla en espera o cobrar.");
+  }
+
+  ui.btnLoadDraftPicker.addEventListener("click", async () => {
+    try {
+      const id = await pickDraftId();
+      if (!id) return;
+      await loadSaleIntoTPV(id);
+    } catch (e) {
+      log("Error cargando: " + (e?.message || e));
+    }
+  });
+
+  /* =========================
+     Payment modal
+  ========================= */
+  function openPayModal() {
+    const { total } = totals();
+    if (!cart.length || total <= 0) {
+      log("No hay nada que cobrar.");
+      return;
+    }
+    ui.payTotal.textContent = money(total);
+    ui.paySummary.textContent = `Ticket • ${cart.length} ítem(s) • ${nowStr()}`;
+    ui.received.value = "";
+    ui.changeBox.textContent = "";
+    setPayMethod(selectedPayMethod);
+    ui.payModal.classList.add("open");
+  }
+
+  function closePayModal() {
+    ui.payModal.classList.remove("open");
+  }
+
+  function setPayMethod(m) {
+    selectedPayMethod = m;
+    ui.methodBtns.forEach(b => b.classList.toggle("active", b.dataset.method === m));
+    ui.paypalQR.classList.toggle("show", m === "paypal");
+  }
+
+  ui.methodBtns.forEach(btn => btn.addEventListener("click", () => setPayMethod(btn.dataset.method)));
+  ui.payClose.addEventListener("click", closePayModal);
+  ui.btnPay.addEventListener("click", openPayModal);
+
+  ui.received.addEventListener("input", () => {
+    const received = Number(ui.received.value || 0);
+    const { total } = totals();
+    if (!received) {
+      ui.changeBox.textContent = "";
+      return;
+    }
+    const change = received - total;
+    ui.changeBox.textContent = change >= 0 ? `Cambio: ${money(change)}` : `Falta: ${money(Math.abs(change))}`;
+  });
+
+  ui.btnConfirmHold.addEventListener("click", async () => {
+    try {
+      log("Guardando en espera...");
+      await upsertSale("draft");
+      closePayModal();
+      log("OK. Venta en espera.");
+    } catch (e) {
+      log("Error: " + (e?.message || e));
+    }
+  });
+
+  /* =========================
+     Confirm pay
+  ========================= */
+  ui.btnConfirmPay.addEventListener("click", async () => {
+    try {
+      const { subtotal, total } = totals();
+      if (!cart.length || total <= 0) {
+        log("Nada que cobrar.");
+        return;
+      }
+
+      log("Confirmando pago...");
+      await upsertSale("pending_payment");
+
+      const client_name = (ui.clientName.value || "").trim() || null;
+      const notes = (ui.notes.value || "").trim() || null;
+
+      const { error: upErr } = await sb.from("sales")
+        .update({
+          status: "paid",
+          payment_method: selectedPayMethod,
+          subtotal,
+          total,
+          client_name,
+          notes,
+          source: "web",
+          appointment_id: linkedAppointmentId,
+          client_id: selectedClientId
+        })
+        .eq("id", currentSaleId);
+      if (upErr) throw upErr;
+
+      const txDesc = `TPV (${selectedPayMethod}) • Sale ${currentSaleId} • ${cart.map(x => x.name).slice(0, 3).join(" + ")}${cart.length > 3 ? " +" : ""}`;
+
+      const txRow = {
+        sale_id: currentSaleId,
+        appointment_id: linkedAppointmentId,
+        type: "income",
+        amount: total,
+        description: txDesc,
+        date: isoDate()
+      };
+
+      const { error: txErr } = await sb
+        .from("transactions")
+        .upsert([txRow], { onConflict: "sale_id" });
+      if (txErr) throw txErr;
+
+      if (linkedAppointmentId) {
+        const { error: aptUpErr } = await sb.from("appointments")
+          .update({ status: "completed", completed_at: new Date().toISOString(), sale_id: currentSaleId })
+          .eq("id", linkedAppointmentId);
+        if (aptUpErr) throw aptUpErr;
+      }
+
+      closePayModal();
+
+      const paidId = currentSaleId;
+      resetTPV();
+      log(`Pago registrado. Venta ${paidId} guardada en "Ventas". TPV limpio.`);
+
+    } catch (e) {
+      log("Error confirmando pago: " + (e?.message || e));
+    }
+  });
+
+  ui.btnPrint.addEventListener("click", () => window.print());
+
+  /* =========================
+     Sales view
+  ========================= */
+  function setSalesStatus(st) {
+    salesStatus = st;
+    ui.salesDraft.classList.toggle("active", st === "draft");
+    ui.salesPaid.classList.toggle("active", st === "paid");
+    ui.salesCancelled.classList.toggle("active", st === "cancelled");
+  }
+
+  ui.salesDraft.addEventListener("click", async () => {
+    setSalesStatus("draft");
+    await refreshSales();
+  });
+  ui.salesPaid.addEventListener("click", async () => {
+    setSalesStatus("paid");
+    await refreshSales();
+  });
+  ui.salesCancelled.addEventListener("click", async () => {
+    setSalesStatus("cancelled");
+    await refreshSales();
+  });
+  ui.btnSalesRefresh.addEventListener("click", refreshSales);
+  ui.salesSearch.addEventListener("input", renderSales);
+
+  async function refreshSales() {
+    try {
+      const { data, error } = await sb.from("sales")
+        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+        .eq("status", salesStatus)
+        .order("created_at", { ascending: false })
+        .limit(300);
+
+      if (error) throw error;
+      salesAll = data || [];
+      renderSales();
+    } catch (e) {
+      ui.salesRows.innerHTML = `<tr><td colspan="7" style="color:rgba(244,228,193,.55);padding:18px">Error: ${escapeHtml(e?.message || e)}</td></tr>`;
+    }
+  }
+
+  function renderSales() {
+    const q = (ui.salesSearch.value || "").toLowerCase().trim();
+    const filtered = salesAll.filter(s => {
+      const blob = `${s.id} ${s.client_name || ""} ${s.notes || ""}`.toLowerCase();
+      return !q || blob.includes(q);
+    });
+
+    ui.salesCount.textContent = filtered.length;
+    ui.salesRows.innerHTML = "";
+
+    if (!filtered.length) {
+      ui.salesRows.innerHTML = `<tr><td colspan="7" style="color:rgba(244,228,193,.55);padding:18px">Sin registros.</td></tr>`;
+      return;
+    }
+
+    filtered.forEach(s => {
+      const tr = document.createElement("tr");
+      tr.className = "clickable";
+      tr.innerHTML = `
+        <td>${new Date(s.created_at).toLocaleString()}</td>
+        <td class="mono">${escapeHtml(s.id.slice(0, 10))}…</td>
+        <td>${escapeHtml(s.client_name || "—")}</td>
+        <td><b style="color:#d4af37">${money(s.total)}</b></td>
+        <td><span class="pill">${escapeHtml(s.status)}</span></td>
+        <td>${escapeHtml(s.payment_method || "—")}</td>
+        <td>${renderSalesActions(s)}</td>
+      `;
+
+      tr.addEventListener("click", async (ev) => {
+        const isBtn = ev.target.closest("button");
+        if (isBtn) return;
+        await openTicketModal(s.id);
+      });
+
+      ui.salesRows.appendChild(tr);
+
+      const btnView = tr.querySelector("[data-view]");
+      const btnOpenTPV = tr.querySelector("[data-open]");
+      const btnReopen = tr.querySelector("[data-reopen]");
+      const btnCancel = tr.querySelector("[data-cancel]");
+      const btnHard = tr.querySelector("[data-hard]");
+
+      if (btnView) btnView.addEventListener("click", async () => {
+        await openTicketModal(s.id);
+      });
+      if (btnOpenTPV) btnOpenTPV.addEventListener("click", async () => {
+        await loadSaleIntoTPV(s.id);
+      });
+      if (btnReopen) btnReopen.addEventListener("click", async () => {
+        await reopenSaleToDraft(s.id);
+      });
+      if (btnCancel) btnCancel.addEventListener("click", async () => {
+        await cancelSale(s);
+      });
+      if (btnHard) btnHard.addEventListener("click", async () => {
+        await hardDeleteSale(s);
+      });
+    });
+  }
+
+  function renderSalesActions(s) {
+    if (s.status === "draft") {
+      return `
+        <button class="btnSmall" data-view="1">Ver ticket</button>
+        <button class="btnSmall ok" data-open="1">Cargar TPV</button>
+        <button class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+      `;
+    }
+    if (s.status === "paid") {
+      return `
+        <button class="btnSmall" data-view="1">Ver ticket</button>
+        <button class="btnSmall ok" data-reopen="1">Pasar a espera</button>
+        <button class="btnSmall danger" data-cancel="1">Anular</button>
+        <button class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+      `;
+    }
+    return `
+      <button class="btnSmall" data-view="1">Ver ticket</button>
+      <button class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+    `;
+  }
+
+  /* =========================
+     Reopen: paid -> draft
+  ========================= */
+  async function reopenSaleToDraft(saleId) {
+    const confirmed = await Dialog.confirm(
+      "¿Pasar esta venta a 'En espera'? Esto la marcará como draft y podrás reabrirla.",
+      "Pasar a espera",
+      { confirmText: "Pasar a espera" }
+    );
+    if (!confirmed) return;
+
+    const { error } = await sb.from("sales").update({ status: "draft", payment_method: null }).eq("id", saleId);
+    if (error) {
+      await Dialog.alert(error.message, "Error");
+      return;
+    }
+    await refreshSales();
+    await openTicketModal(saleId);
+  }
+
+  /* =========================
+     Cancel sale
+  ========================= */
+  async function cancelSale(sale) {
+    const confirmed = await Dialog.confirm(
+      "¿Anular esta venta pagada? Se registrará un reverso en Finanzas (transactions).",
+      "Anular venta",
+      { danger: true, confirmText: "Anular venta" }
+    );
+    if (!confirmed) return;
+
+    const { error: upErr } = await sb.from("sales").update({ status: "cancelled" }).eq("id", sale.id);
+    if (upErr) {
+      await Dialog.alert(upErr.message, "Error");
+      return;
+    }
+
+    const { error: txErr } = await sb.from("transactions").insert([{
+      type: "expense",
+      amount: Number(sale.total || 0),
+      description: `ANULACIÓN TPV • Sale ${sale.id}`,
+      date: isoDate()
+    }]);
+    if (txErr) await Dialog.alert("Venta anulada, pero fallo insert en transactions: " + txErr.message, "Advertencia");
+
+    await refreshSales();
+  }
+
+  /* =========================
+     Hard delete
+  ========================= */
+  async function hardDeleteSale(sale) {
+    const confirmed1 = await Dialog.confirm(
+      "Borrado definitivo elimina ticket (sales/sale_items). ¿Confirmas?",
+      "Borrado definitivo",
+      { danger: true, confirmText: "Borrar" }
+    );
+    if (!confirmed1) return;
+
+    const confirmed2 = await Dialog.confirm(
+      "Confirmación final: esta acción no se puede deshacer. ¿Borrar?",
+      "Confirmación final",
+      { danger: true, confirmText: "Sí, borrar definitivamente" }
+    );
+    if (!confirmed2) return;
+
+    const { error: itErr } = await sb.from("sale_items").delete().eq("sale_id", sale.id);
+    if (itErr) {
+      await Dialog.alert(itErr.message, "Error");
+      return;
+    }
+
+    const { error: sErr } = await sb.from("sales").delete().eq("id", sale.id);
+    if (sErr) {
+      await Dialog.alert(sErr.message, "Error");
+      return;
+    }
+
+    await refreshSales();
+  }
+
+  /* =========================
+     Ticket modal
+  ========================= */
+  function openModal(el) {
+    el.classList.add("open");
+  }
+
+  function closeModal(el) {
+    el.classList.remove("open");
+  }
+
+  ui.ticketClose.addEventListener("click", () => closeModal(ui.ticketModal));
+  ui.btnTicketPrint.addEventListener("click", () => window.print());
+
+  ui.btnTicketLoadTPV.addEventListener("click", async () => {
+    if (!modalSaleId) return;
+    await loadSaleIntoTPV(modalSaleId);
+    closeModal(ui.ticketModal);
+  });
+
+  ui.btnTicketReopenDraft.addEventListener("click", async () => {
+    if (!modalSaleId) return;
+    await reopenSaleToDraft(modalSaleId);
+  });
+
+  async function openTicketModal(saleId) {
+    try {
+      const { data: sale, error: saleErr } = await sb.from("sales")
+        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+        .eq("id", saleId).single();
+      if (saleErr) throw saleErr;
+
+      const { data: items, error: itemsErr } = await sb.from("sale_items")
+        .select("name, qty, unit_price, line_total, item_type")
+        .eq("sale_id", saleId);
+      if (itemsErr) throw itemsErr;
+
+      modalSaleId = sale.id;
+      modalSaleStatus = sale.status;
+
+      ui.ticketModalTitle.textContent = `Ticket • ${sale.id.slice(0, 10)}…`;
+      ui.ticketViewMeta.innerHTML = `
+        <span><b>Fecha:</b> ${new Date(sale.created_at).toLocaleString()}</span>
+        <span><b>Estado:</b> ${escapeHtml(sale.status)}</span>
+        <span><b>Método:</b> ${escapeHtml(sale.payment_method || "—")}</span>
+        <span><b>Cliente:</b> ${escapeHtml(sale.client_name || "—")}</span>
+        <span><b>Notas:</b> ${escapeHtml(sale.notes || "—")}</span>
+      `;
+
+      ui.ticketViewLines.innerHTML = "";
+      let computedSubtotal = 0;
+      (items || []).forEach(it => {
+        const lt = Number(it.line_total ?? (Number(it.unit_price || 0) * Number(it.qty || 1)));
+        computedSubtotal += lt;
+
+        const line = document.createElement("div");
+        line.className = "tLine";
+        line.innerHTML = `
+          <div class="tLeft">
+            <b>${escapeHtml(it.name)}</b>
+            <div>${escapeHtml((it.item_type || "").toUpperCase())} • ${money(it.unit_price)} x ${it.qty}</div>
+          </div>
+          <div class="tRight">${money(lt)}</div>
+        `;
+        ui.ticketViewLines.appendChild(line);
+      });
+
+      const sSubtotal = Number(sale.subtotal ?? computedSubtotal);
+      const sTotal = Number(sale.total ?? sSubtotal);
+      const sAdj = sTotal - sSubtotal;
+
+      ui.ticketViewTotals.innerHTML = `
+        <div class="line"><span>Subtotal</span><b>${money(sSubtotal)}</b></div>
+        <div class="line"><span>Ajustes</span><b>${money(sAdj)}</b></div>
+        <div class="grand"><span>TOTAL</span><span>${money(sTotal)}</span></div>
+      `;
+
+      ui.btnTicketReopenDraft.style.display = (sale.status === "paid" || sale.status === "cancelled") ? "inline-block" : "none";
+
+      openModal(ui.ticketModal);
+    } catch (e) {
+      await Dialog.alert("Error abriendo ticket: " + (e?.message || e), "Error");
+    }
+  }
+
+  /* =========================
+     Catalog load
+  ========================= */
+  async function loadCatalog() {
+    log("Cargando terapias...");
+    const { data, error } = await sb
+      .from("therapies")
+      .select("id,title,price,duration,image_url")
+      .order("title", { ascending: true });
+
+    if (error) throw error;
+
+    therapies = (data || []).map(t => ({
+      ...t,
+      price: Number(t.price || 0)
+    }));
+
+    renderTherapies();
+    renderExtras();
+    log("Catálogo listo.");
+  }
+
+  ui.btnReload.addEventListener("click", async () => {
+    try {
+      await loadCatalog();
+    } catch (e) {
+      log("Error cargando catálogo: " + (e?.message || e));
+    }
+  });
+
+  /* =========================
+     Init
+  ========================= */
+  (async () => {
+    await pingSupabase();
+    await loadCatalog();
+    renderTicket();
+    setSalesStatus("draft");
+
+    const apptId = getParam("appointment_id");
+    const saleId = getParam("sale_id");
+    if (saleId) {
+      await loadSaleIntoTPV(saleId);
+      log(`Ticket ${saleId} cargado por enlace.`);
+    } else if (apptId) {
+      await loadAppointmentIntoTPV(apptId);
+    }
+    log("TPV listo. Cobro -> guarda en Ventas y limpia el TPV.");
+  })();
+</script>
+</body>
+</html>
