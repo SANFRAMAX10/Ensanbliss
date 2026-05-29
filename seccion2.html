@@ -8,6 +8,7 @@
 
   <!-- jsPDF para generar PDFs -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
   <style>
     :root{
@@ -901,6 +902,188 @@
       border: 2px solid rgba(255,255,255,.12);
     }
 
+
+
+    /* PESTAÑA TERAPIAS */
+    .therapy-page-wrap{
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(310px, 420px) 1fr;
+      gap: 18px;
+      min-height: 0;
+    }
+    @media (max-width: 980px){ .therapy-page-wrap{ grid-template-columns: 1fr; overflow:auto; } }
+
+    .therapy-hero-card{
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .therapy-hero-img{
+      width:100%;
+      aspect-ratio:16/9;
+      object-fit:cover;
+      display:block;
+      border-bottom:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.28);
+    }
+    .therapy-lang{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .therapy-lang .lang-btn{
+      padding:9px 14px;
+      border-radius:999px;
+    }
+    .therapy-intro{
+      color:rgba(255,255,255,.76);
+      font-size:14px;
+      line-height:1.48;
+      margin:10px 0 0;
+    }
+    .therapy-menu-card{
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .therapy-menu{
+      padding:14px 16px 16px;
+      overflow:auto;
+      display:grid;
+      grid-template-columns:repeat(2, minmax(230px, 1fr));
+      gap:12px;
+      scrollbar-width:thin;
+    }
+    @media (max-width: 760px){ .therapy-menu{ grid-template-columns:1fr; } }
+    .therapy-card-btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.26);
+      color:rgba(255,255,255,.90);
+      border-radius:16px;
+      padding:14px;
+      cursor:pointer;
+      text-align:left;
+      min-height:128px;
+      display:grid;
+      grid-template-columns:46px 1fr;
+      gap:12px;
+      transition:transform .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .therapy-card-btn:hover{
+      transform:translateY(-2px);
+      border-color:rgba(240,193,75,.45);
+      background:rgba(0,0,0,.34);
+    }
+    .therapy-card-ico{
+      width:46px;
+      height:46px;
+      border-radius:15px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:rgba(240,193,75,.96);
+      background:rgba(240,193,75,.10);
+      border:1px solid rgba(240,193,75,.25);
+      font-size:21px;
+    }
+    .therapy-card-title{
+      font-size:17px;
+      font-weight:800;
+      margin:0 0 5px;
+      letter-spacing:.15px;
+    }
+    .therapy-card-summary{
+      font-size:13px;
+      color:rgba(255,255,255,.68);
+      line-height:1.38;
+      margin:0;
+    }
+    .therapy-tags{
+      grid-column:1 / -1;
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      margin-top:2px;
+    }
+    .therapy-tag{
+      font-size:11px;
+      padding:5px 8px;
+      border-radius:999px;
+      color:rgba(255,255,255,.72);
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .therapy-info-modal{
+      width:min(900px, 96vw);
+    }
+    .therapy-modal-top{
+      display:grid;
+      grid-template-columns:72px 1fr;
+      gap:14px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    .therapy-modal-icon{
+      width:72px;
+      height:72px;
+      border-radius:20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:rgba(240,193,75,.97);
+      background:rgba(240,193,75,.10);
+      border:1px solid rgba(240,193,75,.28);
+      font-size:32px;
+    }
+    .therapy-modal-kicker{
+      color:rgba(255,255,255,.58);
+      text-transform:uppercase;
+      letter-spacing:.24em;
+      font-size:11px;
+      font-weight:800;
+      margin:0 0 5px;
+    }
+    .therapy-modal-summary{
+      margin:0;
+      color:rgba(255,255,255,.76);
+      line-height:1.45;
+      font-size:14px;
+    }
+    .therapy-info-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+    @media (max-width: 780px){ .therapy-info-grid{ grid-template-columns:1fr; } }
+    .therapy-info-box{
+      border:1px solid rgba(255,255,255,.11);
+      background:rgba(0,0,0,.22);
+      border-radius:14px;
+      padding:13px;
+    }
+    .therapy-info-box h4{
+      margin:0 0 10px;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      color:rgba(240,193,75,.92);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .therapy-info-box ul{
+      margin:0;
+      padding-left:18px;
+      color:rgba(255,255,255,.80);
+      line-height:1.52;
+      font-size:13px;
+    }
+    .therapy-info-box li{ margin-bottom:6px; }
+
     /* ESTILOS CONSENTIMIENTO INFORMADO */
     .consent-container{
       height: 100%;
@@ -1230,6 +1413,15 @@
     Música
   </button>
 
+
+
+  <button class="btn tab" id="tabTherapies" type="button" role="tab" aria-selected="false" data-page="therapies">
+      <span class="icon" aria-hidden="true">
+        <i class="fa-solid fa-spa"></i>
+      </span>
+    Terapias
+  </button>
+
   <button class="btn tab" id="tabConsent" type="button" role="tab" aria-selected="false" data-page="consent">
       <span class="icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none">
@@ -1439,7 +1631,7 @@
       <div class="player-wrap">
         <div class="player-visual">
           <div class="player-cover" aria-hidden="true">
-            <img src="assets/media/terapias.png" alt="Terapias Ensanbliss" />
+            <img src="assets/media/terapias.png" alt="Terapias Ensanbliss" onerror="this.onerror=null;this.src='https://github.com/SANFRAMAX10/Ensanbliss/blob/main/terapias.png?raw=true';" />
           </div>
           <div class="player-now">
             <div class="title" id="playerTitle">Selecciona una pista</div>
@@ -1498,6 +1690,34 @@
   </div>
 
   <audio id="audioPlayer" preload="metadata"></audio>
+</section>
+
+
+
+<!-- PAGE: TERAPIAS -->
+<section class="page hidden" id="pageTherapies" role="tabpanel" aria-labelledby="tabTherapies">
+  <div class="therapy-page-wrap">
+    <div class="card therapy-hero-card">
+      <img class="therapy-hero-img" src="assets/media/terapias.png" alt="Nuestras terapias Ensanbliss" onerror="this.onerror=null;this.src='https://github.com/SANFRAMAX10/Ensanbliss/blob/main/terapias.png?raw=true';" />
+      <div class="inner">
+        <div class="chip" id="therapyLangChip">Español</div>
+        <h2 class="brand" id="therapyPageTitle" style="font-size:32px;margin-top:12px;">Nuestras Terapias</h2>
+        <p class="therapy-intro" id="therapyPageIntro">Consulta cada terapia como un menú profesional: para qué sirve, cómo se realiza y qué técnicas se aplican. Pulsa cualquier tarjeta para abrir la ficha completa.</p>
+        <div class="therapy-lang" aria-label="Selector de idioma terapias">
+          <button class="lang-btn active" id="therapyLangES" type="button" data-lang="es">Español</button>
+          <button class="lang-btn" id="therapyLangEN" type="button" data-lang="en">English</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card therapy-menu-card">
+      <div class="card-header">
+        <p class="card-title" id="therapyMenuTitle">Menú de terapias</p>
+        <div class="chip" id="therapyCountChip">6 terapias</div>
+      </div>
+      <div class="therapy-menu" id="therapyMenu"></div>
+    </div>
+  </div>
 </section>
 
 <!-- PAGE: CONSENTIMIENTO INFORMADO -->
@@ -1756,6 +1976,20 @@
     </div>
   </div>
 </div>
+
+<div class="modal-backdrop" id="therapyInfoBackdrop" role="dialog" aria-modal="true" aria-labelledby="therapyInfoTitle">
+  <div class="modal therapy-info-modal">
+    <div class="hd">
+      <h3 id="therapyInfoTitle">Terapia</h3>
+      <button class="btn small" id="btnCloseTherapyInfo" type="button" aria-label="Cerrar información de terapia">
+        <span class="icon" aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+        Cerrar
+      </button>
+    </div>
+    <div class="bd" id="therapyInfoBody"></div>
+  </div>
+</div>
+
 <script>
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
@@ -1801,29 +2035,169 @@
   ];
 
   /***********************
-   * 3 PESTAÑAS
+   * 4 PESTAÑAS
    ***********************/
   function setPage(name){
     $('#pagePanel').classList.toggle('hidden', name !== 'panel');
     $('#pageMusic').classList.toggle('hidden', name !== 'music');
+    $('#pageTherapies').classList.toggle('hidden', name !== 'therapies');
     $('#pageConsent').classList.toggle('hidden', name !== 'consent');
 
     $('#tabPanel').classList.toggle('active', name === 'panel');
     $('#tabMusic').classList.toggle('active', name === 'music');
+    $('#tabTherapies').classList.toggle('active', name === 'therapies');
     $('#tabConsent').classList.toggle('active', name === 'consent');
 
     $('#tabPanel').setAttribute('aria-selected', name === 'panel' ? 'true' : 'false');
     $('#tabMusic').setAttribute('aria-selected', name === 'music' ? 'true' : 'false');
+    $('#tabTherapies').setAttribute('aria-selected', name === 'therapies' ? 'true' : 'false');
     $('#tabConsent').setAttribute('aria-selected', name === 'consent' ? 'true' : 'false');
 
-    const modeText = name === 'panel' ? 'Panel' : (name === 'music' ? 'Música' : 'Consentimiento');
+    const modeText = name === 'panel' ? 'Panel' : (name === 'music' ? 'Música' : (name === 'therapies' ? 'Terapias' : 'Consentimiento'));
     $('#chipMode').textContent = modeText;
   }
 
   $('#tabPanel').addEventListener('click', () => setPage('panel'));
   $('#tabMusic').addEventListener('click', () => setPage('music'));
+  $('#tabTherapies').addEventListener('click', () => setPage('therapies'));
   $('#tabConsent').addEventListener('click', () => setPage('consent'));
   $('#btnGoMusic').addEventListener('click', () => setPage('music'));
+
+
+
+  /***********************
+   * TERAPIAS: menú bilingüe + modal informativo
+   ***********************/
+  const therapyRemoteImage = 'https://github.com/SANFRAMAX10/Ensanbliss/blob/main/terapias.png?raw=true';
+  let therapyLang = 'es';
+
+  const therapyCopy = {
+    es: {
+      chip: 'Español',
+      pageTitle: 'Nuestras Terapias',
+      intro: 'Consulta cada terapia como un menú profesional: para qué sirve, cómo se realiza y qué técnicas se aplican. Pulsa cualquier tarjeta para abrir la ficha completa.',
+      menuTitle: 'Menú de terapias',
+      modalKicker: 'Ficha técnica Ensanbliss',
+      sections: { benefits: 'Para qué sirve', process: 'Cómo se realiza', techniques: 'Técnicas específicas' }
+    },
+    en: {
+      chip: 'English',
+      pageTitle: 'Our Therapies',
+      intro: 'Browse each therapy as a professional menu: what it is for, how it is performed and the specific techniques used. Tap any card to open the full information sheet.',
+      menuTitle: 'Therapy menu',
+      modalKicker: 'Ensanbliss technical sheet',
+      sections: { benefits: 'What it is for', process: 'How it is performed', techniques: 'Specific techniques' }
+    }
+  };
+
+  const therapies = [
+    {
+      id:'sports', icon:'fa-person-running',
+      es:{ title:'Masaje Deportivo', summary:'Recuperación muscular, prevención de lesiones y descarga profunda adaptada al deportista.', tags:['Descarga','Recuperación','Movilidad'], benefits:['Reduce la sobrecarga muscular después del entrenamiento o jornadas exigentes.','Ayuda a mejorar la movilidad y la sensación de ligereza corporal.','Favorece la preparación previa al esfuerzo y la recuperación posterior.','Puede aliviar zonas con tensión acumulada por postura, trabajo físico o deporte.'], process:['Valoración breve de zonas cargadas, molestias, objetivo de la sesión y presión deseada.','Trabajo por grupos musculares con ritmo progresivo, combinando calentamiento, descarga y liberación.','Se adapta la intensidad para evitar dolor innecesario y mantener una sesión segura.','Finaliza con maniobras de integración y recomendaciones básicas de autocuidado.'], techniques:['Amasamiento profundo y fricciones transversas controladas.','Presiones mantenidas en puntos gatillo y bandas tensas.','Movilizaciones suaves y estiramientos asistidos según tolerancia.','Drenaje de retorno para bajar sensación de pesadez.']},
+      en:{ title:'Sports Massage', summary:'Muscle recovery, injury prevention and deep tissue release adapted to active bodies.', tags:['Recovery','Mobility','Deep release'], benefits:['Reduces muscle overload after training or physically demanding days.','Helps improve mobility and a lighter body sensation.','Supports pre-event preparation and post-event recovery.','May relieve tension caused by posture, physical work or sport.'], process:['Brief assessment of overloaded areas, discomfort, session goal and preferred pressure.','Progressive work by muscle groups, combining warm-up, release and integration.','Intensity is adapted to avoid unnecessary pain while keeping the session safe.','Ends with integrating strokes and simple aftercare guidance.'], techniques:['Deep kneading and controlled transverse friction.','Sustained pressure on trigger points and tight bands.','Gentle mobilisations and assisted stretching when appropriate.','Return drainage to reduce heaviness.']}
+    },
+    {
+      id:'relax', icon:'fa-leaf',
+      es:{ title:'Masaje Relajante', summary:'Experiencia suave y envolvente para reducir estrés, relajar el cuerpo y equilibrar la mente.', tags:['Estrés','Calma','Bienestar'], benefits:['Disminuye la tensión nerviosa y favorece un estado de calma profunda.','Ayuda a mejorar la percepción corporal y la calidad del descanso.','Relaja cuello, espalda, hombros y piernas con presión suave o media.','Acompaña procesos de desconexión mental y regulación emocional.'], process:['Ambiente cálido, música suave y ritmo continuo para facilitar la relajación.','Maniobras largas, fluidas y repetitivas que inducen sensación de seguridad.','Se trabaja todo el cuerpo o zonas concretas según necesidad.','Cierre lento para volver de forma gradual al estado activo.'], techniques:['Effleurage o pases largos de contacto.','Amasamiento suave y balanceos rítmicos.','Presiones palmares lentas y envolventes.','Integración final con respiración y pausas conscientes.']},
+      en:{ title:'Relaxing Massage', summary:'A soft, enveloping experience to reduce stress, relax the body and balance the mind.', tags:['Stress relief','Calm','Well-being'], benefits:['Reduces nervous tension and encourages deep calm.','Helps improve body awareness and rest quality.','Relaxes neck, back, shoulders and legs with soft to medium pressure.','Supports mental disconnection and emotional regulation.'], process:['Warm environment, soft music and continuous rhythm to facilitate relaxation.','Long, fluid and repetitive strokes to create a feeling of safety.','Full body or focused areas according to the client’s needs.','Slow closing sequence to return gradually to an active state.'], techniques:['Effleurage and long contact strokes.','Gentle kneading and rhythmic rocking.','Slow, enveloping palmar pressure.','Final integration with breathing and conscious pauses.']}
+    },
+    {
+      id:'sensitive', icon:'fa-spa',
+      es:{ title:'Terapias Sensitivas', summary:'Terapia holística que despierta los sentidos con contacto consciente, respiración y relajación profunda.', tags:['Sensorial','Holístico','Respiración'], benefits:['Potencia la conexión cuerpo-mente mediante un contacto lento y consciente.','Favorece la relajación profunda y la liberación de tensión emocional.','Ayuda a reducir hiperactividad mental y sensación de bloqueo corporal.','Crea una experiencia de bienestar integral y presencia.'], process:['Se establece un marco de confianza, límites y preferencias antes de empezar.','La sesión combina presión suave, pausas, respiración guiada y estímulos sensoriales.','Se usan aceites, temperatura agradable y ritmo muy pausado.','El objetivo es que la persona se sienta segura, presente y profundamente relajada.'], techniques:['Contacto consciente y maniobras lentas de integración.','Respiración sincronizada y pausas terapéuticas.','Estimulación sensorial suave con texturas, calor o aromaterapia.','Trabajo global de espalda, cuello, manos, pies y zonas de tensión.']},
+      en:{ title:'Sensitive Therapies', summary:'A holistic therapy that awakens the senses through conscious touch, breathing and deep relaxation.', tags:['Sensory','Holistic','Breathwork'], benefits:['Enhances body-mind connection through slow, conscious touch.','Encourages deep relaxation and emotional tension release.','Helps reduce mental overactivity and body blockage sensations.','Creates an integral experience of well-being and presence.'], process:['A clear framework of trust, boundaries and preferences is established first.','The session combines soft pressure, pauses, guided breathing and sensory inputs.','Oils, comfortable temperature and a very slow rhythm are used.','The aim is to feel safe, present and deeply relaxed.'], techniques:['Conscious touch and slow integrating strokes.','Synchronized breathing and therapeutic pauses.','Gentle sensory stimulation with textures, warmth or aromatherapy.','Global work on back, neck, hands, feet and tension areas.']}
+    },
+    {
+      id:'reflexology', icon:'fa-shoe-prints',
+      es:{ title:'Reflexoterapia', summary:'Estimulación de puntos reflejos en los pies para equilibrar el cuerpo y aliviar tensión general.', tags:['Pies','Equilibrio','Reflejos'], benefits:['Favorece relajación general a través de zonas reflejas del pie.','Ayuda a liberar tensión acumulada en pies, piernas y cadena posterior.','Puede mejorar la sensación de descanso, ligereza y bienestar corporal.','Adecuada para personas que prefieren una terapia localizada y no invasiva.'], process:['Higiene y preparación de pies con contacto progresivo y respetuoso.','Lectura táctil de zonas sensibles, rigidez o puntos con mayor respuesta.','Trabajo por mapas reflejos con presión ajustada a la tolerancia.','Cierre con maniobras suaves y cuidado de la piel.'], techniques:['Presión pulgar-dedo en puntos reflejos.','Arrastres, círculos y presiones mantenidas.','Movilización suave de dedos, arco plantar y tobillo.','Finalización con masaje relajante de pies y piernas.']},
+      en:{ title:'Reflexology', summary:'Stimulation of reflex points on the feet to balance the body and relieve general tension.', tags:['Feet','Balance','Reflex points'], benefits:['Promotes general relaxation through reflex zones of the feet.','Helps release tension in feet, legs and the posterior chain.','May improve rest, lightness and overall well-being.','Suitable for people who prefer localized, non-invasive therapy.'], process:['Foot hygiene and preparation with progressive, respectful contact.','Tactile reading of sensitive zones, stiffness or areas with stronger response.','Work through reflex maps with pressure adapted to tolerance.','Closing sequence with soft strokes and skin care.'], techniques:['Thumb-finger pressure on reflex points.','Gliding, circles and sustained pressure.','Gentle mobilization of toes, plantar arch and ankle.','Finishing with relaxing foot and leg massage.']}
+    },
+    {
+      id:'bamboo', icon:'fa-sliders',
+      es:{ title:'Bambuterapia', summary:'Masaje con cañas de bambú para drenaje, relajación muscular y remodelación corporal suave.', tags:['Bambú','Drenaje','Remodelante'], benefits:['Combina relajación y trabajo corporal con sensación envolvente.','Ayuda a drenar, activar la circulación superficial y descargar piernas o espalda.','Favorece sensación de ligereza y mejora estética de la piel con continuidad.','Permite presiones amplias y uniformes sin resultar agresivo.'], process:['Se aplican aceites y se seleccionan cañas según zona e intensidad requerida.','Las cañas ruedan, presionan y deslizan sobre grupos musculares.','El ritmo puede ser relajante, drenante o más intenso según objetivo.','Se combina con masaje manual para integrar la respuesta del tejido.'], techniques:['Rodamientos longitudinales y transversales con cañas.','Presiones amplias en espalda, piernas, glúteos y brazos.','Maniobras drenantes en dirección de retorno venoso y linfático.','Amasamientos y percusiones suaves con bambú.']},
+      en:{ title:'Bamboo Therapy', summary:'Massage with bamboo sticks for drainage, muscle relaxation and gentle body contouring.', tags:['Bamboo','Drainage','Body contour'], benefits:['Combines relaxation and bodywork with an enveloping sensation.','Helps drainage, superficial circulation and release in legs or back.','Supports a lighter feeling and skin appearance with regular sessions.','Allows broad, even pressure without feeling aggressive.'], process:['Oils are applied and bamboo sticks are selected according to area and intensity.','The sticks roll, press and glide over muscle groups.','The rhythm may be relaxing, draining or more intense depending on the goal.','It is combined with manual massage to integrate tissue response.'], techniques:['Longitudinal and transverse rolling with bamboo sticks.','Broad pressure on back, legs, glutes and arms.','Drainage strokes following venous and lymphatic return.','Gentle kneading and tapping with bamboo.']}
+    },
+    {
+      id:'facial', icon:'fa-face-smile-beam',
+      es:{ title:'Masaje Facial', summary:'Técnicas delicadas para rejuvenecer, relajar músculos faciales y cuidar la piel.', tags:['Facial','Piel','Rejuvenecedor'], benefits:['Relaja mandíbula, frente, ojos y musculatura facial tensa.','Mejora la sensación de descanso y luminosidad del rostro.','Acompaña rutinas de cuidado de piel con maniobras no invasivas.','Ideal como complemento a terapias relajantes o tratamientos de bienestar.'], process:['Limpieza suave, preparación de la piel y selección de producto adecuado.','Masaje en rostro, cuello, escote y cuero cabelludo según protocolo.','Presión delicada, ritmo lento y maniobras de drenaje para desinflamar.','Cierre con integración craneal y sensación de frescor.'], techniques:['Drenaje linfático facial suave.','Digitopresión en sienes, mandíbula y puntos de tensión.','Lifting manual con pases ascendentes y amasamiento fino.','Masaje craneal y cervical superficial.']},
+      en:{ title:'Facial Massage', summary:'Delicate techniques to refresh the face, relax facial muscles and care for the skin.', tags:['Face','Skin care','Rejuvenating'], benefits:['Relaxes jaw, forehead, eyes and tense facial muscles.','Improves the feeling of rest and facial brightness.','Supports skincare routines with non-invasive techniques.','Ideal as a complement to relaxing therapies or wellness treatments.'], process:['Gentle cleansing, skin preparation and selection of appropriate product.','Massage on face, neck, neckline and scalp depending on protocol.','Delicate pressure, slow rhythm and drainage strokes to reduce puffiness.','Closing with cranial integration and a fresh sensation.'], techniques:['Gentle facial lymphatic drainage.','Acupressure on temples, jaw and tension points.','Manual lifting with upward strokes and fine kneading.','Superficial cranial and cervical massage.']}
+    }
+  ];
+
+  function renderTherapyMenu(){
+    const t = therapyCopy[therapyLang];
+    $('#therapyLangChip').textContent = t.chip;
+    $('#therapyPageTitle').textContent = t.pageTitle;
+    $('#therapyPageIntro').textContent = t.intro;
+    $('#therapyMenuTitle').textContent = t.menuTitle;
+    $('#therapyCountChip').textContent = `${therapies.length} ${therapyLang === 'es' ? 'terapias' : 'therapies'}`;
+    $('#therapyLangES').classList.toggle('active', therapyLang === 'es');
+    $('#therapyLangEN').classList.toggle('active', therapyLang === 'en');
+
+    const menu = $('#therapyMenu');
+    menu.innerHTML = '';
+    therapies.forEach((item) => {
+      const info = item[therapyLang];
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'therapy-card-btn';
+      btn.innerHTML = `
+        <div class="therapy-card-ico"><i class="fa-solid ${item.icon}"></i></div>
+        <div>
+          <h3 class="therapy-card-title">${info.title}</h3>
+          <p class="therapy-card-summary">${info.summary}</p>
+        </div>
+        <div class="therapy-tags">${info.tags.map(tag => `<span class="therapy-tag">${tag}</span>`).join('')}</div>
+      `;
+      btn.addEventListener('click', () => openTherapyInfo(item.id));
+      menu.appendChild(btn);
+    });
+  }
+
+  function openTherapyInfo(id){
+    const item = therapies.find(t => t.id === id);
+    if(!item) return;
+    const info = item[therapyLang];
+    const labels = therapyCopy[therapyLang];
+    $('#therapyInfoTitle').textContent = info.title;
+    $('#therapyInfoBody').innerHTML = `
+      <div class="therapy-modal-top">
+        <div class="therapy-modal-icon"><i class="fa-solid ${item.icon}"></i></div>
+        <div>
+          <p class="therapy-modal-kicker">${labels.modalKicker}</p>
+          <p class="therapy-modal-summary">${info.summary}</p>
+        </div>
+      </div>
+      <div class="therapy-tags" style="margin-bottom:4px;">${info.tags.map(tag => `<span class="therapy-tag">${tag}</span>`).join('')}</div>
+      <div class="therapy-info-grid">
+        <div class="therapy-info-box">
+          <h4><i class="fa-solid fa-bullseye"></i>${labels.sections.benefits}</h4>
+          <ul>${info.benefits.map(x => `<li>${x}</li>`).join('')}</ul>
+        </div>
+        <div class="therapy-info-box">
+          <h4><i class="fa-solid fa-hands"></i>${labels.sections.process}</h4>
+          <ul>${info.process.map(x => `<li>${x}</li>`).join('')}</ul>
+        </div>
+        <div class="therapy-info-box">
+          <h4><i class="fa-solid fa-wand-magic-sparkles"></i>${labels.sections.techniques}</h4>
+          <ul>${info.techniques.map(x => `<li>${x}</li>`).join('')}</ul>
+        </div>
+      </div>
+    `;
+    $('#therapyInfoBackdrop').style.display = 'flex';
+  }
+
+  function closeTherapyInfo(){
+    $('#therapyInfoBackdrop').style.display = 'none';
+  }
+
+  $('#therapyLangES').addEventListener('click', () => { therapyLang = 'es'; renderTherapyMenu(); });
+  $('#therapyLangEN').addEventListener('click', () => { therapyLang = 'en'; renderTherapyMenu(); });
+  $('#btnCloseTherapyInfo').addEventListener('click', closeTherapyInfo);
+  $('#therapyInfoBackdrop').addEventListener('click', (e) => {
+    if(e.target === $('#therapyInfoBackdrop')) closeTherapyInfo();
+  });
+  renderTherapyMenu();
+
 
   /***********************
    * Reloj / Fecha
@@ -3054,99 +3428,99 @@
 </div>
 
 <script>
-(function(){
-  const overlay = document.getElementById('ensAlert');
-  const msgEl = document.getElementById('ensAlertMsg');
-  const subEl = document.getElementById('ensAlertSub');
-  const actionsEl = document.getElementById('ensAlertActions');
+  (function(){
+    const overlay = document.getElementById('ensAlert');
+    const msgEl = document.getElementById('ensAlertMsg');
+    const subEl = document.getElementById('ensAlertSub');
+    const actionsEl = document.getElementById('ensAlertActions');
 
-  let lastActive = null;
+    let lastActive = null;
 
-  function openModal({ message, subtext, buttons }) {
-    lastActive = document.activeElement;
+    function openModal({ message, subtext, buttons }) {
+      lastActive = document.activeElement;
 
-    msgEl.textContent = (message ?? '').toString();
+      msgEl.textContent = (message ?? '').toString();
 
-    if (subtext) {
-      subEl.style.display = 'block';
-      subEl.textContent = subtext.toString();
-    } else {
-      subEl.style.display = 'none';
-      subEl.textContent = '';
-    }
+      if (subtext) {
+        subEl.style.display = 'block';
+        subEl.textContent = subtext.toString();
+      } else {
+        subEl.style.display = 'none';
+        subEl.textContent = '';
+      }
 
-    actionsEl.innerHTML = '';
-    buttons.forEach(btn => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'ens-btn' + (btn.primary ? ' ens-btn-primary' : '');
-      b.textContent = btn.label;
-      b.addEventListener('click', () => {
-        closeModal();
-        try { btn.onClick && btn.onClick(); } catch(e){}
+      actionsEl.innerHTML = '';
+      buttons.forEach(btn => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'ens-btn' + (btn.primary ? ' ens-btn-primary' : '');
+        b.textContent = btn.label;
+        b.addEventListener('click', () => {
+          closeModal();
+          try { btn.onClick && btn.onClick(); } catch(e){}
+        });
+        actionsEl.appendChild(b);
       });
-      actionsEl.appendChild(b);
-    });
 
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden', 'false');
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden', 'false');
 
-    const firstBtn = actionsEl.querySelector('button');
-    if (firstBtn) firstBtn.focus();
-  }
-
-  function closeModal(){
-    overlay.classList.remove('show');
-    overlay.setAttribute('aria-hidden', 'true');
-    actionsEl.innerHTML = '';
-
-    if (lastActive && typeof lastActive.focus === 'function') {
-      try { lastActive.focus(); } catch(e){}
+      const firstBtn = actionsEl.querySelector('button');
+      if (firstBtn) firstBtn.focus();
     }
-  }
 
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeModal();
-  });
+    function closeModal(){
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden', 'true');
+      actionsEl.innerHTML = '';
 
-  overlay.querySelectorAll('[data-ens-close]').forEach(el => {
-    el.addEventListener('click', closeModal);
-  });
+      if (lastActive && typeof lastActive.focus === 'function') {
+        try { lastActive.focus(); } catch(e){}
+      }
+    }
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal();
-  });
-
-  window.alert = function(message){
-    openModal({
-      message,
-      subtext: '',
-      buttons: [{ label: 'Cerrar', primary: true, onClick: () => {} }]
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
     });
-  };
 
-  window.ensConfirm = function(message){
-    return new Promise((resolve) => {
+    overlay.querySelectorAll('[data-ens-close]').forEach(el => {
+      el.addEventListener('click', closeModal);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal();
+    });
+
+    window.alert = function(message){
       openModal({
         message,
-        subtext: '¿Deseas continuar?',
-        buttons: [
-          { label: 'Cancelar', primary: false, onClick: () => resolve(false) },
-          { label: 'Confirmar', primary: true, onClick: () => resolve(true) }
-        ]
+        subtext: '',
+        buttons: [{ label: 'Cerrar', primary: true, onClick: () => {} }]
       });
-    });
-  };
+    };
 
-  window.confirm = function(message){
-    openModal({
-      message,
-      subtext: 'Confirmación requerida',
-      buttons: [{ label: 'Cerrar', primary: true, onClick: () => {} }]
-    });
-    return false;
-  };
-})();
+    window.ensConfirm = function(message){
+      return new Promise((resolve) => {
+        openModal({
+          message,
+          subtext: '¿Deseas continuar?',
+          buttons: [
+            { label: 'Cancelar', primary: false, onClick: () => resolve(false) },
+            { label: 'Confirmar', primary: true, onClick: () => resolve(true) }
+          ]
+        });
+      });
+    };
+
+    window.confirm = function(message){
+      openModal({
+        message,
+        subtext: 'Confirmación requerida',
+        buttons: [{ label: 'Cerrar', primary: true, onClick: () => {} }]
+      });
+      return false;
+    };
+  })();
 </script>
 
 </body>
