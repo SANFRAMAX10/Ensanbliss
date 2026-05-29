@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>TPV Ensanbliss - Caja + Ventas (integrado)</title>
+  <title>TPV Ensanbliss Pro - Caja, Tickets y Ventas</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -598,6 +598,188 @@
       background: rgba(255, 90, 95, 0.18);
     }
 
+
+    /* ===== ENSANBLISS TPV PRO: mejoras funcionales ===== */
+    .proBadge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(212,175,55,.22);
+      background:rgba(212,175,55,.10);
+      color:var(--gold);font-weight:1000;font-size:11px;
+      letter-spacing:.35px;text-transform:uppercase;
+    }
+    .assistBar{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+    .assistBtn{
+      padding:11px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      transition:.18s ease;
+      text-align:left;
+    }
+    .assistBtn:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.38);background:rgba(212,175,55,.08)}
+    .assistBtn b{display:block;color:var(--gold);font-size:12px;margin-bottom:3px}
+    .assistBtn span{display:block;color:rgba(244,228,193,.62);font-size:11px;font-weight:700;line-height:1.25}
+    .ticket-empty{
+      text-align:center;
+      padding:22px 12px;
+      color:rgba(244,228,193,.58);
+      border:1px dashed rgba(212,175,55,.16);
+      border-radius:14px;
+      background:rgba(0,0,0,.16);
+      margin:8px 0;
+      line-height:1.35;
+    }
+    .ticket-empty b{color:var(--gold)}
+    .paymentSteps{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;
+    }
+    .paymentStep{
+      border:1px solid rgba(212,175,55,.18);
+      border-radius:14px;
+      padding:10px;
+      background:rgba(0,0,0,.18);
+      color:rgba(244,228,193,.62);
+      font-size:11px;
+      font-weight:900;
+      text-align:center;
+    }
+    .paymentStep.active{background:rgba(212,175,55,.12);color:var(--gold);border-color:rgba(212,175,55,.36)}
+    .cashQuickGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+    .cashQuickGrid button{
+      padding:10px 8px;border-radius:12px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.24);
+      color:var(--text);font-weight:900;cursor:pointer;
+    }
+    .cashQuickGrid button:hover{border-color:rgba(212,175,55,.38);color:var(--gold)}
+    .printHint{
+      display:flex;align-items:center;gap:9px;margin-top:10px;
+      color:rgba(244,228,193,.72);font-size:12px;font-weight:800;
+      padding:10px;border-radius:14px;border:1px solid rgba(212,175,55,.14);background:rgba(0,0,0,.18)
+    }
+    .printHint input{width:18px;height:18px;accent-color:#d4af37}
+    .quickTotalBox{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 12px 0;
+    }
+    .quickTotalCard{
+      border:1px solid rgba(212,175,55,.16);
+      background:rgba(0,0,0,.18);
+      border-radius:16px;
+      padding:12px;
+    }
+    .quickTotalCard small{display:block;color:rgba(244,228,193,.55);font-size:11px;font-weight:900;margin-bottom:6px}
+    .quickTotalCard b{display:block;color:var(--gold);font-size:18px}
+    .receiptMiniLogo{
+      width:48px;height:48px;border-radius:16px;object-fit:cover;display:block;margin:0 auto 8px;
+    }
+    @media (max-width: 1100px){
+      .assistBar{grid-template-columns:1fr 1fr;}
+      .quickTotalBox{grid-template-columns:1fr;}
+      .cashQuickGrid{grid-template-columns:repeat(2,1fr)}
+    }
+
+
+
+    /* ===== TABLET CASH REGISTER MODE: compacto, elegante, una pantalla ===== */
+    body.tpv-tablet-mode .top{height:62px;padding:0 12px;gap:8px;}
+    body.tpv-tablet-mode .brand{min-width:250px;gap:9px;}
+    body.tpv-tablet-mode .brand .logo{width:40px;height:40px;border-radius:12px;}
+    body.tpv-tablet-mode .brand .title h1{font-size:29px;}
+    body.tpv-tablet-mode .brand .title span{display:none;}
+    body.tpv-tablet-mode .tabBtn,
+    body.tpv-tablet-mode .pillBtn{padding:9px 10px;border-radius:12px;font-size:11px;}
+    body.tpv-tablet-mode .status-pill{min-width:auto;padding:9px 10px;font-size:11px;}
+    body.tpv-tablet-mode .view{height:calc(100vh - 62px);padding:9px;}
+    body.tpv-tablet-mode .gridTPV{grid-template-columns:minmax(0,1.18fr) minmax(320px,.82fr);gap:9px;}
+    body.tpv-tablet-mode .panel{border-radius:14px;}
+    body.tpv-tablet-mode .panel-header{padding:9px 10px;}
+    body.tpv-tablet-mode .panel-header h2{font-size:12px;}
+    body.tpv-tablet-mode .panel-header small,
+    body.tpv-tablet-mode .sectionTitle .hint,
+    body.tpv-tablet-mode .note{display:none;}
+    body.tpv-tablet-mode .panel-body{padding:10px;overflow:auto;}
+    body.tpv-tablet-mode label{margin:6px 0 5px;font-size:11px;}
+    body.tpv-tablet-mode .input{padding:9px 10px;border-radius:11px;font-size:12px;}
+    body.tpv-tablet-mode .sectionTitle{margin:8px 0 7px;}
+    body.tpv-tablet-mode .btnGrid{grid-template-columns:repeat(5, minmax(92px,1fr));gap:7px;}
+    body.tpv-tablet-mode .btnCard{min-height:82px;padding:7px;border-radius:12px;gap:5px;}
+    body.tpv-tablet-mode .btnCard .thumb{height:44px;border-radius:10px;}
+    body.tpv-tablet-mode .btnCard .name{font-size:11px;line-height:1.12;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    body.tpv-tablet-mode .btnCard .price{font-size:12px;}
+    body.tpv-tablet-mode .btnCard .meta{display:none;}
+    body.tpv-tablet-mode .extrasGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
+    body.tpv-tablet-mode .extraLine{padding:7px;border-radius:12px;display:grid;grid-template-columns:1fr;gap:6px;}
+    body.tpv-tablet-mode .extraLine .left span{display:none;}
+    body.tpv-tablet-mode .extraLine .right{gap:5px;}
+    body.tpv-tablet-mode .mini{width:70px;padding:8px;border-radius:10px;font-size:12px;}
+    body.tpv-tablet-mode .assistBar{grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px;}
+    body.tpv-tablet-mode .assistBtn{padding:8px 9px;border-radius:11px;font-size:11px;text-align:center;}
+    body.tpv-tablet-mode .assistBtn span{display:none;}
+    body.tpv-tablet-mode .ticket{padding:9px;border-radius:13px;}
+    body.tpv-tablet-mode .ticket h3{font-size:26px;margin-bottom:3px;}
+    body.tpv-tablet-mode .ticket .sub{font-size:10px;margin-bottom:5px;}
+    body.tpv-tablet-mode .ticket .row{padding:7px 0;}
+    body.tpv-tablet-mode .itemName,
+    body.tpv-tablet-mode .priceVal{font-size:11px;}
+    body.tpv-tablet-mode .itemMeta{font-size:10px;}
+    body.tpv-tablet-mode .qtyCtrls{margin-top:5px;gap:5px;}
+    body.tpv-tablet-mode .qtyBtn{width:24px;height:24px;border-radius:8px;}
+    body.tpv-tablet-mode .removeBtn{padding:5px 8px;font-size:10px;}
+    body.tpv-tablet-mode .totals{margin-top:8px;padding-top:8px;}
+    body.tpv-tablet-mode .totals .line{margin:5px 0;font-size:11px;}
+    body.tpv-tablet-mode .totals .grand{font-size:15px;}
+    body.tpv-tablet-mode .actions{gap:7px;margin-top:8px;}
+    body.tpv-tablet-mode .btn{padding:10px;border-radius:12px;font-size:12px;}
+
+    .payRegisterCard{width:min(860px,96vw);max-height:94vh;border-radius:20px;}
+    .payRegisterBody{padding:12px;display:grid;grid-template-columns:.88fr 1.12fr;gap:12px;}
+    .payBox{border:1px solid rgba(212,175,55,.18);background:rgba(0,0,0,.22);border-radius:16px;padding:12px;}
+    .payBox h4{margin:0 0 8px;font-size:12px;letter-spacing:.35px;color:rgba(244,228,193,.86);}
+    .payTotalDisplay{border:1px solid rgba(212,175,55,.22);border-radius:16px;padding:12px;background:linear-gradient(180deg,rgba(212,175,55,.12),rgba(0,0,0,.22));text-align:center;margin-bottom:10px;}
+    .payTotalDisplay span{display:block;font-size:11px;color:rgba(244,228,193,.68);font-weight:900;text-transform:uppercase;}
+    .payTotalDisplay b{display:block;font-size:34px;color:var(--gold);letter-spacing:.5px;margin-top:2px;}
+    .methodGrid.cashRegisterMethods{grid-template-columns:repeat(2,1fr);gap:8px;}
+    .cashRegisterMethods .methodBtn{padding:11px 10px;border-radius:13px;font-size:12px;}
+    .payCompactSummary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+    .payMiniStat{padding:10px;border:1px solid rgba(212,175,55,.15);background:rgba(0,0,0,.18);border-radius:13px;}
+    .payMiniStat span{display:block;font-size:10px;color:rgba(244,228,193,.62);font-weight:900;text-transform:uppercase;}
+    .payMiniStat b{display:block;color:var(--gold);font-size:16px;margin-top:3px;}
+    .cashDisplayInput{font-size:30px!important;text-align:right;color:var(--gold);font-weight:1000!important;padding:13px!important;border-radius:15px!important;letter-spacing:1px;}
+    .cashRegisterKeypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px;}
+    .cashKey{min-height:54px;border-radius:16px;border:1px solid rgba(212,175,55,.22);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.24));color:var(--text);font-size:22px;font-weight:1000;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.24);}
+    .cashKey:active{transform:translateY(1px);filter:brightness(1.08);}
+    .cashKey.fn{font-size:14px;color:var(--gold);}
+    .cashKey.ok{background:linear-gradient(180deg,var(--gold),#f1d889);color:#18120e;border:none;grid-column:span 2;}
+    .cashKey.danger{color:#ffb2b5;border-color:rgba(255,90,95,.35);background:rgba(255,90,95,.10);}
+    .payChangeDisplay{margin-top:8px;padding:10px;border-radius:14px;border:1px solid rgba(212,175,55,.16);background:rgba(0,0,0,.20);font-size:15px;font-weight:1000;text-align:center;color:rgba(244,228,193,.86);min-height:40px;}
+    .payChangeDisplay.ok{color:#bff7d6;border-color:rgba(43,213,118,.35);background:rgba(43,213,118,.10);}
+    .payChangeDisplay.bad{color:#ffb2b5;border-color:rgba(255,90,95,.35);background:rgba(255,90,95,.10);}
+    .cashQuickGrid.compactCash{grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px;}
+    .cashQuickGrid.compactCash button{padding:9px 6px;border-radius:11px;font-size:12px;}
+    .printHint.compact{padding:8px 10px;border-radius:12px;font-size:11px;margin-top:8px;}
+    .payRegisterFoot{padding:10px 12px;}
+    .payRegisterFoot .btn{min-width:150px;}
+    @media (max-width: 1100px){
+      body.tpv-tablet-mode .gridTPV{grid-template-columns:1fr .72fr;}
+      body.tpv-tablet-mode .btnGrid{grid-template-columns:repeat(4,1fr);}
+      body.tpv-tablet-mode .extrasGrid{grid-template-columns:repeat(2,1fr);}
+      .payRegisterBody{grid-template-columns:1fr 1fr;}
+    }
+    @media (max-width: 900px){
+      body.tpv-tablet-mode .gridTPV{grid-template-columns:1fr;}
+      .payRegisterBody{grid-template-columns:1fr;}
+      .payRegisterCard{max-height:98vh;overflow:auto;}
+    }
+
     @media (max-width: 1100px){
       .gridTPV{grid-template-columns:1fr}
       .brand{min-width:auto}
@@ -610,7 +792,7 @@
   </style>
 </head>
 
-<body>
+<body class="tpv-tablet-mode">
 <!-- CUSTOM DIALOG OVERLAY -->
 <div id="customDialog">
   <div class="dialog-box">
@@ -634,18 +816,20 @@
     </div>
     <div class="title">
       <h1> Ensanbliss</h1>
-      <span>Caja registradora • Ticket • Ventas • Finanzas vía transactions</span>
+      <span>TPV Pro • Caja intuitiva • Tickets imprimibles • Ventas • Finanzas</span>
     </div>
   </div>
 
   <div class="tabs">
-    <button class="tabBtn active" id="tabTPV">TPV</button>
-    <button class="tabBtn" id="tabSales">Ventas</button>
+    <button type="button" class="tabBtn active" id="tabTPV">TPV</button>
+    <button type="button" class="tabBtn" id="tabSales">Ventas</button>
   </div>
 
   <div class="actionsTop">
-    <button class="pillBtn" id="btnReload">Recargar catálogo</button>
-    <button class="pillBtn primary" id="btnNewSale">Nueva venta</button>
+    <span class="proBadge">Modo profesional</span>
+    <button type="button" class="pillBtn" id="btnTodaySummary">Resumen caja</button>
+    <button type="button" class="pillBtn" id="btnReload">Recargar catálogo</button>
+    <button type="button" class="pillBtn primary" id="btnNewSale">Nueva venta</button>
     <div class="status-pill">
       <span class="dot" id="sbDot"></span>
       <span id="sbText">Conectando a Supabase...</span>
@@ -680,6 +864,13 @@
           </div>
         </div>
 
+        <div class="assistBar">
+          <button type="button" class="assistBtn" id="btnQuickClient"><b>Cliente rápido</b><span>Guardar nombre y preparar ticket</span></button>
+          <button type="button" class="assistBtn" id="btnDiscountPercent"><b>Descuento %</b><span>Aplica porcentaje al ticket</span></button>
+          <button type="button" class="assistBtn" id="btnDeposit"><b>Señal / anticipo</b><span>Resta un importe ya pagado</span></button>
+          <button type="button" class="assistBtn" id="btnGiftCard"><b>Bono regalo</b><span>Añade concepto de regalo</span></button>
+        </div>
+
         <div class="sectionTitle" style="margin-top:14px;">
           <h3>Terapias</h3>
           <div class="hint">Pulsa para añadir al ticket</div>
@@ -709,11 +900,11 @@
         </div>
 
         <div class="rowFlex" style="margin-top:12px;">
-          <button class="pillBtn" id="btnAddAdj">Añadir ajuste</button>
-          <button class="pillBtn" id="btnAddCustom">Ítem personalizado</button>
+          <button type="button" class="pillBtn" id="btnAddAdj">Añadir ajuste</button>
+          <button type="button" class="pillBtn" id="btnAddCustom">Ítem personalizado</button>
           <div class="spacer"></div>
-          <button class="pillBtn" id="btnSaveDraft">Guardar en espera</button>
-          <button class="pillBtn" id="btnLoadDraftPicker">Cargar en espera</button>
+          <button type="button" class="pillBtn" id="btnSaveDraft">Guardar en espera</button>
+          <button type="button" class="pillBtn" id="btnLoadDraftPicker">Cargar en espera</button>
         </div>
 
         <div class="note" style="margin-top:12px;">
@@ -747,10 +938,10 @@
           </div>
 
           <div class="actions">
-            <button class="btn danger" id="btnClear">Vaciar</button>
-            <button class="btn" id="btnHold">Dejar en espera</button>
-            <button class="btn primary" id="btnPay">Pagar</button>
-            <button class="btn" id="btnPrint">Imprimir (demo)</button>
+            <button type="button" class="btn danger" id="btnClear">Vaciar</button>
+            <button type="button" class="btn" id="btnHold">Dejar en espera</button>
+            <button type="button" class="btn primary" id="btnPay">Pagar</button>
+            <button type="button" class="btn" id="btnPrint">Imprimir ticket</button>
           </div>
 
           <div class="note" style="margin-top:10px;" id="debugBox">Listo.</div>
@@ -767,14 +958,14 @@
       <div class="panel-header">
         <div class="rowFlex" style="width:100%;">
           <div class="rowFlex">
-            <button class="tabBtn active" id="salesDraft">En espera</button>
-            <button class="tabBtn" id="salesPaid">Pagadas</button>
-            <button class="tabBtn" id="salesCancelled">Anuladas</button>
+            <button type="button" class="tabBtn active" id="salesDraft">En espera</button>
+            <button type="button" class="tabBtn" id="salesPaid">Pagadas</button>
+            <button type="button" class="tabBtn" id="salesCancelled">Anuladas</button>
           </div>
           <div class="spacer"></div>
           <input class="search" id="salesSearch" placeholder="Buscar por cliente / notas / id..." />
           <span class="pill gray" id="salesCount">0</span>
-          <button class="pillBtn" id="btnSalesRefresh">Actualizar</button>
+          <button type="button" class="pillBtn" id="btnSalesRefresh">Actualizar</button>
         </div>
       </div>
       <div class="panel-body">
@@ -803,51 +994,74 @@
 
 <!-- MODAL: PAYMENT -->
 <div class="modal" id="payModal">
-  <div class="modalCard">
+  <div class="modalCard payRegisterCard">
     <div class="modalHead">
-      <b>Pago</b>
-      <button class="closeX" id="payClose">Cerrar</button>
+      <b>Cobro</b>
+      <button type="button" class="closeX" id="payClose">Cerrar</button>
     </div>
 
-    <div class="modalBody">
-      <div class="payMethod">
-        <h4>Selecciona método</h4>
-        <div class="methodGrid">
-          <button class="methodBtn" data-method="cash">Efectivo <span>✓</span></button>
-          <button class="methodBtn" data-method="bizum">Bizum <span>✓</span></button>
-          <button class="methodBtn" data-method="paypal">PayPal <span>QR</span></button>
-          <button class="methodBtn" data-method="card">Tarjeta <span>—</span></button>
+    <div class="payRegisterBody">
+      <div class="payBox">
+        <div class="payTotalDisplay">
+          <span>Total a cobrar</span>
+          <b id="payTotal">€0.00</b>
+        </div>
+
+        <h4>Método</h4>
+        <div class="methodGrid cashRegisterMethods">
+          <button type="button" class="methodBtn" data-method="cash">Efectivo <span>✓</span></button>
+          <button type="button" class="methodBtn" data-method="card">Tarjeta <span>✓</span></button>
+          <button type="button" class="methodBtn" data-method="bizum">Bizum <span>✓</span></button>
+          <button type="button" class="methodBtn" data-method="paypal">PayPal <span>QR</span></button>
         </div>
 
         <div class="qrBox" id="paypalQR">
           <img alt="PayPal QR" src="https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/main/qrcode.png">
-          <p>Escanea el QR para pagar por PayPal y luego confirma abajo.</p>
+          <p>Escanear y confirmar.</p>
         </div>
 
-        <div class="note" style="margin-top:12px;">
-          Este TPV registra el pago en la tabla <span class="mono">transactions</span> (tu panel financiero).
+        <div class="payCompactSummary">
+          <div class="payMiniStat"><span>Ticket</span><b id="paySummary">—</b></div>
+          <div class="payMiniStat"><span>Cliente</span><b id="payClientSummary">—</b></div>
         </div>
       </div>
 
-      <div class="payMethod">
-        <h4>Resumen</h4>
-        <div class="ticket" style="margin:0">
-          <div class="sub" id="paySummary">—</div>
-          <div class="totals" style="margin-top:0">
-            <div class="line"><span>Total</span><b id="payTotal">€0.00</b></div>
-          </div>
-          <div style="margin-top:10px">
-            <label>Importe recibido (opcional)</label>
-            <input class="input" id="received" type="number" step="0.01" placeholder="Solo si quieres calcular cambio" />
-            <div class="note" style="margin-top:8px" id="changeBox"></div>
-          </div>
+      <div class="payBox">
+        <h4>Importe recibido</h4>
+        <input class="input cashDisplayInput" id="received" type="text" inputmode="decimal" placeholder="0.00" readonly />
+
+        <div class="cashQuickGrid compactCash" id="cashQuickGrid">
+          <button type="button" data-cash="exact">Exacto</button>
+          <button type="button" data-cash="10">10€</button>
+          <button type="button" data-cash="20">20€</button>
+          <button type="button" data-cash="50">50€</button>
         </div>
+
+        <div class="cashRegisterKeypad" id="cashKeypad">
+          <button type="button" class="cashKey" data-key="7">7</button>
+          <button type="button" class="cashKey" data-key="8">8</button>
+          <button type="button" class="cashKey" data-key="9">9</button>
+          <button type="button" class="cashKey" data-key="4">4</button>
+          <button type="button" class="cashKey" data-key="5">5</button>
+          <button type="button" class="cashKey" data-key="6">6</button>
+          <button type="button" class="cashKey" data-key="1">1</button>
+          <button type="button" class="cashKey" data-key="2">2</button>
+          <button type="button" class="cashKey" data-key="3">3</button>
+          <button type="button" class="cashKey fn" data-key=".">.</button>
+          <button type="button" class="cashKey" data-key="0">0</button>
+          <button type="button" class="cashKey danger" data-key="back">⌫</button>
+          <button type="button" class="cashKey fn" data-key="clear">C</button>
+          <button type="button" class="cashKey ok" data-key="confirm">Cobrar</button>
+        </div>
+
+        <div class="payChangeDisplay" id="changeBox"></div>
+        <label class="printHint compact"><input type="checkbox" id="printAfterPay" checked> Imprimir al cobrar</label>
       </div>
     </div>
 
-    <div class="modalFoot">
-      <button class="btn" id="btnConfirmHold">Guardar en espera</button>
-      <button class="btn primary" id="btnConfirmPay">Confirmar pago</button>
+    <div class="modalFoot payRegisterFoot">
+      <button type="button" class="btn" id="btnConfirmHold">En espera</button>
+      <button type="button" class="btn primary" id="btnConfirmPay">Confirmar pago</button>
     </div>
   </div>
 </div>
@@ -858,9 +1072,9 @@
     <div class="modalHead">
       <b id="ticketModalTitle">Ticket</b>
       <div class="rowFlex" style="margin-left:auto;">
-        <button class="pillBtn" id="btnTicketLoadTPV">Cargar al TPV</button>
-        <button class="pillBtn" id="btnTicketReopenDraft" style="display:none;">Pasar a espera</button>
-        <button class="closeX" id="ticketClose">Cerrar</button>
+        <button type="button" class="pillBtn" id="btnTicketLoadTPV">Cargar al TPV</button>
+        <button type="button" class="pillBtn" id="btnTicketReopenDraft" style="display:none;">Pasar a espera</button>
+        <button type="button" class="closeX" id="ticketClose">Cerrar</button>
       </div>
     </div>
     <div class="modalBodyFull">
@@ -869,7 +1083,7 @@
       <div class="tTotals" id="ticketViewTotals"></div>
     </div>
     <div class="modalFoot">
-      <button class="btn" id="btnTicketPrint">Imprimir</button>
+      <button type="button" class="btn" id="btnTicketPrint">Imprimir</button>
     </div>
   </div>
 </div>
@@ -912,7 +1126,7 @@
         this.input.style.display = 'none';
 
         this.footer.innerHTML = `
-          <button class="dialog-btn primary" onclick="Dialog.resolveOk()">Aceptar</button>
+          <button type="button" class="dialog-btn primary" onclick="Dialog.resolveOk()">Aceptar</button>
         `;
 
         this.show();
@@ -931,8 +1145,8 @@
         const cancelText = options.cancelText || 'Cancelar';
 
         this.footer.innerHTML = `
-          <button class="dialog-btn" onclick="Dialog.resolveCancel()">${cancelText}</button>
-          <button class="dialog-btn ${confirmClass}" onclick="Dialog.resolveOk()">${confirmText}</button>
+          <button type="button" class="dialog-btn" onclick="Dialog.resolveCancel()">${cancelText}</button>
+          <button type="button" class="dialog-btn ${confirmClass}" onclick="Dialog.resolveOk()">${confirmText}</button>
         `;
 
         this.show();
@@ -948,8 +1162,8 @@
         this.input.value = defaultValue;
 
         this.footer.innerHTML = `
-          <button class="dialog-btn" onclick="Dialog.resolveCancel()">Cancelar</button>
-          <button class="dialog-btn primary" onclick="Dialog.resolvePrompt()">Aceptar</button>
+          <button type="button" class="dialog-btn" onclick="Dialog.resolveCancel()">Cancelar</button>
+          <button type="button" class="dialog-btn primary" onclick="Dialog.resolvePrompt()">Aceptar</button>
         `;
 
         this.show();
@@ -982,6 +1196,18 @@
 
   // Initialize on load
   Dialog.init();
+
+  /* =========================
+     SAFETY: botones sin descarga ni submit accidental
+     Evita que cualquier botón normal actúe como submit/enlace en tablets o WebViews.
+  ========================= */
+  document.addEventListener('click', function(ev){
+    const btn = ev.target.closest('button');
+    if (!btn) return;
+    if (!btn.getAttribute('type')) btn.setAttribute('type', 'button');
+    if (btn.getAttribute('type') !== 'submit') ev.preventDefault();
+  }, true);
+
 
   /* =========================
      SUPABASE
@@ -1063,6 +1289,11 @@
     sbText: document.getElementById("sbText"),
     btnReload: document.getElementById("btnReload"),
     btnNewSale: document.getElementById("btnNewSale"),
+    btnTodaySummary: document.getElementById("btnTodaySummary"),
+    btnQuickClient: document.getElementById("btnQuickClient"),
+    btnDiscountPercent: document.getElementById("btnDiscountPercent"),
+    btnDeposit: document.getElementById("btnDeposit"),
+    btnGiftCard: document.getElementById("btnGiftCard"),
 
     saleIdLabel: document.getElementById("saleIdLabel"),
     saleStatusLabel: document.getElementById("saleStatusLabel"),
@@ -1094,9 +1325,13 @@
     paypalQR: document.getElementById("paypalQR"),
     methodBtns: Array.from(document.querySelectorAll(".methodBtn")),
     paySummary: document.getElementById("paySummary"),
+    payClientSummary: document.getElementById("payClientSummary"),
     payTotal: document.getElementById("payTotal"),
     received: document.getElementById("received"),
     changeBox: document.getElementById("changeBox"),
+    cashQuickGrid: document.getElementById("cashQuickGrid"),
+    cashKeypad: document.getElementById("cashKeypad"),
+    printAfterPay: document.getElementById("printAfterPay"),
     btnConfirmHold: document.getElementById("btnConfirmHold"),
     btnConfirmPay: document.getElementById("btnConfirmPay"),
 
@@ -1122,6 +1357,15 @@
   /* =========================
      Helpers
   ========================= */
+  const BUSINESS = {
+    name: "Ensanbliss",
+    subtitle: "Body & Soul Care",
+    web: "ensanbliss.es",
+    email: "info@ensanbliss.es",
+    logo: "https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/refs/heads/main/Negro.png",
+    footer: "Gracias por confiar en Ensanbliss. Tu bienestar, nuestra inspiración."
+  };
+
   function money(n) {
     return "€" + Number(n || 0).toFixed(2);
   }
@@ -1250,7 +1494,7 @@
         </div>
         <div class="right">
           <input class="mini" type="number" step="0.01" value="${Number(ex.price || 0).toFixed(2)}" />
-          <button class="pillBtn">Añadir</button>
+          <button type="button" class="pillBtn">Añadir</button>
         </div>
       `;
       const inp = row.querySelector("input");
@@ -1315,6 +1559,10 @@
     ui.ticketMeta.textContent = `${nowStr()} • ${cart.length} ítem(s)`;
     ui.ticketItemsCount.textContent = `${cart.length} ítems`;
 
+    if (!cart.length) {
+      ui.ticketLines.innerHTML = `<div class="ticket-empty"><b>Ticket vacío</b><br>Selecciona una terapia, extra o bono para empezar. El flujo recomendado es: cliente → terapia → extras → pago → imprimir.</div>`;
+    }
+
     cart.forEach(line => {
       const lineTotal = Number(line.unit || 0) * Number(line.qty || 1);
 
@@ -1326,9 +1574,9 @@
         <div class="itemName">${escapeHtml(line.name)}</div>
         <div class="itemMeta">${escapeHtml(line.type.toUpperCase())} • ${money(line.unit)} x ${line.qty}</div>
         <div class="qtyCtrls">
-          <button class="qtyBtn" data-act="minus">-</button>
-          <button class="qtyBtn" data-act="plus">+</button>
-          <button class="removeBtn">Eliminar</button>
+          <button type="button" class="qtyBtn" data-act="minus">-</button>
+          <button type="button" class="qtyBtn" data-act="plus">+</button>
+          <button type="button" class="removeBtn">Eliminar</button>
         </div>
       `;
       const right = document.createElement("div");
@@ -1357,6 +1605,43 @@
   /* =========================
      TPV actions
   ========================= */
+
+  ui.btnQuickClient.addEventListener("click", async () => {
+    const name = await Dialog.prompt("Nombre del cliente para este ticket:", ui.clientName.value || "", "Cliente rápido");
+    if (!name) return;
+    ui.clientName.value = name;
+    log("Cliente asignado: " + name);
+  });
+
+  ui.btnDiscountPercent.addEventListener("click", async () => {
+    const { subtotal } = totals();
+    if (subtotal <= 0) { log("Añade primero una terapia o producto para calcular el descuento."); return; }
+    const val = await Dialog.prompt("Porcentaje de descuento (%):", "10", "Descuento porcentual");
+    if (val === null) return;
+    const pct = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(pct) || pct <= 0) { log("Porcentaje no válido."); return; }
+    const discount = -Math.abs(subtotal * pct / 100);
+    addLine({ type: "adjustment", refId: null, name: `Descuento ${pct}%`, unit: discount, qty: 1 });
+  });
+
+  ui.btnDeposit.addEventListener("click", async () => {
+    const val = await Dialog.prompt("Importe de señal/anticipo ya pagado (€):", "0", "Señal / anticipo");
+    if (val === null) return;
+    const amount = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(amount) || amount <= 0) { log("Importe no válido."); return; }
+    addLine({ type: "adjustment", refId: null, name: "Señal / anticipo", unit: -Math.abs(amount), qty: 1 });
+  });
+
+  ui.btnGiftCard.addEventListener("click", async () => {
+    const name = await Dialog.prompt("Nombre del bono regalo:", "Bono regalo Ensanbliss", "Bono regalo");
+    if (!name) return;
+    const val = await Dialog.prompt("Importe del bono regalo (€):", "50", "Importe del bono");
+    if (val === null) return;
+    const amount = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(amount) || amount <= 0) { log("Importe no válido."); return; }
+    addLine({ type: "custom", refId: null, name, unit: amount, qty: 1 });
+  });
+
   ui.btnAddAdj.addEventListener("click", () => {
     const name = (ui.adjName.value || "Ajuste").trim();
     const amt = Number(ui.adjAmount.value || 0);
@@ -1571,9 +1856,10 @@
       return;
     }
     ui.payTotal.textContent = money(total);
-    ui.paySummary.textContent = `Ticket • ${cart.length} ítem(s) • ${nowStr()}`;
+    ui.paySummary.textContent = `${cart.length} ítem(s)`;
+    ui.payClientSummary.textContent = (ui.clientName.value || "—").trim() || "—";
     ui.received.value = "";
-    ui.changeBox.textContent = "";
+    updateChangeBox();
     setPayMethod(selectedPayMethod);
     ui.payModal.classList.add("open");
   }
@@ -1586,21 +1872,85 @@
     selectedPayMethod = m;
     ui.methodBtns.forEach(b => b.classList.toggle("active", b.dataset.method === m));
     ui.paypalQR.classList.toggle("show", m === "paypal");
+    if (m !== "cash") {
+      const { total } = totals();
+      ui.received.value = Number(total || 0).toFixed(2);
+    } else if (!ui.received.value) {
+      ui.received.value = "";
+    }
+    updateChangeBox();
   }
 
   ui.methodBtns.forEach(btn => btn.addEventListener("click", () => setPayMethod(btn.dataset.method)));
   ui.payClose.addEventListener("click", closePayModal);
   ui.btnPay.addEventListener("click", openPayModal);
 
-  ui.received.addEventListener("input", () => {
-    const received = Number(ui.received.value || 0);
+  function parseCashInputValue(){
+    const raw = String(ui.received.value || "").replace(",", ".");
+    const n = Number(raw || 0);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function updateChangeBox(){
+    const received = parseCashInputValue();
     const { total } = totals();
+    ui.changeBox.classList.remove("ok", "bad");
     if (!received) {
-      ui.changeBox.textContent = "";
+      ui.changeBox.textContent = selectedPayMethod === "cash" ? "Introduce recibido" : "No hace falta efectivo";
       return;
     }
     const change = received - total;
-    ui.changeBox.textContent = change >= 0 ? `Cambio: ${money(change)}` : `Falta: ${money(Math.abs(change))}`;
+    if (change >= 0) {
+      ui.changeBox.textContent = `Cambio: ${money(change)}`;
+      ui.changeBox.classList.add("ok");
+    } else {
+      ui.changeBox.textContent = `Falta: ${money(Math.abs(change))}`;
+      ui.changeBox.classList.add("bad");
+    }
+  }
+
+  ui.received.addEventListener("input", updateChangeBox);
+
+  ui.cashQuickGrid.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button[data-cash]");
+    if (!btn) return;
+    const { total } = totals();
+    const val = btn.dataset.cash === "exact" ? total : Number(btn.dataset.cash || 0);
+    ui.received.value = Number(val || 0).toFixed(2);
+    updateChangeBox();
+  });
+
+  ui.cashKeypad.addEventListener("click", async (ev) => {
+    const btn = ev.target.closest("button[data-key]");
+    if (!btn) return;
+    const key = btn.dataset.key;
+
+    if (key === "confirm") {
+      ui.btnConfirmPay.click();
+      return;
+    }
+    if (key === "clear") {
+      ui.received.value = "";
+      updateChangeBox();
+      return;
+    }
+    if (key === "back") {
+      ui.received.value = String(ui.received.value || "").slice(0, -1);
+      updateChangeBox();
+      return;
+    }
+    if (key === ".") {
+      if (!ui.received.value.includes(".")) ui.received.value = (ui.received.value || "0") + ".";
+      updateChangeBox();
+      return;
+    }
+
+    const next = String(ui.received.value || "") + key;
+    const parts = next.split(".");
+    if (parts[1] && parts[1].length > 2) return;
+    if (Number(next) > 99999) return;
+    ui.received.value = next.replace(/^0+(?=\d)/, "");
+    updateChangeBox();
   });
 
   ui.btnConfirmHold.addEventListener("click", async () => {
@@ -1622,6 +1972,12 @@
       const { subtotal, total } = totals();
       if (!cart.length || total <= 0) {
         log("Nada que cobrar.");
+        return;
+      }
+
+      const received = parseCashInputValue();
+      if (selectedPayMethod === "cash" && received > 0 && received < total) {
+        log("El efectivo recibido es inferior al total.");
         return;
       }
 
@@ -1672,6 +2028,10 @@
       closePayModal();
 
       const paidId = currentSaleId;
+      const shouldPrint = !!ui.printAfterPay.checked;
+      if (shouldPrint) {
+        await printSaleReceipt(paidId);
+      }
       resetTPV();
       log(`Pago registrado. Venta ${paidId} guardada en "Ventas". TPV limpio.`);
 
@@ -1680,7 +2040,7 @@
     }
   });
 
-  ui.btnPrint.addEventListener("click", () => window.print());
+  ui.btnPrint.addEventListener("click", () => printCurrentTicket());
 
   /* =========================
      Sales view
@@ -1763,6 +2123,7 @@
       const btnOpenTPV = tr.querySelector("[data-open]");
       const btnReopen = tr.querySelector("[data-reopen]");
       const btnCancel = tr.querySelector("[data-cancel]");
+      const btnPrintSale = tr.querySelector("[data-print]");
       const btnHard = tr.querySelector("[data-hard]");
 
       if (btnView) btnView.addEventListener("click", async () => {
@@ -1777,6 +2138,9 @@
       if (btnCancel) btnCancel.addEventListener("click", async () => {
         await cancelSale(s);
       });
+      if (btnPrintSale) btnPrintSale.addEventListener("click", async () => {
+        await printSaleReceipt(s.id);
+      });
       if (btnHard) btnHard.addEventListener("click", async () => {
         await hardDeleteSale(s);
       });
@@ -1786,22 +2150,25 @@
   function renderSalesActions(s) {
     if (s.status === "draft") {
       return `
-        <button class="btnSmall" data-view="1">Ver ticket</button>
-        <button class="btnSmall ok" data-open="1">Cargar TPV</button>
-        <button class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+        <button type="button" class="btnSmall" data-view="1">Ver ticket</button>
+        <button type="button" class="btnSmall" data-print="1">Imprimir</button>
+        <button type="button" class="btnSmall ok" data-open="1">Cargar TPV</button>
+        <button type="button" class="btnSmall danger" data-hard="1">Borrado definitivo</button>
       `;
     }
     if (s.status === "paid") {
       return `
-        <button class="btnSmall" data-view="1">Ver ticket</button>
-        <button class="btnSmall ok" data-reopen="1">Pasar a espera</button>
-        <button class="btnSmall danger" data-cancel="1">Anular</button>
-        <button class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+        <button type="button" class="btnSmall" data-view="1">Ver ticket</button>
+        <button type="button" class="btnSmall" data-print="1">Imprimir</button>
+        <button type="button" class="btnSmall ok" data-reopen="1">Pasar a espera</button>
+        <button type="button" class="btnSmall danger" data-cancel="1">Anular</button>
+        <button type="button" class="btnSmall danger" data-hard="1">Borrado definitivo</button>
       `;
     }
     return `
-      <button class="btnSmall" data-view="1">Ver ticket</button>
-      <button class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+      <button type="button" class="btnSmall" data-view="1">Ver ticket</button>
+      <button type="button" class="btnSmall" data-print="1">Imprimir</button>
+      <button type="button" class="btnSmall danger" data-hard="1">Borrado definitivo</button>
     `;
   }
 
@@ -1886,6 +2253,157 @@
     await refreshSales();
   }
 
+
+  /* =========================
+     Ticket printing + daily cash summary
+  ========================= */
+  function receiptCss(){
+    return `
+      <style>
+        @page{size:80mm auto;margin:4mm;}
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;}
+        .receipt{width:72mm;margin:0 auto;font-size:12px;line-height:1.28;}
+        .center{text-align:center}.muted{color:#555}.mono{font-family:Consolas,monospace}
+        .logo{width:42px;height:42px;border-radius:10px;object-fit:cover;margin:0 auto 4px;display:block}
+        h1{font-size:20px;margin:2px 0 0;font-family:Georgia,serif;}
+        .sub{font-size:11px;margin:2px 0 8px;color:#444}
+        .rule{border-top:1px dashed #333;margin:8px 0}
+        .meta{font-size:11px;display:grid;gap:2px;margin:6px 0;}
+        .line{display:grid;grid-template-columns:1fr auto;gap:8px;padding:5px 0;border-bottom:1px dotted #bbb;}
+        .line:last-child{border-bottom:none}.name{font-weight:700}.desc{font-size:10px;color:#555;margin-top:2px}
+        .totals{margin-top:8px}.trow{display:flex;justify-content:space-between;margin:4px 0}.grand{font-size:16px;font-weight:800;border-top:1px dashed #333;padding-top:6px;margin-top:6px}
+        .footer{font-size:10px;color:#444;text-align:center;margin-top:10px}
+        .summary h2{font-size:15px;margin:8px 0;text-align:center}.summary .row{display:flex;justify-content:space-between;margin:5px 0}
+      </style>`;
+  }
+
+  function printHtml(html){
+    const frame = document.createElement("iframe");
+    frame.style.position = "fixed";
+    frame.style.right = "0";
+    frame.style.bottom = "0";
+    frame.style.width = "0";
+    frame.style.height = "0";
+    frame.style.border = "0";
+    document.body.appendChild(frame);
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(html);
+    doc.close();
+    frame.onload = () => {
+      setTimeout(() => {
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+        setTimeout(() => document.body.removeChild(frame), 800);
+      }, 150);
+    };
+  }
+
+  function buildReceiptHtml({ sale, items, title = "Ticket" }){
+    const lines = (items || []).map(it => {
+      const qty = Number(it.qty || 1);
+      const unit = Number(it.unit_price ?? it.unit ?? 0);
+      const lt = Number(it.line_total ?? (unit * qty));
+      return `<div class="line"><div><div class="name">${escapeHtml(it.name)}</div><div class="desc">${escapeHtml((it.item_type || it.type || "item").toUpperCase())} • ${money(unit)} x ${qty}</div></div><b>${money(lt)}</b></div>`;
+    }).join("");
+
+    const subtotal = Number(sale.subtotal ?? (items || []).reduce((a,it)=>a+Number(it.line_total ?? ((it.unit_price||it.unit||0)*(it.qty||1))),0));
+    const total = Number(sale.total ?? subtotal);
+    const adj = total - subtotal;
+    const id = sale.id ? String(sale.id) : "Borrador";
+    const date = sale.created_at ? new Date(sale.created_at).toLocaleString() : nowStr();
+
+    return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${receiptCss()}</head><body>
+      <div class="receipt">
+        <img class="logo" src="${BUSINESS.logo}" alt="${BUSINESS.name}">
+        <div class="center"><h1>${BUSINESS.name}</h1><div class="sub">${BUSINESS.subtitle}<br>${BUSINESS.web} · ${BUSINESS.email}</div></div>
+        <div class="rule"></div>
+        <div class="meta">
+          <div><b>Ticket:</b> <span class="mono">${escapeHtml(id)}</span></div>
+          <div><b>Fecha:</b> ${escapeHtml(date)}</div>
+          <div><b>Cliente:</b> ${escapeHtml(sale.client_name || "—")}</div>
+          <div><b>Método:</b> ${escapeHtml(sale.payment_method || "—")}</div>
+          ${sale.notes ? `<div><b>Notas:</b> ${escapeHtml(sale.notes)}</div>` : ""}
+        </div>
+        <div class="rule"></div>
+        ${lines || `<div class="center muted">Sin líneas.</div>`}
+        <div class="totals">
+          <div class="trow"><span>Subtotal</span><b>${money(subtotal)}</b></div>
+          <div class="trow"><span>Ajustes</span><b>${money(adj)}</b></div>
+          <div class="trow grand"><span>TOTAL</span><span>${money(total)}</span></div>
+        </div>
+        <div class="rule"></div>
+        <div class="footer">${BUSINESS.footer}<br>Conserve este ticket para cualquier consulta.</div>
+      </div>
+    </body></html>`;
+  }
+
+  function printCurrentTicket(){
+    const { subtotal, total } = totals();
+    if (!cart.length) { log("No hay líneas para imprimir."); return; }
+    const sale = {
+      id: currentSaleId || "Borrador",
+      created_at: new Date().toISOString(),
+      status: currentStatus,
+      payment_method: selectedPayMethod || "—",
+      subtotal,
+      total,
+      client_name: (ui.clientName.value || "").trim() || null,
+      notes: (ui.notes.value || "").trim() || null
+    };
+    const items = cart.map(x => ({...x, unit_price:x.unit, item_type:x.type, line_total:Number(x.unit||0)*Number(x.qty||1)}));
+    printHtml(buildReceiptHtml({ sale, items, title:"Ticket Ensanbliss" }));
+  }
+
+  async function printSaleReceipt(saleId){
+    try{
+      const { data: sale, error: saleErr } = await sb.from("sales")
+        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+        .eq("id", saleId).single();
+      if (saleErr) throw saleErr;
+      const { data: items, error: itemsErr } = await sb.from("sale_items")
+        .select("name, qty, unit_price, line_total, item_type")
+        .eq("sale_id", saleId);
+      if (itemsErr) throw itemsErr;
+      printHtml(buildReceiptHtml({ sale, items, title:"Ticket Ensanbliss" }));
+    }catch(e){
+      await Dialog.alert("No se pudo imprimir el ticket: " + (e?.message || e), "Error de impresión");
+    }
+  }
+
+  async function openTodaySummary(){
+    try{
+      const today = isoDate();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate()+1);
+      const tomorrowStr = tomorrow.toISOString().split("T")[0];
+      const { data, error } = await sb.from("sales")
+        .select("id, created_at, status, payment_method, total, client_name")
+        .gte("created_at", today + "T00:00:00")
+        .lt("created_at", tomorrowStr + "T00:00:00")
+        .order("created_at", { ascending:false });
+      if(error) throw error;
+      const rows = data || [];
+      const paid = rows.filter(x=>x.status === "paid");
+      const cancelled = rows.filter(x=>x.status === "cancelled");
+      const draft = rows.filter(x=>x.status === "draft");
+      const totalPaid = paid.reduce((a,x)=>a+Number(x.total||0),0);
+      const byMethod = paid.reduce((acc,x)=>{ const k=x.payment_method||"sin método"; acc[k]=(acc[k]||0)+Number(x.total||0); return acc; },{});
+      const methods = Object.entries(byMethod).map(([k,v])=>`${k}: ${money(v)}`).join("\n") || "Sin pagos";
+      const msg = `Resumen de caja de hoy (${today})\n\nPagadas: ${paid.length} · ${money(totalPaid)}\nEn espera: ${draft.length}\nAnuladas: ${cancelled.length}\n\nPor método:\n${methods}`;
+      const print = await Dialog.confirm(msg, "Resumen de caja", { confirmText:"Imprimir resumen", cancelText:"Cerrar" });
+      if(print){
+        const html = `<!doctype html><html><head><meta charset="utf-8"><title>Resumen caja</title>${receiptCss()}</head><body><div class="receipt summary"><img class="logo" src="${BUSINESS.logo}"><h2>Resumen caja Ensanbliss</h2><div class="center muted">${today}</div><div class="rule"></div><div class="row"><span>Pagadas</span><b>${paid.length}</b></div><div class="row"><span>Total cobrado</span><b>${money(totalPaid)}</b></div><div class="row"><span>En espera</span><b>${draft.length}</b></div><div class="row"><span>Anuladas</span><b>${cancelled.length}</b></div><div class="rule"></div>${Object.entries(byMethod).map(([k,v])=>`<div class="row"><span>${escapeHtml(k)}</span><b>${money(v)}</b></div>`).join("") || '<div class="center muted">Sin pagos por método.</div>'}<div class="rule"></div><div class="footer">${BUSINESS.web}</div></div></body></html>`;
+        printHtml(html);
+      }
+    }catch(e){
+      await Dialog.alert("No se pudo calcular el resumen de caja: " + (e?.message || e), "Error");
+    }
+  }
+
+  ui.btnTodaySummary.addEventListener("click", openTodaySummary);
+
   /* =========================
      Ticket modal
   ========================= */
@@ -1898,7 +2416,10 @@
   }
 
   ui.ticketClose.addEventListener("click", () => closeModal(ui.ticketModal));
-  ui.btnTicketPrint.addEventListener("click", () => window.print());
+  ui.btnTicketPrint.addEventListener("click", async () => {
+    if (modalSaleId) await printSaleReceipt(modalSaleId);
+    else printCurrentTicket();
+  });
 
   ui.btnTicketLoadTPV.addEventListener("click", async () => {
     if (!modalSaleId) return;

@@ -724,6 +724,33 @@
       height: 60px;
     }
 
+    .player-cover{
+      width: min(420px, 92%);
+      aspect-ratio: 16 / 10;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 18px 48px rgba(0,0,0,.45);
+      background: rgba(0,0,0,.25);
+      position: relative;
+    }
+
+    .player-cover::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.38), rgba(0,0,0,0) 58%);
+      pointer-events: none;
+    }
+
+    .player-cover img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.04) contrast(1.02);
+    }
+
     .player-now{
       text-align: center;
     }
@@ -1398,7 +1425,7 @@
     <div class="card" style="display:flex;flex-direction:column;">
       <div class="card-header">
         <p class="card-title">Meditación & Relax</p>
-        <div class="chip" id="musicStatus">20 pistas</div>
+        <div class="chip" id="musicStatus">20 pistas largas</div>
       </div>
       <div class="music-list" id="musicList"></div>
     </div>
@@ -1411,12 +1438,8 @@
 
       <div class="player-wrap">
         <div class="player-visual">
-          <div class="player-icon">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
-              <circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/>
-            </svg>
+          <div class="player-cover" aria-hidden="true">
+            <img src="assets/media/terapias.png" alt="Terapias Ensanbliss" />
           </div>
           <div class="player-now">
             <div class="title" id="playerTitle">Selecciona una pista</div>
@@ -1753,27 +1776,28 @@
   }
 
   // PLAYLIST CON URLs REALES DE ARCHIVE.ORG
+  // Pista 3 conservada tal cual. El resto se ha cambiado a música relajante larga (mínimo 1h).
   const musicPlaylist = [
-    { title: 'Meditación Zen Profunda', artist: 'Sonidos Naturaleza', duration: '1:02:15', url: 'https://archive.org/download/meditation-music/Buddhist%20Meditation%20Music%20for%20Positive%20Energy.mp3' },
-    { title: 'Jardín Japonés Relajante', artist: 'Zen Garden', duration: '27:35', url: 'https://archive.org/download/meditation-music/Japanese%20Garden%20Relaxing%20Music.mp3' },
+    { title: 'Cuencos Tibetanos y Ambiente Suave', artist: 'Sound Healing', duration: '1:57:40', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Zen%20Meditation%20Music%2C%20Soothing%20Music%2C%20Relaxing%20Music%20Meditation%2C%20Zen%2C%20Binaural%20Beats%2C%20%E2%98%AF3236.ogg' },
+    { title: 'Flauta y Piano Relajante', artist: 'Instrumental Peace', duration: '3:03:15', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/3%20HOURS%20The%20Best%20Relaxing%20Piano%20Flute%20Music%20Ever.mp3' },
     { title: 'Música de Meditación', artist: 'Relax Sounds', duration: '55:17', url: 'https://archive.org/download/meditation-music/Meditation%20Music.mp3' },
-    { title: 'Música Japonesa Relajante', artist: 'Asian Ambience', duration: '56:17', url: 'https://archive.org/download/meditation-music/Relaxing%20Japanese%20Music.mp3' },
-    { title: 'Samurai Relax', artist: 'Japanese Zen', duration: '56:14', url: 'https://archive.org/download/meditation-music/Samurai%20Relax%20Meditation%20Music.mp3' },
-    { title: 'Activación Chi 3 Horas', artist: 'Energy Flow', duration: '3:02:30', url: 'https://archive.org/download/meditation-music-for-focus/3%20Hours%20Chi%20Activation%20Music.mp3' },
-    { title: 'Música de Estudio Ambiente', artist: 'Focus Music', duration: '3:28:09', url: 'https://archive.org/download/meditation-music-for-focus/Ambient%20Study%20Music%20To%20Concentrate.mp3' },
-    { title: 'Estimulación Cerebral Profunda', artist: 'Brain Waves', duration: '1:05:39', url: 'https://archive.org/download/meditation-music-for-focus/Deep%20Brain%20Stimulation%20Music.mp3' },
-    { title: 'Binaural Brainwave Potente', artist: 'Frequency Healing', duration: '56:32', url: 'https://archive.org/download/meditation-music-for-focus/Extremely%20Powerful%20Brainwave%20Binaural.mp3' },
-    { title: 'Música para Concentración', artist: 'Study Focus', duration: '3:11:49', url: 'https://archive.org/download/meditation-music-for-focus/Focus%20Music%2C.mp3' },
-    { title: 'Mejora Concentración y Foco', artist: 'Mental Power', duration: '2:34:36', url: 'https://archive.org/download/meditation-music-for-focus/Improve%20Concentration%20and%20Focus%20Study.mp3' },
-    { title: 'Música para Trabajo', artist: 'Productive Vibes', duration: '1:42:46', url: 'https://archive.org/download/meditation-music-for-focus/Music%20for%20Work%20and%20Concentration.mp3' },
-    { title: 'Piano Relajante para Estudiar', artist: 'Calm Piano', duration: '3:02:08', url: 'https://archive.org/download/meditation-music-for-focus/Relaxing%20Piano%20Music%20for%20Studying%20Concentration.mp3' },
-    { title: 'Guitarra Relajante 3 Horas', artist: 'Guitar Meditation', duration: '3:01:54', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/3%20Hour%20Relaxing%20Guitar%20Music%20Meditation%20Music%2C%20Instrumental%20Music%2C%20Calming%20Music%2C%20Soft%20Music%2C%20%E2%98%AF2432.mp3' },
-    { title: 'Piano y Flauta Relajante', artist: 'Instrumental Peace', duration: '3:03:15', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/3%20HOURS%20The%20Best%20Relaxing%20Piano%20Flute%20Music%20Ever.mp3' },
-    { title: 'Música Celta Hermosa', artist: 'Celtic Harp', duration: '1:00:36', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Beautiful%20Celtic%20Music%20Celtic%20Harp%20Relaxing%2C%20Ambient%2C%20Instrumental.mp3' },
-    { title: 'Piano Violín Cello Romántico', artist: 'Orchestra Relax', duration: '3:02:12', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Beautiful%20Relaxing%20Music%20Romantic%20Music%2C%20Piano%20Music%2C%20Violin%20Music%2C%20Cello%20Music%20%E2%98%85115.mp3' },
-    { title: 'Arpa con Lluvia y Truenos', artist: 'Nature Sounds', duration: '3:01:52', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Relaxing%20Harp%20Music%20Rain%20%26%20Thunder%2C%20Sleep%20Music%2C%20Relaxing%20Music%2C%20Sleeping%20Music%2C%20Fall%20Asleep%20%E2%98%85120.mp3' },
-    { title: 'Piano Relajante para Dormir', artist: 'Sleep Music', duration: '3:04:10', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Relaxing%20Piano%20Music%20Relaxing%20Music%2C%20Romantic%20Music%2C%20Beautiful%20Music%2C%20Soothing%20Sleep%20Music%20%E2%98%85119.mp3' },
-    { title: 'Música Zen Profunda', artist: 'Binaural Zen', duration: '1:57:40', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Zen%20Meditation%20Music%2C%20Soothing%20Music%2C%20Relaxing%20Music%20Meditation%2C%20Zen%2C%20Binaural%20Beats%2C%20%E2%98%AF3236.ogg' }
+    { title: 'Mindfulness para Masaje', artist: 'Calm Spa', duration: '1:02:00', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Mindfulness%20Relaxing%20Music%20for%20Meditation.%20Calm%20Music%20for%20Stress%20Relief%2C%20Sleep%2C%20Massage.mp3' },
+    { title: 'Flauta Antiestrés Muy Suave', artist: 'Soft Flute', duration: '3:00:00', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Meditatie%20Relaxare%20Liniste%20~Muzica%20Antistres%20Flaut%20~Muzica%20pentru%20relaxarea%20mintii.mp3' },
+    { title: 'Guitarra Suave de Relajación', artist: 'Guitar Meditation', duration: '3:01:54', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/3%20Hour%20Relaxing%20Guitar%20Music%20Meditation%20Music%2C%20Instrumental%20Music%2C%20Calming%20Music%2C%20Soft%20Music%2C%20%E2%98%AF2432.mp3' },
+    { title: 'Melodías de Piano para Masaje', artist: 'Calm Piano', duration: '3:02:08', url: 'https://archive.org/download/meditation-music-for-focus/Relaxing%20Piano%20Music%20for%20Studying%20Concentration.mp3' },
+    { title: 'Piano, Violín y Cello Suave', artist: 'Orchestra Relax', duration: '3:02:12', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Beautiful%20Relaxing%20Music%20Romantic%20Music%2C%20Piano%20Music%2C%20Violin%20Music%2C%20Cello%20Music%20%E2%98%85115.mp3' },
+    { title: 'Piano y Flauta con Agua y Pájaros', artist: 'Nature Flute', duration: '3:00:00', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Muzica%20de%20relaxare%20Pian%20si%20Flaut%2C%20Background%20Apa%20si%20Pasari.mp3' },
+    { title: 'Piano Suave para Dormir', artist: 'Sleep Music', duration: '3:04:10', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Relaxing%20Piano%20Music%20Relaxing%20Music%2C%20Romantic%20Music%2C%20Beautiful%20Music%2C%20Soothing%20Sleep%20Music%20%E2%98%85119.mp3' },
+    { title: 'Arpa Healing para Meditación', artist: 'Pablo Arellano', duration: '1:59:00', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Healing%20And%20Relaxing%20Music%20For%20Meditation%20%28Harp%2009%29%20-%20Pablo%20Arellano.mp3' },
+    { title: 'Arpa Suave para Spa', artist: 'Harp Meditation', duration: '1:05:00', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Relaxing%20Harp%20Music%20Sleep%20Music%2C%20Stress%20Relief%2C%20Meditation%20Music%2C%20Spa%20Music%2C%20Background%20Music%20%E2%98%8553.mp3' },
+    { title: 'Piano Relajante Hermoso', artist: 'Beautiful Piano', duration: '3:00:00', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Relaxing%20Music%20Mix%20BEAUTIFUL%20PIANO.mp3' },
+    { title: 'Instrumental Peaceful Largo', artist: 'Peaceful Instrumental', duration: '4:00:00', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/4%20hours%20Peaceful%20%26%20Relaxing%20Instrumental%20Music-Long%20Playlist.mp3' },
+    { title: 'Música de Trabajo Calmado', artist: 'Productive Vibes', duration: '1:42:46', url: 'https://archive.org/download/meditation-music-for-focus/Music%20for%20Work%20and%20Concentration.mp3' },
+    { title: 'Foco Armónico Relajante', artist: 'Study Focus', duration: '3:11:49', url: 'https://archive.org/download/meditation-music-for-focus/Focus%20Music%2C.mp3' },
+    { title: 'Piano Meditativo Largo', artist: 'Calm Piano', duration: '3:02:08', url: 'https://archive.org/download/meditation-music-for-focus/Relaxing%20Piano%20Music%20for%20Studying%20Concentration.mp3' },
+    { title: 'Cuerdas y Piano de Spa', artist: 'Orchestra Relax', duration: '3:02:12', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Beautiful%20Relaxing%20Music%20Romantic%20Music%2C%20Piano%20Music%2C%20Violin%20Music%2C%20Cello%20Music%20%E2%98%85115.mp3' },
+    { title: 'Flauta Pan Armónica', artist: 'Zamfir Pan Flute', duration: '3:00:00', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Zamfir%20Greatest%20Hits%20Best%20Of%20Gheorghe%20Zamfir.mp3' },
+    { title: 'Meditación Zen Profunda', artist: 'Binaural Zen', duration: '1:57:40', url: 'https://archive.org/download/ZenMeditationMusicSoothingMusicRelaxingMusicMeditationZenBinauralBeats3236/Zen%20Meditation%20Music%2C%20Soothing%20Music%2C%20Relaxing%20Music%20Meditation%2C%20Zen%2C%20Binaural%20Beats%2C%20%E2%98%AF3236.ogg' }
   ];
 
   /***********************
@@ -2426,7 +2450,7 @@
     audioPlayer.src = track.url;
     $('#playerTitle').textContent = track.title;
     $('#playerArtist').textContent = track.artist;
-    $('#musicNowChip').textContent = `#${index + 1} / 20`;
+    $('#musicNowChip').textContent = `#${index + 1} / ${musicPlaylist.length}`;
 
     updateMusicListUI();
 
