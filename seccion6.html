@@ -207,6 +207,23 @@
     }
 
     .extrasGrid{display:grid;grid-template-columns: repeat(2, 1fr);gap:10px;}
+    .supplementsGrid{display:grid;grid-template-columns: repeat(3, 1fr);gap:10px;}
+    .supplementCard{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:11px;
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      cursor:pointer;
+      transition:.18s ease;
+      min-height:92px;
+    }
+    .supplementCard:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.38);background:rgba(212,175,55,.08)}
+    .supplementCard b{font-size:12px;color:rgba(244,228,193,.95)}
+    .supplementCard span{font-size:11px;color:rgba(244,228,193,.60);line-height:1.25}
+    .supplementCard strong{font-size:12px;color:var(--gold)}
     .extraLine{
       border:1px solid rgba(212,175,55,.18);
       background:rgba(0,0,0,.22);
@@ -717,6 +734,9 @@
     body.tpv-tablet-mode .btnCard .price{font-size:12px;}
     body.tpv-tablet-mode .btnCard .meta{display:none;}
     body.tpv-tablet-mode .extrasGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
+    body.tpv-tablet-mode .supplementsGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
+    body.tpv-tablet-mode .supplementCard{min-height:72px;padding:8px;border-radius:12px;gap:5px;}
+    body.tpv-tablet-mode .supplementCard span{display:none;}
     body.tpv-tablet-mode .extraLine{padding:7px;border-radius:12px;display:grid;grid-template-columns:1fr;gap:6px;}
     body.tpv-tablet-mode .extraLine .left span{display:none;}
     body.tpv-tablet-mode .extraLine .right{gap:5px;}
@@ -772,6 +792,7 @@
       body.tpv-tablet-mode .gridTPV{grid-template-columns:1fr .72fr;}
       body.tpv-tablet-mode .btnGrid{grid-template-columns:repeat(4,1fr);}
       body.tpv-tablet-mode .extrasGrid{grid-template-columns:repeat(2,1fr);}
+      body.tpv-tablet-mode .supplementsGrid{grid-template-columns:repeat(2,1fr);}
       .payRegisterBody{grid-template-columns:1fr 1fr;}
     }
     @media (max-width: 900px){
@@ -878,10 +899,10 @@
         <div class="btnGrid" id="therapyGrid"></div>
 
         <div class="sectionTitle" style="margin-top:18px;">
-          <h3>Extras (importe editable)</h3>
-          <div class="hint">Define el precio y pulsa "Añadir"</div>
+          <h3>Suplementos</h3>
+          <div class="hint">Incluye suplementos de Supabase y transporte con importe manual</div>
         </div>
-        <div class="extrasGrid" id="extrasGrid"></div>
+        <div class="supplementsGrid" id="supplementsGrid"></div>
 
         <div class="sectionTitle" style="margin-top:18px;">
           <h3>Descuento / Incremento</h3>
@@ -1013,6 +1034,7 @@
           <button type="button" class="methodBtn" data-method="card">Tarjeta <span>✓</span></button>
           <button type="button" class="methodBtn" data-method="bizum">Bizum <span>✓</span></button>
           <button type="button" class="methodBtn" data-method="paypal">PayPal <span>QR</span></button>
+          <button type="button" class="methodBtn" data-method="groupon">Groupon <span>0€</span></button>
         </div>
 
         <div class="qrBox" id="paypalQR">
@@ -1197,6 +1219,22 @@
   // Initialize on load
   Dialog.init();
 
+  async function promptAmount(message, defaultValue = "", title = "Importe") {
+    const previousType = Dialog.input.getAttribute("type") || "text";
+    const previousInputMode = Dialog.input.getAttribute("inputmode") || "";
+    Dialog.input.setAttribute("type", "number");
+    Dialog.input.setAttribute("inputmode", "decimal");
+    Dialog.input.setAttribute("step", "0.01");
+    const value = await Dialog.prompt(message, defaultValue, title);
+    Dialog.input.setAttribute("type", previousType);
+    if (previousInputMode) Dialog.input.setAttribute("inputmode", previousInputMode);
+    else Dialog.input.removeAttribute("inputmode");
+    Dialog.input.removeAttribute("step");
+    if (value === null || value === false) return null;
+    const parsed = Number(String(value).replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
   /* =========================
      SAFETY: botones sin descarga ni submit accidental
      Evita que cualquier botón normal actúe como submit/enlace en tablets o WebViews.
@@ -1232,7 +1270,7 @@
     try {
       const { data: apt, error } = await sb
         .from("appointments")
-        .select("id, client_id, client_name, therapy_type, final_price, status, sale_id, date, time")
+        .select("id, client_id, client_name, therapy_type, final_price, status, sale_id, date, time, duration, supplements_selected")
         .eq("id", appointmentId)
         .single();
       if (error) throw error;
@@ -1264,12 +1302,41 @@
       }
       if (!price) price = 0;
 
+      const selectedSupplements = Array.isArray(apt.supplements_selected) ? apt.supplements_selected : [];
+      let therapyBasePrice = price;
+
       if (therapyTitle) {
-        cart.push({ id: "apt-therapy", type: "therapy", refId: null, name: therapyTitle, unit: price, qty: 1 });
+        const th = therapies.find(x => (x.title || "").trim().toLowerCase() === therapyTitle.toLowerCase());
+        if (th?.price != null) therapyBasePrice = Number(th.price || 0);
+        cart.push({
+          id: crypto.randomUUID(),
+          type: "therapy",
+          refId: th?.id || null,
+          name: therapyTitle,
+          unit: therapyBasePrice,
+          qty: 1,
+          meta: apt.duration ? `${apt.duration} min` : "Cita cargada"
+        });
+      }
+
+      selectedSupplements.forEach(s => addSupplementLine({
+        id: s.supplement_id || s.id || null,
+        therapy_id: s.therapy_id || null,
+        name: s.name || "Suplemento",
+        price: Number(s.price || 0),
+        description: s.description || ""
+      }, "appointment"));
+
+      const currentTicketTotal = cart.reduce((acc, x) => acc + Number(x.unit || 0) * Number(x.qty || 1), 0);
+      if (apt.final_price != null && Number.isFinite(Number(apt.final_price))) {
+        const diff = Number(apt.final_price) - currentTicketTotal;
+        if (Math.abs(diff) >= 0.01) {
+          cart.push({ id: crypto.randomUUID(), type: "adjustment", refId: null, name: "Ajuste precio cita", unit: diff, qty: 1, meta: "Cuadra con final_price de la reserva" });
+        }
       }
 
       renderTicket();
-      log(`Cita cargada en TPV: ${therapyTitle || "sin terapia"}.`);
+      log(`Cita cargada en TPV: ${therapyTitle || "sin terapia"}${selectedSupplements.length ? ` + ${selectedSupplements.length} suplemento(s)` : ""}.`);
     } catch (err) {
       console.error(err);
       log(`No se pudo cargar la cita: ${err.message || err}`);
@@ -1300,6 +1367,7 @@
     clientName: document.getElementById("clientName"),
     notes: document.getElementById("notes"),
     therapyGrid: document.getElementById("therapyGrid"),
+    supplementsGrid: document.getElementById("supplementsGrid"),
     extrasGrid: document.getElementById("extrasGrid"),
     adjName: document.getElementById("adjName"),
     adjAmount: document.getElementById("adjAmount"),
@@ -1392,10 +1460,101 @@
     ui.debugBox.textContent = msg;
   }
 
+  function getTherapyTitleById(id) {
+    const th = therapies.find(t => String(t.id) === String(id));
+    return th?.title || "Suplemento general";
+  }
+
+  function normalizeSupplement(raw) {
+    return {
+      id: raw.id,
+      therapy_id: raw.therapy_id || null,
+      name: raw.name || raw.title || "Suplemento",
+      price: Number(raw.price || raw.amount || 0),
+      description: raw.description || "",
+      sort_order: Number(raw.sort_order || 0)
+    };
+  }
+
+  function supplementDedupKey(sup) {
+    const cleanName = String(sup?.name || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ");
+    return `${cleanName}|${Number(sup?.price || 0).toFixed(2)}`;
+  }
+
+  function uniqueSupplementsByNameAndPrice(list) {
+    const map = new Map();
+
+    (list || []).forEach(sup => {
+      const key = supplementDedupKey(sup);
+      if (!map.has(key)) {
+        map.set(key, {
+          ...sup,
+          therapy_ids: sup.therapy_id ? [sup.therapy_id] : [],
+          duplicate_count: 1
+        });
+        return;
+      }
+
+      const existing = map.get(key);
+      existing.duplicate_count += 1;
+      if (sup.therapy_id && !existing.therapy_ids.some(id => String(id) === String(sup.therapy_id))) {
+        existing.therapy_ids.push(sup.therapy_id);
+      }
+      if (!existing.description && sup.description) existing.description = sup.description;
+      if (Number(sup.sort_order || 0) < Number(existing.sort_order || 0)) existing.sort_order = Number(sup.sort_order || 0);
+    });
+
+    return Array.from(map.values()).sort((a, b) => {
+      const orderDiff = Number(a.sort_order || 0) - Number(b.sort_order || 0);
+      if (orderDiff) return orderDiff;
+      return String(a.name || "").localeCompare(String(b.name || ""), "es", { sensitivity: "base" });
+    });
+  }
+
+  function supplementMetaText(sup) {
+    if (Array.isArray(sup.therapy_ids) && sup.therapy_ids.length > 1) {
+      return `Disponible para ${sup.therapy_ids.length} terapias`;
+    }
+    if (Array.isArray(sup.therapy_ids) && sup.therapy_ids.length === 1) {
+      return getTherapyTitleById(sup.therapy_ids[0]);
+    }
+    return getTherapyTitleById(sup.therapy_id);
+  }
+
+  function addSupplementLine(sup, source = "manual") {
+    addLine({
+      type: "supplement",
+      refId: sup.id || null,
+      name: `Suplemento: ${sup.name}`,
+      unit: Number(sup.price || 0),
+      qty: 1,
+      meta: source === "appointment" ? "Suplemento incluido en la cita" : supplementMetaText(sup)
+    });
+  }
+
+  function paymentLabel(method) {
+    const labels = { cash: "Efectivo", card: "Tarjeta", bizum: "Bizum", paypal: "PayPal", groupon: "Groupon" };
+    return labels[method] || method || "—";
+  }
+
+  function totalsForPayment(method = selectedPayMethod) {
+    const base = totals();
+    if (method === "groupon") {
+      return { subtotal: 0, adj: 0, total: 0, originalSubtotal: base.subtotal, originalAdj: base.adj, originalTotal: base.total };
+    }
+    return { ...base, originalSubtotal: base.subtotal, originalAdj: base.adj, originalTotal: base.total };
+  }
+
   /* =========================
      State
   ========================= */
   let therapies = [];
+  let supplements = [];
   let extras = [
     { key: "transport", title: "Transporte", desc: "Desplazamiento", price: 0 },
     { key: "materials", title: "Materiales", desc: "Consumibles/desechables", price: 0 },
@@ -1476,41 +1635,72 @@
         refId: t.id,
         name: t.title,
         unit: Number(t.price || 0),
-        qty: 1
+        qty: 1,
+        meta: t.supplements_enabled ? "Tiene suplementos disponibles" : (t.duration || "")
       }));
       ui.therapyGrid.appendChild(btn);
     });
   }
 
-  function renderExtras() {
-    ui.extrasGrid.innerHTML = "";
-    extras.forEach(ex => {
-      const row = document.createElement("div");
-      row.className = "extraLine";
-      row.innerHTML = `
-        <div class="left">
-          <b>${escapeHtml(ex.title)}</b>
-          <span>${escapeHtml(ex.desc)}</span>
-        </div>
-        <div class="right">
-          <input class="mini" type="number" step="0.01" value="${Number(ex.price || 0).toFixed(2)}" />
-          <button type="button" class="pillBtn">Añadir</button>
-        </div>
+  function renderSupplements() {
+    ui.supplementsGrid.innerHTML = "";
+
+    const transportCard = document.createElement("button");
+    transportCard.type = "button";
+    transportCard.className = "supplementCard";
+    transportCard.innerHTML = `
+      <b>Transporte</b>
+      <span>Importe manual</span>
+      <strong>Precio libre</strong>
+    `;
+    transportCard.addEventListener("click", addTransportLine);
+    ui.supplementsGrid.appendChild(transportCard);
+
+    const visibleSupplements = uniqueSupplementsByNameAndPrice(supplements);
+
+    if (!visibleSupplements.length) {
+      const empty = document.createElement("div");
+      empty.className = "ticket-empty";
+      empty.style.gridColumn = "1 / -1";
+      empty.innerHTML = `<b>Sin suplementos de Supabase</b><br>Solo está disponible Transporte con importe manual.`;
+      ui.supplementsGrid.appendChild(empty);
+      return;
+    }
+
+    visibleSupplements.forEach(sup => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "supplementCard";
+      const meta = sup.description || supplementMetaText(sup);
+      card.innerHTML = `
+        <b>${escapeHtml(sup.name)}</b>
+        <span>${escapeHtml(meta)}</span>
+        <strong>${money(sup.price)}</strong>
       `;
-      const inp = row.querySelector("input");
-      const addBtn = row.querySelector("button");
-      inp.addEventListener("input", () => ex.price = Number(inp.value || 0));
-      addBtn.addEventListener("click", () => {
-        const price = Number(inp.value || 0);
-        addLine({
-          type: "extra",
-          refId: ex.key,
-          name: ex.title,
-          unit: price,
-          qty: 1
-        });
-      });
-      ui.extrasGrid.appendChild(row);
+      card.addEventListener("click", () => addSupplementLine(sup));
+      ui.supplementsGrid.appendChild(card);
+    });
+  }
+
+  function renderExtras() {
+    // Bloque eliminado: los extras fijos ya no se muestran.
+    // Transporte vive ahora dentro de Suplementos y abre teclado numérico.
+    if (ui.extrasGrid) ui.extrasGrid.innerHTML = "";
+  }
+
+  async function addTransportLine() {
+    const price = await promptAmount("Introduce el importe del transporte (€)", "0.00", "Transporte");
+    if (price === null) return;
+    if (price < 0) {
+      await Dialog.alert("El transporte no puede tener importe negativo.", "Importe no válido");
+      return;
+    }
+    addLine({
+      type: "supplement",
+      refId: "transport",
+      name: "Transporte",
+      unit: price,
+      qty: 1
     });
   }
 
@@ -1572,7 +1762,7 @@
       const left = document.createElement("div");
       left.innerHTML = `
         <div class="itemName">${escapeHtml(line.name)}</div>
-        <div class="itemMeta">${escapeHtml(line.type.toUpperCase())} • ${money(line.unit)} x ${line.qty}</div>
+        <div class="itemMeta">${escapeHtml(line.type.toUpperCase())} • ${money(line.unit)} x ${line.qty}${line.meta ? ` • ${escapeHtml(line.meta)}` : ""}</div>
         <div class="qtyCtrls">
           <button type="button" class="qtyBtn" data-act="minus">-</button>
           <button type="button" class="qtyBtn" data-act="plus">+</button>
@@ -1718,12 +1908,12 @@
       const lt = Number(line.unit || 0) * Number(line.qty || 1);
       let itemType = line.type;
       if (line.type === "adjustment") itemType = "custom";
-      if (line.type !== "therapy" && line.type !== "extra") itemType = "custom";
+      if (!["therapy", "extra", "supplement"].includes(line.type)) itemType = "custom";
 
       return {
         sale_id: saleId,
         item_type: itemType,
-        item_ref_id: null,
+        item_ref_id: line.refId || null,
         name: line.name,
         qty: line.qty,
         unit_price: line.unit,
@@ -1824,7 +2014,7 @@
 
     cart = (items || []).map(it => ({
       id: crypto.randomUUID(),
-      type: (it.item_type === "therapy" ? "therapy" : it.item_type === "extra" ? "extra" : "custom"),
+      type: (it.item_type === "therapy" ? "therapy" : it.item_type === "extra" ? "extra" : it.item_type === "supplement" ? "supplement" : "custom"),
       refId: null,
       name: it.name,
       qty: Number(it.qty || 1),
@@ -1850,11 +2040,16 @@
      Payment modal
   ========================= */
   function openPayModal() {
-    const { total } = totals();
-    if (!cart.length || total <= 0) {
+    const baseTotals = totals();
+    if (!cart.length) {
+      log("No hay ítems en el ticket.");
+      return;
+    }
+    if (baseTotals.total <= 0 && selectedPayMethod !== "groupon") {
       log("No hay nada que cobrar.");
       return;
     }
+    const { total } = totalsForPayment(selectedPayMethod);
     ui.payTotal.textContent = money(total);
     ui.paySummary.textContent = `${cart.length} ítem(s)`;
     ui.payClientSummary.textContent = (ui.clientName.value || "—").trim() || "—";
@@ -1872,8 +2067,16 @@
     selectedPayMethod = m;
     ui.methodBtns.forEach(b => b.classList.toggle("active", b.dataset.method === m));
     ui.paypalQR.classList.toggle("show", m === "paypal");
+    const { total, originalTotal } = totalsForPayment(m);
+    ui.payTotal.textContent = money(total);
+    if (m === "groupon") {
+      ui.received.value = "0.00";
+      ui.changeBox.textContent = `Groupon registrado: ${money(originalTotal)} no se cobra en caja`;
+      ui.changeBox.classList.remove("bad");
+      ui.changeBox.classList.add("ok");
+      return;
+    }
     if (m !== "cash") {
-      const { total } = totals();
       ui.received.value = Number(total || 0).toFixed(2);
     } else if (!ui.received.value) {
       ui.received.value = "";
@@ -1893,8 +2096,13 @@
 
   function updateChangeBox(){
     const received = parseCashInputValue();
-    const { total } = totals();
+    const { total, originalTotal } = totalsForPayment(selectedPayMethod);
     ui.changeBox.classList.remove("ok", "bad");
+    if (selectedPayMethod === "groupon") {
+      ui.changeBox.textContent = `Groupon registrado: ${money(originalTotal)} no se cobra en caja`;
+      ui.changeBox.classList.add("ok");
+      return;
+    }
     if (!received) {
       ui.changeBox.textContent = selectedPayMethod === "cash" ? "Introduce recibido" : "No hace falta efectivo";
       return;
@@ -1914,7 +2122,7 @@
   ui.cashQuickGrid.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button[data-cash]");
     if (!btn) return;
-    const { total } = totals();
+    const { total } = totalsForPayment(selectedPayMethod);
     const val = btn.dataset.cash === "exact" ? total : Number(btn.dataset.cash || 0);
     ui.received.value = Number(val || 0).toFixed(2);
     updateChangeBox();
@@ -1969,13 +2177,18 @@
   ========================= */
   ui.btnConfirmPay.addEventListener("click", async () => {
     try {
-      const { subtotal, total } = totals();
-      if (!cart.length || total <= 0) {
+      const payTotals = totalsForPayment(selectedPayMethod);
+      const { subtotal, total, originalTotal } = payTotals;
+      if (!cart.length) {
+        log("Nada que cobrar.");
+        return;
+      }
+      if (total <= 0 && selectedPayMethod !== "groupon") {
         log("Nada que cobrar.");
         return;
       }
 
-      const received = parseCashInputValue();
+      const received = selectedPayMethod === "groupon" ? 0 : parseCashInputValue();
       if (selectedPayMethod === "cash" && received > 0 && received < total) {
         log("El efectivo recibido es inferior al total.");
         return;
@@ -1985,7 +2198,10 @@
       await upsertSale("pending_payment");
 
       const client_name = (ui.clientName.value || "").trim() || null;
-      const notes = (ui.notes.value || "").trim() || null;
+      const notesRaw = (ui.notes.value || "").trim();
+      const notes = selectedPayMethod === "groupon"
+        ? [notesRaw, `Pago Groupon registrado. Valor original del ticket: ${money(originalTotal || 0)}. Total caja: €0.00. Abonado en caja: €0.00.`].filter(Boolean).join(" | ")
+        : (notesRaw || null);
 
       const { error: upErr } = await sb.from("sales")
         .update({
@@ -2002,13 +2218,15 @@
         .eq("id", currentSaleId);
       if (upErr) throw upErr;
 
-      const txDesc = `TPV (${selectedPayMethod}) • Sale ${currentSaleId} • ${cart.map(x => x.name).slice(0, 3).join(" + ")}${cart.length > 3 ? " +" : ""}`;
+      const txDesc = selectedPayMethod === "groupon"
+        ? `TPV (Groupon) • Sale ${currentSaleId} • valor original ${money(originalTotal)} • cobro caja €0.00`
+        : `TPV (${paymentLabel(selectedPayMethod)}) • Sale ${currentSaleId} • ${cart.map(x => x.name).slice(0, 3).join(" + ")}${cart.length > 3 ? " +" : ""}`;
 
       const txRow = {
         sale_id: currentSaleId,
         appointment_id: linkedAppointmentId,
         type: "income",
-        amount: total,
+        amount: selectedPayMethod === "groupon" ? 0 : total,
         description: txDesc,
         date: isoDate()
       };
@@ -2496,10 +2714,10 @@
      Catalog load
   ========================= */
   async function loadCatalog() {
-    log("Cargando terapias...");
+    log("Cargando terapias y suplementos...");
     const { data, error } = await sb
       .from("therapies")
-      .select("id,title,price,duration,image_url")
+      .select("id,title,price,duration,image_url,supplements_enabled")
       .order("title", { ascending: true });
 
     if (error) throw error;
@@ -2509,9 +2727,23 @@
       price: Number(t.price || 0)
     }));
 
+    try {
+      const { data: supData, error: supErr } = await sb
+        .from("supplements")
+        .select("id,therapy_id,name,price,description,sort_order")
+        .order("sort_order", { ascending: true });
+      if (supErr) throw supErr;
+      supplements = (supData || []).map(normalizeSupplement);
+    } catch (supErr) {
+      supplements = [];
+      log("Terapias cargadas, pero no se pudieron cargar suplementos: " + (supErr?.message || supErr));
+    }
+
     renderTherapies();
+    renderSupplements();
     renderExtras();
-    log("Catálogo listo.");
+    const uniqueCount = uniqueSupplementsByNameAndPrice(supplements).length;
+    log(`Catálogo listo: ${therapies.length} terapia(s), ${uniqueCount} suplemento(s) visible(s) de ${supplements.length} registro(s).`);
   }
 
   ui.btnReload.addEventListener("click", async () => {
