@@ -1664,12 +1664,152 @@
     return labels[method] || method || "—";
   }
 
+  /* =========================
+     Groupon: pago en caja 0€ + beneficio contable real
+     Reglas:
+     - Terapias Groupon estándar con PVP 60€ => beneficio Ensanbliss 26,52€
+     - Terapias Afrodita / Apolo con PVP 70€ => beneficio Ensanbliss 34,10€
+     - El cliente no paga en caja: received = 0 y método = Groupon
+     - La venta/factura/contabilidad se guardan por el beneficio neto real.
+  ========================= */
+  const GROUPON_RULES = {
+    standardPvp: 60,
+    standardBenefit: 26.52,
+    apoloAfroditaPvp: 70,
+    apoloAfroditaBenefit: 34.10
+  };
+
+  function normalizeForMatch(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function isApoloAfroditaLine(line) {
+    const name = normalizeForMatch(line?.name);
+    return name.includes("apolo") || name.includes("afrodita");
+  }
+
+  function grouponBenefitForLine(line) {
+    if (!line || line.type !== "therapy") return 0;
+    const qty = Number(line.qty || 1);
+    const unit = Number(line.unit || 0);
+
+    if (isApoloAfroditaLine(line)) {
+      return GROUPON_RULES.apoloAfroditaBenefit * qty;
+    }
+
+    if (Math.abs(unit - GROUPON_RULES.standardPvp) < 0.01 || unit >= 59) {
+      return GROUPON_RULES.standardBenefit * qty;
+    }
+
+    // Si se marca Groupon sobre una terapia sin precio reconocido, se aplica la regla estándar.
+    return GROUPON_RULES.standardBenefit * qty;
+  }
+
+  function grouponTotalsFromCart() {
+    const original = totals();
+    const benefit = cart.reduce((acc, line) => acc + grouponBenefitForLine(line), 0);
+    const nonTherapyTotal = cart
+      .filter(line => line.type !== "therapy")
+      .reduce((acc, line) => acc + Number(line.unit || 0) * Number(line.qty || 1), 0);
+    const accountingTotal = Math.max(0, benefit + nonTherapyTotal);
+    return {
+      cashSubtotal: 0,
+      cashTotal: 0,
+      accountingSubtotal: accountingTotal,
+      accountingTotal,
+      benefit,
+      originalSubtotal: original.subtotal,
+      originalAdj: original.adj,
+      originalTotal: original.total
+    };
+  }
+
+  function buildGrouponSaleItems(saleId) {
+    const items = [];
+
+    cart.forEach(line => {
+      const qty = Number(line.qty || 1);
+      const originalLineTotal = Number(line.unit || 0) * qty;
+
+      if (line.type === "therapy") {
+        const benefit = grouponBenefitForLine(line);
+        const pvpGroupon = isApoloAfroditaLine(line)
+          ? GROUPON_RULES.apoloAfroditaPvp
+          : GROUPON_RULES.standardPvp;
+
+        items.push({
+          sale_id: saleId,
+          item_type: "therapy",
+          item_ref_id: line.refId || null,
+          name: `${line.name} — Groupon: pagado por el cliente en Groupon, cobro en caja 0€`,
+          qty,
+          unit_price: 0,
+          line_total: 0
+        });
+
+        items.push({
+          sale_id: saleId,
+          item_type: "custom",
+          item_ref_id: null,
+          name: `Beneficio neto Groupon ${line.name} — PVP ${money(pvpGroupon)} / liquidación Ensanbliss`,
+          qty: 1,
+          unit_price: benefit,
+          line_total: benefit
+        });
+        return;
+      }
+
+      // Si hay suplementos/ajustes no Groupon, se mantienen como líneas normales.
+      let itemType = line.type;
+      if (line.type === "adjustment") itemType = "custom";
+      if (!["therapy", "extra", "supplement"].includes(line.type)) itemType = "custom";
+
+      items.push({
+        sale_id: saleId,
+        item_type: itemType,
+        item_ref_id: line.refId || null,
+        name: line.name,
+        qty,
+        unit_price: Number(line.unit || 0),
+        line_total: originalLineTotal
+      });
+    });
+
+    return items;
+  }
+
+  async function replaceSaleItemsForGroupon(saleId) {
+    const items = buildGrouponSaleItems(saleId);
+    const { error: delErr } = await sb.from("sale_items").delete().eq("sale_id", saleId);
+    if (delErr) throw delErr;
+    if (items.length) {
+      const { error: insErr } = await sb.from("sale_items").insert(items);
+      if (insErr) throw insErr;
+    }
+  }
+
   function totalsForPayment(method = selectedPayMethod) {
     const base = totals();
     if (method === "groupon") {
-      return { subtotal: 0, adj: 0, total: 0, originalSubtotal: base.subtotal, originalAdj: base.adj, originalTotal: base.total };
+      const groupon = grouponTotalsFromCart();
+      return {
+        subtotal: groupon.accountingSubtotal,
+        adj: 0,
+        total: groupon.accountingTotal,
+        cashSubtotal: groupon.cashSubtotal,
+        cashTotal: groupon.cashTotal,
+        grouponBenefit: groupon.benefit,
+        originalSubtotal: groupon.originalSubtotal,
+        originalAdj: groupon.originalAdj,
+        originalTotal: groupon.originalTotal
+      };
     }
-    return { ...base, originalSubtotal: base.subtotal, originalAdj: base.adj, originalTotal: base.total };
+    return { ...base, cashSubtotal: base.subtotal, cashTotal: base.total, grouponBenefit: 0, originalSubtotal: base.subtotal, originalAdj: base.adj, originalTotal: base.total };
   }
 
   /* =========================
@@ -2217,8 +2357,8 @@
       log("No hay nada que cobrar.");
       return;
     }
-    const { total } = totalsForPayment(selectedPayMethod);
-    ui.payTotal.textContent = money(total);
+    const { total, cashTotal } = totalsForPayment(selectedPayMethod);
+    ui.payTotal.textContent = money(selectedPayMethod === "groupon" ? cashTotal : total);
     ui.paySummary.textContent = `${cart.length} ítem(s)`;
     ui.payClientSummary.textContent = (ui.clientName.value || "—").trim() || "—";
     ui.received.value = "";
@@ -2235,11 +2375,11 @@
     selectedPayMethod = m;
     ui.methodBtns.forEach(b => b.classList.toggle("active", b.dataset.method === m));
     ui.paypalQR.classList.toggle("show", m === "paypal");
-    const { total, originalTotal } = totalsForPayment(m);
-    ui.payTotal.textContent = money(total);
+    const { total, originalTotal, cashTotal } = totalsForPayment(m);
+    ui.payTotal.textContent = money(m === "groupon" ? cashTotal : total);
     if (m === "groupon") {
       ui.received.value = "0.00";
-      ui.changeBox.textContent = `Groupon registrado: ${money(originalTotal)} no se cobra en caja`;
+      ui.changeBox.textContent = `Groupon: caja ${money(0)} · beneficio contable ${money(total)} · PVP original ${money(originalTotal)}`;
       ui.changeBox.classList.remove("bad");
       ui.changeBox.classList.add("ok");
       return;
@@ -2267,7 +2407,7 @@
     const { total, originalTotal } = totalsForPayment(selectedPayMethod);
     ui.changeBox.classList.remove("ok", "bad");
     if (selectedPayMethod === "groupon") {
-      ui.changeBox.textContent = `Groupon registrado: ${money(originalTotal)} no se cobra en caja`;
+      ui.changeBox.textContent = `Groupon: caja ${money(0)} · beneficio contable ${money(total)} · PVP original ${money(originalTotal)}`;
       ui.changeBox.classList.add("ok");
       return;
     }
@@ -2290,8 +2430,8 @@
   ui.cashQuickGrid.addEventListener("click", (ev) => {
     const btn = ev.target.closest("button[data-cash]");
     if (!btn) return;
-    const { total } = totalsForPayment(selectedPayMethod);
-    const val = btn.dataset.cash === "exact" ? total : Number(btn.dataset.cash || 0);
+    const { total, cashTotal } = totalsForPayment(selectedPayMethod);
+    const val = btn.dataset.cash === "exact" ? (selectedPayMethod === "groupon" ? cashTotal : total) : Number(btn.dataset.cash || 0);
     ui.received.value = Number(val || 0).toFixed(2);
     updateChangeBox();
   });
@@ -2346,7 +2486,7 @@
   ui.btnConfirmPay.addEventListener("click", async () => {
     try {
       const payTotals = totalsForPayment(selectedPayMethod);
-      const { subtotal, total, originalTotal } = payTotals;
+      const { subtotal, total, originalTotal, cashTotal, grouponBenefit } = payTotals;
       if (!cart.length) {
         log("Nada que cobrar.");
         return;
@@ -2368,7 +2508,10 @@
       const client_name = (ui.clientName.value || "").trim() || null;
       const notesRaw = (ui.notes.value || "").trim();
       const notes = selectedPayMethod === "groupon"
-        ? [notesRaw, `Pago Groupon registrado. Valor original del ticket: ${money(originalTotal || 0)}. Total caja: €0.00. Abonado en caja: €0.00.`].filter(Boolean).join(" | ")
+        ? [
+            notesRaw,
+            `Pago realizado a través de Groupon. Cobro en caja: €0.00. PVP original: ${money(originalTotal || 0)}. Beneficio neto Ensanbliss para facturación/contabilidad: ${money(grouponBenefit || total || 0)}.`
+          ].filter(Boolean).join(" | ")
         : (notesRaw || null);
 
       const { error: upErr } = await sb.from("sales")
@@ -2386,15 +2529,19 @@
         .eq("id", currentSaleId);
       if (upErr) throw upErr;
 
+      if (selectedPayMethod === "groupon") {
+        await replaceSaleItemsForGroupon(currentSaleId);
+      }
+
       const txDesc = selectedPayMethod === "groupon"
-        ? `TPV (Groupon) • Sale ${currentSaleId} • valor original ${money(originalTotal)} • cobro caja €0.00`
+        ? `TPV (Groupon) • Sale ${currentSaleId} • PVP original ${money(originalTotal)} • cobro caja €0.00 • beneficio neto ${money(grouponBenefit || total || 0)}`
         : `TPV (${paymentLabel(selectedPayMethod)}) • Sale ${currentSaleId} • ${cart.map(x => x.name).slice(0, 3).join(" + ")}${cart.length > 3 ? " +" : ""}`;
 
       const txRow = {
         sale_id: currentSaleId,
         appointment_id: linkedAppointmentId,
         type: "income",
-        amount: selectedPayMethod === "groupon" ? 0 : total,
+        amount: selectedPayMethod === "groupon" ? Number(grouponBenefit || total || 0) : total,
         description: txDesc,
         date: isoDate()
       };
