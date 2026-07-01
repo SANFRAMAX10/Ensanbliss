@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -189,6 +190,26 @@
     .btnCard .name{font-weight:900;font-size:12px;color:rgba(244,228,193,.95)}
     .btnCard .price{font-weight:900;font-size:12px;color:var(--gold)}
     .btnCard .meta{font-size:11px;color:rgba(244,228,193,.55)}
+    .btnCard.customTherapyCard{
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      border-color:rgba(212,175,55,.34);
+      background:linear-gradient(180deg, rgba(212,175,55,.12), rgba(0,0,0,.24));
+    }
+    .customTherapyIcon{
+      width:42px;
+      height:42px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      color:#18120e;
+      background:linear-gradient(180deg, var(--gold), #f1d889);
+      box-shadow:0 10px 24px rgba(212,175,55,.20);
+      font-size:18px;
+      margin-bottom:2px;
+    }
+    .btnCard.customTherapyCard .price{color:rgba(244,228,193,.82)}
 
     .btnCard .thumb{
       width:100%;
@@ -375,6 +396,24 @@
       outline:none;
       width:360px;
       font-weight:800;
+    }
+    .dateFilter{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      outline:none;
+      width:150px;
+      font-weight:900;
+      color-scheme:dark;
+    }
+    .dateFilterLabel{
+      color:rgba(244,228,193,.70);
+      font-size:11px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.25px;
+      margin-left:4px;
     }
     .rowFlex{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .spacer{flex:1}
@@ -733,6 +772,8 @@
     body.tpv-tablet-mode .btnCard .name{font-size:11px;line-height:1.12;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     body.tpv-tablet-mode .btnCard .price{font-size:12px;}
     body.tpv-tablet-mode .btnCard .meta{display:none;}
+    body.tpv-tablet-mode .customTherapyIcon{width:32px;height:32px;border-radius:12px;font-size:14px;margin:0;}
+    body.tpv-tablet-mode .btnCard.customTherapyCard{min-height:82px;}
     body.tpv-tablet-mode .extrasGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
     body.tpv-tablet-mode .supplementsGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
     body.tpv-tablet-mode .supplementCard{min-height:72px;padding:8px;border-radius:12px;gap:5px;}
@@ -844,6 +885,7 @@
   <div class="tabs">
     <button type="button" class="tabBtn active" id="tabTPV">TPV</button>
     <button type="button" class="tabBtn" id="tabSales">Ventas</button>
+    <button type="button" class="tabBtn" id="tabInvoices">Facturas</button>
   </div>
 
   <div class="actionsTop">
@@ -953,8 +995,10 @@
           <div id="ticketLines"></div>
 
           <div class="totals">
-            <div class="line"><span>Subtotal</span><b id="subTotal">€0.00</b></div>
+            <div class="line"><span>Subtotal líneas</span><b id="subTotal">€0.00</b></div>
             <div class="line"><span>Ajustes</span><b id="adjTotal">€0.00</b></div>
+            <div class="line"><span>Base imponible</span><b id="taxBaseTotal">€0.00</b></div>
+            <div class="line"><span>IVA 21% incluido</span><b id="taxVatTotal">€0.00</b></div>
             <div class="line grand"><span>TOTAL</span><span id="grandTotal">€0.00</span></div>
           </div>
 
@@ -962,7 +1006,8 @@
             <button type="button" class="btn danger" id="btnClear">Vaciar</button>
             <button type="button" class="btn" id="btnHold">Dejar en espera</button>
             <button type="button" class="btn primary" id="btnPay">Pagar</button>
-            <button type="button" class="btn" id="btnPrint">Imprimir ticket</button>
+            <button type="button" class="btn" id="btnPrint">Ticket</button>
+            <button type="button" class="btn" id="btnInvoice">Factura</button>
           </div>
 
           <div class="note" style="margin-top:10px;" id="debugBox">Listo.</div>
@@ -985,6 +1030,11 @@
           </div>
           <div class="spacer"></div>
           <input class="search" id="salesSearch" placeholder="Buscar por cliente / notas / id..." />
+          <span class="dateFilterLabel">Desde</span>
+          <input class="dateFilter" id="salesDateFrom" type="date" />
+          <span class="dateFilterLabel">Hasta</span>
+          <input class="dateFilter" id="salesDateTo" type="date" />
+          <button type="button" class="pillBtn" id="btnSalesClearDates">Limpiar fechas</button>
           <span class="pill gray" id="salesCount">0</span>
           <button type="button" class="pillBtn" id="btnSalesRefresh">Actualizar</button>
         </div>
@@ -1007,6 +1057,49 @@
 
         <div class="note" style="margin-top:10px;">
           Puedes ver el ticket de cualquier venta haciendo clic en la fila o usando "Ver ticket".
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- VIEW: INVOICES -->
+<div class="view" id="viewInvoices">
+  <div class="salesWrap">
+    <section class="panel" style="height:100%;">
+      <div class="panel-header">
+        <div class="rowFlex" style="width:100%;">
+          <div class="rowFlex">
+            <span class="proBadge">Facturas emitidas</span>
+          </div>
+          <div class="spacer"></div>
+          <input class="search" id="invoiceSearch" placeholder="Buscar por cliente / NIF / nº factura..." />
+          <span class="dateFilterLabel">Desde</span>
+          <input class="dateFilter" id="invoiceDateFrom" type="date" />
+          <span class="dateFilterLabel">Hasta</span>
+          <input class="dateFilter" id="invoiceDateTo" type="date" />
+          <button type="button" class="pillBtn" id="btnInvoiceClearDates">Limpiar fechas</button>
+          <span class="pill gray" id="invoiceCount">0</span>
+          <button type="button" class="pillBtn" id="btnInvoicesRefresh">Actualizar</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <table>
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>N.º factura</th>
+            <th>Cliente</th>
+            <th>NIF / DNI / NIE</th>
+            <th>Total</th>
+            <th>Tipo</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody id="invoiceRows"></tbody>
+        </table>
+        <div class="note" style="margin-top:10px;">
+          Las facturas emitidas quedan guardadas en Supabase. No se eliminan; si hay que corregir una, genera una factura de devolución.
         </div>
       </div>
     </section>
@@ -1105,7 +1198,8 @@
       <div class="tTotals" id="ticketViewTotals"></div>
     </div>
     <div class="modalFoot">
-      <button type="button" class="btn" id="btnTicketPrint">Imprimir</button>
+      <button type="button" class="btn" id="btnTicketPrint">Ticket</button>
+      <button type="button" class="btn primary" id="btnTicketInvoice">Factura</button>
     </div>
   </div>
 </div>
@@ -1349,8 +1443,10 @@
   const ui = {
     tabTPV: document.getElementById("tabTPV"),
     tabSales: document.getElementById("tabSales"),
+    tabInvoices: document.getElementById("tabInvoices"),
     viewTPV: document.getElementById("viewTPV"),
     viewSales: document.getElementById("viewSales"),
+    viewInvoices: document.getElementById("viewInvoices"),
 
     sbDot: document.getElementById("sbDot"),
     sbText: document.getElementById("sbText"),
@@ -1379,6 +1475,8 @@
     ticketLines: document.getElementById("ticketLines"),
     subTotal: document.getElementById("subTotal"),
     adjTotal: document.getElementById("adjTotal"),
+    taxBaseTotal: document.getElementById("taxBaseTotal"),
+    taxVatTotal: document.getElementById("taxVatTotal"),
     grandTotal: document.getElementById("grandTotal"),
     ticketMeta: document.getElementById("ticketMeta"),
     ticketItemsCount: document.getElementById("ticketItemsCount"),
@@ -1387,6 +1485,7 @@
     btnHold: document.getElementById("btnHold"),
     btnPay: document.getElementById("btnPay"),
     btnPrint: document.getElementById("btnPrint"),
+    btnInvoice: document.getElementById("btnInvoice"),
 
     payModal: document.getElementById("payModal"),
     payClose: document.getElementById("payClose"),
@@ -1407,9 +1506,20 @@
     salesPaid: document.getElementById("salesPaid"),
     salesCancelled: document.getElementById("salesCancelled"),
     salesSearch: document.getElementById("salesSearch"),
+    salesDateFrom: document.getElementById("salesDateFrom"),
+    salesDateTo: document.getElementById("salesDateTo"),
+    btnSalesClearDates: document.getElementById("btnSalesClearDates"),
     salesCount: document.getElementById("salesCount"),
     salesRows: document.getElementById("salesRows"),
     btnSalesRefresh: document.getElementById("btnSalesRefresh"),
+
+    invoiceSearch: document.getElementById("invoiceSearch"),
+    invoiceDateFrom: document.getElementById("invoiceDateFrom"),
+    invoiceDateTo: document.getElementById("invoiceDateTo"),
+    btnInvoiceClearDates: document.getElementById("btnInvoiceClearDates"),
+    invoiceCount: document.getElementById("invoiceCount"),
+    invoiceRows: document.getElementById("invoiceRows"),
+    btnInvoicesRefresh: document.getElementById("btnInvoicesRefresh"),
 
     ticketModal: document.getElementById("ticketModal"),
     ticketClose: document.getElementById("ticketClose"),
@@ -1420,6 +1530,7 @@
     btnTicketLoadTPV: document.getElementById("btnTicketLoadTPV"),
     btnTicketReopenDraft: document.getElementById("btnTicketReopenDraft"),
     btnTicketPrint: document.getElementById("btnTicketPrint"),
+    btnTicketInvoice: document.getElementById("btnTicketInvoice"),
   };
 
   /* =========================
@@ -1428,14 +1539,25 @@
   const BUSINESS = {
     name: "Ensanbliss",
     subtitle: "Body & Soul Care",
-    web: "ensanbliss.es",
+    web: "ensanblisss.es",
     email: "info@ensanbliss.es",
-    logo: "https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/refs/heads/main/Negro.png",
+    phone: "+34 607 496 297",
+    hours: "Todos los días de 09:00 a 21:00",
+    logo: "https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/refs/heads/main/Logo%20B%26W.png",
     footer: "Gracias por confiar en Ensanbliss. Tu bienestar, nuestra inspiración."
   };
 
+  const VAT_RATE = 0.21;
+
   function money(n) {
     return "€" + Number(n || 0).toFixed(2);
+  }
+
+  function taxBreakdown(total) {
+    const gross = Number(total || 0);
+    const base = gross / (1 + VAT_RATE);
+    const vat = gross - base;
+    return { base, vat, gross };
   }
 
   function nowStr() {
@@ -1571,6 +1693,7 @@
 
   let salesStatus = "draft";
   let salesAll = [];
+  let invoicesAll = [];
 
   let modalSaleId = null;
   let modalSaleStatus = null;
@@ -1580,16 +1703,24 @@
   ========================= */
   function showView(which) {
     const isTPV = which === "tpv";
+    const isSales = which === "sales";
+    const isInvoices = which === "invoices";
     ui.viewTPV.classList.toggle("active", isTPV);
-    ui.viewSales.classList.toggle("active", !isTPV);
+    ui.viewSales.classList.toggle("active", isSales);
+    ui.viewInvoices.classList.toggle("active", isInvoices);
     ui.tabTPV.classList.toggle("active", isTPV);
-    ui.tabSales.classList.toggle("active", !isTPV);
+    ui.tabSales.classList.toggle("active", isSales);
+    ui.tabInvoices.classList.toggle("active", isInvoices);
   }
 
   ui.tabTPV.addEventListener("click", () => showView("tpv"));
   ui.tabSales.addEventListener("click", async () => {
     showView("sales");
     await refreshSales();
+  });
+  ui.tabInvoices.addEventListener("click", async () => {
+    showView("invoices");
+    await refreshInvoices();
   });
 
   /* =========================
@@ -1613,6 +1744,18 @@
   ========================= */
   function renderTherapies() {
     ui.therapyGrid.innerHTML = "";
+
+    const customBtn = document.createElement("div");
+    customBtn.className = "btnCard customTherapyCard";
+    customBtn.innerHTML = `
+      <div class="customTherapyIcon"><i class="fa-solid fa-plus"></i></div>
+      <div class="name">Custom</div>
+      <div class="price">Precio manual</div>
+      <div class="meta">Academy, productos u otros conceptos</div>
+    `;
+    customBtn.addEventListener("click", addCustomTicketLine);
+    ui.therapyGrid.appendChild(customBtn);
+
     therapies.forEach(t => {
       const btn = document.createElement("div");
       btn.className = "btnCard";
@@ -1704,10 +1847,36 @@
     });
   }
 
+  async function addCustomTicketLine() {
+    const title = await Dialog.prompt("Título del concepto:", "Ensanbliss Academy", "Custom");
+    if (!title) return;
+
+    const description = await Dialog.prompt("Descripción para el ticket:", "", "Descripción");
+    if (description === false) return;
+
+    const val = await Dialog.prompt("Valor / precio (€):", "0", "Importe");
+    if (val === null) return;
+
+    const price = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(price) || price < 0) {
+      await Dialog.alert("El importe no es válido.", "Importe no válido");
+      return;
+    }
+
+    addLine({
+      type: "custom",
+      refId: null,
+      name: title.trim(),
+      unit: price,
+      qty: 1,
+      meta: (description || "").trim()
+    });
+  }
+
   /* =========================
      Ticket: cart ops
   ========================= */
-  function addLine({ type, refId, name, unit, qty }) {
+  function addLine({ type, refId, name, unit, qty, meta }) {
     cart.push({
       id: crypto.randomUUID(),
       type,
@@ -1715,6 +1884,7 @@
       name,
       unit: Number(unit || 0),
       qty: Math.max(1, parseInt(qty || 1, 10)),
+      meta: meta || "",
     });
     renderTicket();
   }
@@ -1784,8 +1954,11 @@
     });
 
     const t = totals();
+    const tax = taxBreakdown(t.total);
     ui.subTotal.textContent = money(t.subtotal);
     ui.adjTotal.textContent = money(t.adj);
+    ui.taxBaseTotal.textContent = money(tax.base);
+    ui.taxVatTotal.textContent = money(tax.vat);
     ui.grandTotal.textContent = money(t.total);
 
     ui.saleIdLabel.textContent = `Venta: ${currentSaleId ? currentSaleId : "Sin guardar"}`;
@@ -1843,14 +2016,7 @@
     ui.adjAmount.value = "0";
   });
 
-  ui.btnAddCustom.addEventListener("click", async () => {
-    const name = await Dialog.prompt("Nombre del ítem personalizado:", "Ítem personalizado", "Ítem personalizado");
-    if (!name) return;
-    const val = await Dialog.prompt("Precio unitario (€):", "0", "Precio del ítem");
-    if (val === null) return;
-    const price = Number(val || 0);
-    addLine({ type: "custom", refId: null, name, unit: price, qty: 1 });
-  });
+  ui.btnAddCustom.addEventListener("click", addCustomTicketLine);
 
   ui.btnClear.addEventListener("click", async () => {
     const confirmed = await Dialog.confirm("¿Vaciar el ticket actual?", "Vaciar ticket", { danger: true, confirmText: "Vaciar" });
@@ -1910,11 +2076,13 @@
       if (line.type === "adjustment") itemType = "custom";
       if (!["therapy", "extra", "supplement"].includes(line.type)) itemType = "custom";
 
+      const persistedName = (itemType === "custom" && line.meta) ? `${line.name} — ${line.meta}` : line.name;
+
       return {
         sale_id: saleId,
         item_type: itemType,
         item_ref_id: line.refId || null,
-        name: line.name,
+        name: persistedName,
         qty: line.qty,
         unit_price: line.unit,
         line_total: lt
@@ -2258,7 +2426,8 @@
     }
   });
 
-  ui.btnPrint.addEventListener("click", () => printCurrentTicket());
+  ui.btnPrint.addEventListener("click", () => printCurrentTicket("ticket"));
+  ui.btnInvoice.addEventListener("click", () => issueInvoiceFromCurrent());
 
   /* =========================
      Sales view
@@ -2284,14 +2453,39 @@
   });
   ui.btnSalesRefresh.addEventListener("click", refreshSales);
   ui.salesSearch.addEventListener("input", renderSales);
+  ui.salesDateFrom.addEventListener("change", refreshSales);
+  ui.salesDateTo.addEventListener("change", refreshSales);
+  ui.btnSalesClearDates.addEventListener("click", async () => {
+    ui.salesDateFrom.value = "";
+    ui.salesDateTo.value = "";
+    await refreshSales();
+  });
+
+  function dateStartISO(dateValue) {
+    if (!dateValue) return null;
+    return `${dateValue}T00:00:00`;
+  }
+
+  function dateEndISO(dateValue) {
+    if (!dateValue) return null;
+    return `${dateValue}T23:59:59.999`;
+  }
 
   async function refreshSales() {
     try {
-      const { data, error } = await sb.from("sales")
+      let query = sb.from("sales")
         .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
-        .eq("status", salesStatus)
+        .eq("status", salesStatus);
+
+      const from = dateStartISO(ui.salesDateFrom.value);
+      const to = dateEndISO(ui.salesDateTo.value);
+
+      if (from) query = query.gte("created_at", from);
+      if (to) query = query.lte("created_at", to);
+
+      const { data, error } = await query
         .order("created_at", { ascending: false })
-        .limit(300);
+        .limit(500);
 
       if (error) throw error;
       salesAll = data || [];
@@ -2308,7 +2502,8 @@
       return !q || blob.includes(q);
     });
 
-    ui.salesCount.textContent = filtered.length;
+    const dateInfo = [ui.salesDateFrom.value ? `desde ${ui.salesDateFrom.value}` : "", ui.salesDateTo.value ? `hasta ${ui.salesDateTo.value}` : ""].filter(Boolean).join(" · ");
+    ui.salesCount.textContent = dateInfo ? `${filtered.length} (${dateInfo})` : filtered.length;
     ui.salesRows.innerHTML = "";
 
     if (!filtered.length) {
@@ -2391,6 +2586,326 @@
   }
 
   /* =========================
+     Invoices view + Supabase invoice archive
+  ========================= */
+  const INVOICE_TABLE_SQL = `create table if not exists public.invoices (
+  id uuid primary key default gen_random_uuid(),
+  invoice_number text unique not null,
+  sale_id uuid null,
+  original_invoice_id uuid null references public.invoices(id),
+  issued_at timestamptz not null default now(),
+  status text not null default 'issued',
+  client_name text,
+  client_tax_id text,
+  client_address text,
+  payment_method text,
+  subtotal numeric default 0,
+  adjustments numeric default 0,
+  tax_base numeric default 0,
+  tax_vat numeric default 0,
+  total numeric default 0,
+  notes text,
+  invoice_data jsonb,
+  items jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists invoices_issued_at_idx on public.invoices(issued_at desc);
+create index if not exists invoices_sale_id_idx on public.invoices(sale_id);
+
+alter table public.invoices enable row level security;
+create policy if not exists "Allow anon full invoices" on public.invoices
+for all to anon using (true) with check (true);`;
+
+  function invoiceNumberFromSale(sale, prefix = "FAC") {
+    const cleanSaleId = sale?.id && String(sale.id) !== "Borrador" ? String(sale.id) : "";
+    const stamp = (sale?.created_at ? new Date(sale.created_at) : new Date())
+      .toISOString().replace(/[-:T.Z]/g, "").slice(0, 14);
+    return cleanSaleId ? `${prefix}-${cleanSaleId.slice(0, 8).toUpperCase()}` : `${prefix}-${stamp}`;
+  }
+
+  function invoiceTableMissingMessage(errorMessage = "") {
+    return `No se pudo guardar/leer la factura en Supabase.\n\n` +
+      `Comprueba que existe la tabla public.invoices. Ejecuta este SQL en Supabase SQL Editor:\n\n` +
+      INVOICE_TABLE_SQL +
+      (errorMessage ? `\n\nError técnico: ${errorMessage}` : "");
+  }
+
+  function normalizeInvoiceItems(items, sign = 1) {
+    return (items || []).map(it => {
+      const qty = Number(it.qty || 1);
+      const unit = Number(it.unit_price ?? it.unit ?? 0) * sign;
+      const lt = Number(it.line_total ?? (Number(it.unit_price ?? it.unit ?? 0) * qty)) * sign;
+      return {
+        name: it.name,
+        qty,
+        unit_price: unit,
+        line_total: lt,
+        item_type: it.item_type || it.type || "servicio"
+      };
+    });
+  }
+
+  function saleObjectFromInvoice(inv) {
+    return {
+      id: inv.sale_id || inv.invoice_number,
+      created_at: inv.issued_at || inv.created_at,
+      payment_method: inv.payment_method || "—",
+      subtotal: Number(inv.subtotal || 0),
+      total: Number(inv.total || 0),
+      client_name: inv.client_name || "—",
+      notes: inv.notes || null,
+      invoice_number: inv.invoice_number,
+      invoice_label: inv.status === "refund" ? "FACTURA DE DEVOLUCIÓN" : "FACTURA"
+    };
+  }
+
+  function invoiceDataFromRow(inv) {
+    const extra = inv.invoice_data || {};
+    return {
+      name: inv.client_name || extra.name || "",
+      taxId: inv.client_tax_id || extra.taxId || "",
+      address: inv.client_address || extra.address || ""
+    };
+  }
+
+  async function readSaleWithItems(saleId) {
+    const { data: sale, error: saleErr } = await sb.from("sales")
+      .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+      .eq("id", saleId).single();
+    if (saleErr) throw saleErr;
+
+    const { data: items, error: itemsErr } = await sb.from("sale_items")
+      .select("name, qty, unit_price, line_total, item_type")
+      .eq("sale_id", saleId);
+    if (itemsErr) throw itemsErr;
+    return { sale, items: items || [] };
+  }
+
+  async function findIssuedInvoiceBySale(saleId) {
+    const { data, error } = await sb.from("invoices")
+      .select("*")
+      .eq("sale_id", saleId)
+      .eq("status", "issued")
+      .order("issued_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    return data || null;
+  }
+
+  async function saveInvoiceRecord({ sale, items, invoiceData, status = "issued", originalInvoice = null, reason = "" }) {
+    const sign = status === "refund" ? -1 : 1;
+    const sourceItems = normalizeInvoiceItems(items, sign);
+    const rawSubtotal = Number(sale.subtotal ?? (items || []).reduce((a,it)=>a+Number(it.line_total ?? ((it.unit_price||it.unit||0)*(it.qty||1))),0));
+    const rawTotal = Number(sale.total ?? rawSubtotal);
+    const subtotal = rawSubtotal * sign;
+    const total = rawTotal * sign;
+    const adjustments = total - subtotal;
+    const tax = taxBreakdown(total);
+    const prefix = status === "refund" ? "DEV" : "FAC";
+    const invoiceNumber = status === "refund"
+      ? `${prefix}-${new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 14)}`
+      : invoiceNumberFromSale(sale, prefix);
+
+    const row = {
+      invoice_number: invoiceNumber,
+      sale_id: sale.id && String(sale.id) !== "Borrador" ? sale.id : null,
+      original_invoice_id: originalInvoice?.id || null,
+      issued_at: new Date().toISOString(),
+      status,
+      client_name: invoiceData?.name || sale.client_name || null,
+      client_tax_id: invoiceData?.taxId || null,
+      client_address: invoiceData?.address || null,
+      payment_method: sale.payment_method || null,
+      subtotal,
+      adjustments,
+      tax_base: tax.base,
+      tax_vat: tax.vat,
+      total,
+      notes: status === "refund" ? `Devolución de ${originalInvoice?.invoice_number || "factura"}${reason ? ` · ${reason}` : ""}` : (sale.notes || null),
+      invoice_data: invoiceData || {},
+      items: sourceItems
+    };
+
+    const { data, error } = await sb.from("invoices").insert([row]).select("*").single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function issueInvoiceForSale(saleId, invoiceData = null) {
+    try {
+      const existing = await findIssuedInvoiceBySale(saleId);
+      if (existing) {
+        const html = buildReceiptHtml({
+          sale: saleObjectFromInvoice(existing),
+          items: existing.items || [],
+          title: "Factura Ensanbliss",
+          mode: "invoice",
+          invoiceData: invoiceDataFromRow(existing)
+        });
+        printHtml(html);
+        log(`Factura recuperada: ${existing.invoice_number}`);
+        await refreshInvoicesIfVisible();
+        return existing;
+      }
+
+      const { sale, items } = await readSaleWithItems(saleId);
+      const data = invoiceData || await collectInvoiceData(sale.client_name || "");
+      if (!data) return null;
+
+      const inv = await saveInvoiceRecord({ sale, items, invoiceData: data, status: "issued" });
+      const html = buildReceiptHtml({
+        sale: saleObjectFromInvoice(inv),
+        items: inv.items || [],
+        title: "Factura Ensanbliss",
+        mode: "invoice",
+        invoiceData: invoiceDataFromRow(inv)
+      });
+      printHtml(html);
+      log(`Factura emitida y guardada: ${inv.invoice_number}`);
+      await refreshInvoicesIfVisible();
+      return inv;
+    } catch (e) {
+      await Dialog.alert(invoiceTableMissingMessage(e?.message || e), "Facturas Supabase");
+      return null;
+    }
+  }
+
+  async function issueInvoiceFromCurrent() {
+    try {
+      if (!cart.length) { log("No hay líneas para facturar."); return; }
+      const invoiceData = await collectInvoiceData((ui.clientName.value || "").trim());
+      if (!invoiceData) { log("Factura cancelada: faltan datos fiscales."); return; }
+      if (invoiceData.name) ui.clientName.value = invoiceData.name;
+
+      const saleId = currentSaleId || await upsertSale(currentStatus === "paid" ? "paid" : "draft");
+      if (!saleId) return;
+      await issueInvoiceForSale(saleId, invoiceData);
+    } catch (e) {
+      await Dialog.alert("No se pudo emitir la factura: " + (e?.message || e), "Error");
+    }
+  }
+
+  async function refreshInvoicesIfVisible() {
+    if (ui.viewInvoices?.classList.contains("active")) await refreshInvoices();
+  }
+
+  ui.btnInvoicesRefresh.addEventListener("click", refreshInvoices);
+  ui.invoiceSearch.addEventListener("input", renderInvoices);
+  ui.invoiceDateFrom.addEventListener("change", refreshInvoices);
+  ui.invoiceDateTo.addEventListener("change", refreshInvoices);
+  ui.btnInvoiceClearDates.addEventListener("click", async () => {
+    ui.invoiceDateFrom.value = "";
+    ui.invoiceDateTo.value = "";
+    await refreshInvoices();
+  });
+
+  async function refreshInvoices() {
+    try {
+      let query = sb.from("invoices")
+        .select("*");
+
+      const from = dateStartISO(ui.invoiceDateFrom.value);
+      const to = dateEndISO(ui.invoiceDateTo.value);
+      if (from) query = query.gte("issued_at", from);
+      if (to) query = query.lte("issued_at", to);
+
+      const { data, error } = await query
+        .order("issued_at", { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      invoicesAll = data || [];
+      renderInvoices();
+    } catch (e) {
+      ui.invoiceRows.innerHTML = `<tr><td colspan="7" style="color:rgba(244,228,193,.55);padding:18px;white-space:pre-wrap">${escapeHtml(invoiceTableMissingMessage(e?.message || e))}</td></tr>`;
+    }
+  }
+
+  function renderInvoices() {
+    const q = (ui.invoiceSearch.value || "").toLowerCase().trim();
+    const filtered = invoicesAll.filter(inv => {
+      const blob = `${inv.invoice_number || ""} ${inv.client_name || ""} ${inv.client_tax_id || ""} ${inv.sale_id || ""}`.toLowerCase();
+      return !q || blob.includes(q);
+    });
+
+    const dateInfo = [ui.invoiceDateFrom.value ? `desde ${ui.invoiceDateFrom.value}` : "", ui.invoiceDateTo.value ? `hasta ${ui.invoiceDateTo.value}` : ""].filter(Boolean).join(" · ");
+    ui.invoiceCount.textContent = dateInfo ? `${filtered.length} (${dateInfo})` : filtered.length;
+    ui.invoiceRows.innerHTML = "";
+
+    if (!filtered.length) {
+      ui.invoiceRows.innerHTML = `<tr><td colspan="7" style="color:rgba(244,228,193,.55);padding:18px">Sin facturas emitidas.</td></tr>`;
+      return;
+    }
+
+    filtered.forEach(inv => {
+      const tr = document.createElement("tr");
+      tr.className = "clickable";
+      const isRefund = inv.status === "refund";
+      tr.innerHTML = `
+        <td>${new Date(inv.issued_at || inv.created_at).toLocaleString()}</td>
+        <td class="mono">${escapeHtml(inv.invoice_number || "—")}</td>
+        <td>${escapeHtml(inv.client_name || "—")}</td>
+        <td class="mono">${escapeHtml(inv.client_tax_id || "—")}</td>
+        <td><b style="color:#d4af37">${money(inv.total)}</b></td>
+        <td><span class="pill ${isRefund ? "gray" : ""}">${isRefund ? "devolución" : "emitida"}</span></td>
+        <td>
+          <button type="button" class="btnSmall" data-print-invoice="1">Imprimir</button>
+          ${!isRefund ? `<button type="button" class="btnSmall danger" data-refund-invoice="1">Factura devolución</button>` : ""}
+        </td>
+      `;
+      tr.addEventListener("click", (ev) => {
+        if (ev.target.closest("button")) return;
+        printInvoiceRow(inv);
+      });
+      ui.invoiceRows.appendChild(tr);
+
+      const printBtn = tr.querySelector("[data-print-invoice]");
+      const refundBtn = tr.querySelector("[data-refund-invoice]");
+      if (printBtn) printBtn.addEventListener("click", () => printInvoiceRow(inv));
+      if (refundBtn) refundBtn.addEventListener("click", () => createRefundInvoice(inv));
+    });
+  }
+
+  function printInvoiceRow(inv) {
+    const html = buildReceiptHtml({
+      sale: saleObjectFromInvoice(inv),
+      items: inv.items || [],
+      title: inv.status === "refund" ? "Factura devolución Ensanbliss" : "Factura Ensanbliss",
+      mode: "invoice",
+      invoiceData: invoiceDataFromRow(inv)
+    });
+    printHtml(html);
+  }
+
+  async function createRefundInvoice(originalInvoice) {
+    const confirmed = await Dialog.confirm(
+      `Vas a generar una factura de devolución para ${originalInvoice.invoice_number}.\n\nLa factura original no se eliminará. Se creará una nueva factura negativa.`,
+      "Factura de devolución",
+      { danger: true, confirmText: "Generar devolución" }
+    );
+    if (!confirmed) return;
+
+    const reason = await Dialog.prompt("Motivo de la devolución (opcional):", "Devolución / corrección", "Factura devolución");
+    try {
+      const sale = saleObjectFromInvoice(originalInvoice);
+      const inv = await saveInvoiceRecord({
+        sale,
+        items: originalInvoice.items || [],
+        invoiceData: invoiceDataFromRow(originalInvoice),
+        status: "refund",
+        originalInvoice,
+        reason: reason || ""
+      });
+      printInvoiceRow(inv);
+      await refreshInvoices();
+      log(`Factura de devolución generada: ${inv.invoice_number}`);
+    } catch (e) {
+      await Dialog.alert(invoiceTableMissingMessage(e?.message || e), "Facturas Supabase");
+    }
+  }
+
+  /* =========================
      Reopen: paid -> draft
   ========================= */
   async function reopenSaleToDraft(saleId) {
@@ -2442,6 +2957,19 @@
      Hard delete
   ========================= */
   async function hardDeleteSale(sale) {
+    try {
+      const { data: linkedInvoices, error: invErr } = await sb.from("invoices")
+        .select("invoice_number")
+        .eq("sale_id", sale.id)
+        .limit(1);
+      if (!invErr && linkedInvoices && linkedInvoices.length) {
+        await Dialog.alert(`Esta venta tiene factura emitida (${linkedInvoices[0].invoice_number}). No se puede borrar la venta vinculada a una factura. Genera una factura de devolución si necesitas corregirla.`, "Factura emitida");
+        return;
+      }
+    } catch (_) {
+      // Si la tabla invoices no existe aún, se mantiene el comportamiento anterior.
+    }
+
     const confirmed1 = await Dialog.confirm(
       "Borrado definitivo elimina ticket (sales/sale_items). ¿Confirmas?",
       "Borrado definitivo",
@@ -2475,7 +3003,50 @@
   /* =========================
      Ticket printing + daily cash summary
   ========================= */
-  function receiptCss(){
+  function receiptCss(mode = "ticket"){
+    if (mode === "invoice") {
+      return `
+      <style>
+        @page{size:A4;margin:12mm;}
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;}
+        .invoiceA4{width:100%;max-width:190mm;margin:0 auto;font-size:11.5px;line-height:1.25;}
+        .invHeader{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:start;border-bottom:3px solid #111;padding-bottom:10px;margin-bottom:10px;}
+        .brandBlock{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:start;}
+        .invLogo{width:76px;max-width:100%;height:auto;object-fit:contain;display:block;margin:0;}
+        .companyName{font-size:23px;font-weight:900;margin:0 0 2px 0;letter-spacing:.2px;}
+        .companySub{font-size:11px;color:#333;margin-bottom:5px;}
+        .companyData{font-size:10px;color:#333;line-height:1.35;}
+        .invoiceTitleBox{text-align:right;}
+        .invoiceTitle{font-size:32px;font-weight:900;letter-spacing:1px;margin:0 0 8px;text-transform:uppercase;}
+        .invoiceMetaTable{width:100%;border-collapse:collapse;margin-left:auto;max-width:78mm;}
+        .invoiceMetaTable th{background:#111;color:#fff;font-size:10px;text-align:left;padding:6px 7px;text-transform:uppercase;white-space:nowrap;}
+        .invoiceMetaTable td{border:1px solid #bbb;padding:6px 7px;font-size:11px;text-align:left;}
+        .clientBox{border:1px solid #bbb;margin:10px 0 8px;display:grid;grid-template-columns:32mm 1fr;min-height:auto;}
+        .clientBox h3{margin:0;background:#111;color:#fff;padding:8px 9px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;}
+        .clientBody{padding:8px 10px;font-size:11.5px;line-height:1.35;display:grid;grid-template-columns:1.1fr .9fr 1.6fr;gap:8px;align-items:start;}
+        .clientBody .label{display:block;color:#666;font-size:9.5px;font-weight:900;text-transform:uppercase;margin-bottom:2px;}
+        .docInfoBar{border:1px solid #bbb;border-bottom:none;background:#f3f3f3;padding:6px 8px;font-size:10.5px;display:grid;grid-template-columns:1fr 1fr;gap:6px;color:#333;}
+        .docInfoBar b{color:#111;}
+        .docInfoBar .notes{grid-column:1 / -1;}
+        table.lines{width:100%;border-collapse:collapse;margin-top:0;}
+        table.lines th{background:#111;color:#fff;text-align:left;padding:7px 7px;font-size:11px;text-transform:uppercase;}
+        table.lines th.qty, table.lines th.price, table.lines th.amount{text-align:right;}
+        table.lines td{border-bottom:1px solid #d7d7d7;padding:7px 7px;vertical-align:top;font-size:11.5px;}
+        table.lines td.qty, table.lines td.price, table.lines td.amount{text-align:right;white-space:nowrap;}
+        .lineDesc{font-size:9.5px;color:#555;margin-top:2px;text-transform:uppercase;}
+        .invoiceBottom{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-top:12px;align-items:start;}
+        .obsBox{border:1px solid #bbb;min-height:24mm;padding:8px;font-size:10.5px;color:#333;}
+        .obsBox b{display:block;margin-bottom:5px;text-transform:uppercase;}
+        .totalsBox{border:1px solid #bbb;}
+        .totalsBox .trow{display:grid;grid-template-columns:1fr auto;gap:10px;padding:7px 9px;border-bottom:1px solid #ddd;font-size:11px;}
+        .totalsBox .trow:last-child{border-bottom:none;}
+        .totalsBox .grand{background:#111;color:#fff;font-size:15px;font-weight:900;}
+        .payBox{margin-top:8px;font-size:10.5px;color:#333;line-height:1.35;}
+        .legalNote{margin-top:10px;border-top:1px solid #bbb;padding-top:8px;font-size:9.5px;color:#555;line-height:1.35;text-align:center;}
+        .mono{font-family:Consolas,monospace}.muted{color:#666}.right{text-align:right}
+      </style>`;
+    }
     return `
       <style>
         @page{size:80mm auto;margin:4mm;}
@@ -2483,7 +3054,7 @@
         body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;}
         .receipt{width:72mm;margin:0 auto;font-size:12px;line-height:1.28;}
         .center{text-align:center}.muted{color:#555}.mono{font-family:Consolas,monospace}
-        .logo{width:42px;height:42px;border-radius:10px;object-fit:cover;margin:0 auto 4px;display:block}
+        .logo{width:180px;max-width:100%;height:auto;border-radius:0;object-fit:contain;margin:0 auto 8px;display:block}
         h1{font-size:20px;margin:2px 0 0;font-family:Georgia,serif;}
         .sub{font-size:11px;margin:2px 0 8px;color:#444}
         .rule{border-top:1px dashed #333;margin:8px 0}
@@ -2518,7 +3089,117 @@
     };
   }
 
-  function buildReceiptHtml({ sale, items, title = "Ticket" }){
+  function buildReceiptHtml({ sale, items, title = "Ticket", mode = "ticket", invoiceData = null }){
+    const subtotal = Number(sale.subtotal ?? (items || []).reduce((a,it)=>a+Number(it.line_total ?? ((it.unit_price||it.unit||0)*(it.qty||1))),0));
+    const total = Number(sale.total ?? subtotal);
+    const adj = total - subtotal;
+    const tax = taxBreakdown(total);
+    const id = sale.id ? String(sale.id) : "Borrador";
+    const date = sale.created_at ? new Date(sale.created_at).toLocaleString() : nowStr();
+    const isInvoice = mode === "invoice";
+    const cleanSaleId = sale.id && String(sale.id) !== "Borrador" ? String(sale.id) : "";
+    const invoiceStamp = (sale.created_at ? new Date(sale.created_at) : new Date())
+      .toISOString()
+      .replace(/[-:T.Z]/g, "")
+      .slice(0, 14);
+    const invoiceNumber = sale.invoice_number || (cleanSaleId ? `FAC-${cleanSaleId.slice(0, 8).toUpperCase()}` : `FAC-${invoiceStamp}`);
+    const inv = invoiceData || {};
+
+    if (isInvoice) {
+      const rows = (items || []).map((it, idx) => {
+        const qty = Number(it.qty || 1);
+        const unit = Number(it.unit_price ?? it.unit ?? 0);
+        const lt = Number(it.line_total ?? (unit * qty));
+        return `<tr>
+          <td>${idx + 1}</td>
+          <td><b>${escapeHtml(it.name)}</b><div class="lineDesc">${escapeHtml((it.item_type || it.type || "servicio").toUpperCase())}</div></td>
+          <td class="qty">${qty}</td>
+          <td class="price">${money(unit)}</td>
+          <td class="amount"><b>${money(lt)}</b></td>
+        </tr>`;
+      }).join("");
+
+      return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${receiptCss("invoice")}</head><body>
+        <div class="invoiceA4">
+          <div class="invHeader">
+            <div class="brandBlock">
+              <img class="invLogo" src="${BUSINESS.logo}" alt="${BUSINESS.name}">
+              <div>
+                <div class="companyName">${BUSINESS.name}</div>
+                <div class="companySub">${BUSINESS.subtitle}</div>
+                <div class="companyData">
+                  Web: ${BUSINESS.web}<br>
+                  Email: ${BUSINESS.email}<br>
+                  Tel: ${BUSINESS.phone}<br>
+                  Horario habitual: ${BUSINESS.hours}
+                </div>
+              </div>
+            </div>
+            <div class="invoiceTitleBox">
+              <div class="invoiceTitle">${escapeHtml(sale.invoice_label || "FACTURA")}</div>
+              <table class="invoiceMetaTable">
+                <tr><th>N.º factura</th><td class="mono">${escapeHtml(invoiceNumber)}</td></tr>
+                <tr><th>Fecha</th><td>${escapeHtml(date)}</td></tr>
+                <tr><th>Método</th><td>${escapeHtml(sale.payment_method || "—")}</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="clientBox">
+            <h3>Datos del cliente</h3>
+            <div class="clientBody">
+              <div><span class="label">Nombre fiscal</span><b>${escapeHtml(inv.name || sale.client_name || "—")}</b></div>
+              <div><span class="label">NIF / DNI / NIE</span><span class="mono"><b>${escapeHtml(inv.taxId || "—")}</b></span></div>
+              <div><span class="label">Dirección fiscal</span>${inv.address ? escapeHtml(inv.address) : "—"}</div>
+            </div>
+          </div>
+
+          <div class="docInfoBar">
+            <div>Venta: <b class="mono">${escapeHtml(id)}</b></div>
+            <div>Cliente TPV: <b>${escapeHtml(sale.client_name || inv.name || "—")}</b></div>
+            ${sale.notes ? `<div class="notes">Notas: <b>${escapeHtml(sale.notes)}</b></div>` : ""}
+          </div>
+          <table class="lines">
+            <thead>
+              <tr>
+                <th style="width:12mm;">#</th>
+                <th>Descripción</th>
+                <th class="qty" style="width:20mm;">Cant.</th>
+                <th class="price" style="width:28mm;">Precio</th>
+                <th class="amount" style="width:30mm;">Importe</th>
+              </tr>
+            </thead>
+            <tbody>${rows || `<tr><td colspan="5" class="muted">Sin líneas.</td></tr>`}</tbody>
+          </table>
+
+          <div class="invoiceBottom">
+            <div>
+              <div class="obsBox">
+                <b>Observaciones</b>
+                Importes con IVA incluido. Esta factura se genera desde el TPV Ensanbliss y corresponde a los servicios indicados.
+              </div>
+              <div class="payBox">
+                <b>Contacto:</b> ${BUSINESS.phone} · ${BUSINESS.email}<br>
+                <b>Web:</b> ${BUSINESS.web}
+              </div>
+            </div>
+            <div class="totalsBox">
+              <div class="trow"><span>Subtotal líneas</span><b>${money(subtotal)}</b></div>
+              <div class="trow"><span>Ajustes</span><b>${money(adj)}</b></div>
+              <div class="trow"><span>Base imponible</span><b>${money(tax.base)}</b></div>
+              <div class="trow"><span>IVA 21% incluido</span><b>${money(tax.vat)}</b></div>
+              <div class="trow grand"><span>TOTAL</span><span>${money(total)}</span></div>
+            </div>
+          </div>
+
+          <div class="legalNote">
+            ${BUSINESS.footer}<br>
+            Conserve esta factura para cualquier consulta.
+          </div>
+        </div>
+      </body></html>`;
+    }
+
     const lines = (items || []).map(it => {
       const qty = Number(it.qty || 1);
       const unit = Number(it.unit_price ?? it.unit ?? 0);
@@ -2526,16 +3207,10 @@
       return `<div class="line"><div><div class="name">${escapeHtml(it.name)}</div><div class="desc">${escapeHtml((it.item_type || it.type || "item").toUpperCase())} • ${money(unit)} x ${qty}</div></div><b>${money(lt)}</b></div>`;
     }).join("");
 
-    const subtotal = Number(sale.subtotal ?? (items || []).reduce((a,it)=>a+Number(it.line_total ?? ((it.unit_price||it.unit||0)*(it.qty||1))),0));
-    const total = Number(sale.total ?? subtotal);
-    const adj = total - subtotal;
-    const id = sale.id ? String(sale.id) : "Borrador";
-    const date = sale.created_at ? new Date(sale.created_at).toLocaleString() : nowStr();
-
-    return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${receiptCss()}</head><body>
+    return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${receiptCss("ticket")}</head><body>
       <div class="receipt">
         <img class="logo" src="${BUSINESS.logo}" alt="${BUSINESS.name}">
-        <div class="center"><h1>${BUSINESS.name}</h1><div class="sub">${BUSINESS.subtitle}<br>${BUSINESS.web} · ${BUSINESS.email}</div></div>
+        <div class="center"><h1>${BUSINESS.name}</h1><div class="sub">${BUSINESS.subtitle}<br>${BUSINESS.web} · ${BUSINESS.email}<br>${BUSINESS.phone}<br>Horario habitual: ${BUSINESS.hours}</div></div>
         <div class="rule"></div>
         <div class="meta">
           <div><b>Ticket:</b> <span class="mono">${escapeHtml(id)}</span></div>
@@ -2547,19 +3222,36 @@
         <div class="rule"></div>
         ${lines || `<div class="center muted">Sin líneas.</div>`}
         <div class="totals">
-          <div class="trow"><span>Subtotal</span><b>${money(subtotal)}</b></div>
+          <div class="trow"><span>Subtotal líneas</span><b>${money(subtotal)}</b></div>
           <div class="trow"><span>Ajustes</span><b>${money(adj)}</b></div>
+          <div class="trow"><span>Base imponible</span><b>${money(tax.base)}</b></div>
+          <div class="trow"><span>IVA 21% incluido</span><b>${money(tax.vat)}</b></div>
           <div class="trow grand"><span>TOTAL</span><span>${money(total)}</span></div>
         </div>
         <div class="rule"></div>
-        <div class="footer">${BUSINESS.footer}<br>Conserve este ticket para cualquier consulta.</div>
+        <div class="footer">Web: ${BUSINESS.web}<br>Tel: ${BUSINESS.phone}<br>Horario habitual: ${BUSINESS.hours}<br>${BUSINESS.footer}<br>Conserve este ticket para cualquier consulta.</div>
       </div>
     </body></html>`;
   }
 
-  function printCurrentTicket(){
+  async function collectInvoiceData(defaultName = "") {
+    const name = await Dialog.prompt("Nombre fiscal completo del cliente:", defaultName || "", "Modo factura");
+    if (!name) return null;
+
+    const taxId = await Dialog.prompt("NIF / DNI / NIE del cliente:", "", "Datos fiscales");
+    if (!taxId) return null;
+
+    const address = await Dialog.prompt("Dirección fiscal del cliente (opcional):", "", "Datos fiscales");
+    return { name: name.trim(), taxId: taxId.trim().toUpperCase(), address: address ? address.trim() : "" };
+  }
+
+  async function printCurrentTicket(mode = "ticket"){
     const { subtotal, total } = totals();
     if (!cart.length) { log("No hay líneas para imprimir."); return; }
+    const invoiceData = mode === "invoice" ? await collectInvoiceData((ui.clientName.value || "").trim()) : null;
+    if (mode === "invoice" && !invoiceData) { log("Factura cancelada: faltan datos fiscales."); return; }
+    if (invoiceData?.name) ui.clientName.value = invoiceData.name;
+
     const sale = {
       id: currentSaleId || "Borrador",
       created_at: new Date().toISOString(),
@@ -2571,10 +3263,10 @@
       notes: (ui.notes.value || "").trim() || null
     };
     const items = cart.map(x => ({...x, unit_price:x.unit, item_type:x.type, line_total:Number(x.unit||0)*Number(x.qty||1)}));
-    printHtml(buildReceiptHtml({ sale, items, title:"Ticket Ensanbliss" }));
+    printHtml(buildReceiptHtml({ sale, items, title: mode === "invoice" ? "Factura Ensanbliss" : "Ticket Ensanbliss", mode, invoiceData }));
   }
 
-  async function printSaleReceipt(saleId){
+  async function printSaleReceipt(saleId, mode = "ticket"){
     try{
       const { data: sale, error: saleErr } = await sb.from("sales")
         .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
@@ -2584,7 +3276,9 @@
         .select("name, qty, unit_price, line_total, item_type")
         .eq("sale_id", saleId);
       if (itemsErr) throw itemsErr;
-      printHtml(buildReceiptHtml({ sale, items, title:"Ticket Ensanbliss" }));
+      const invoiceData = mode === "invoice" ? await collectInvoiceData(sale.client_name || "") : null;
+      if (mode === "invoice" && !invoiceData) return;
+      printHtml(buildReceiptHtml({ sale, items, title: mode === "invoice" ? "Factura Ensanbliss" : "Ticket Ensanbliss", mode, invoiceData }));
     }catch(e){
       await Dialog.alert("No se pudo imprimir el ticket: " + (e?.message || e), "Error de impresión");
     }
@@ -2612,7 +3306,7 @@
       const msg = `Resumen de caja de hoy (${today})\n\nPagadas: ${paid.length} · ${money(totalPaid)}\nEn espera: ${draft.length}\nAnuladas: ${cancelled.length}\n\nPor método:\n${methods}`;
       const print = await Dialog.confirm(msg, "Resumen de caja", { confirmText:"Imprimir resumen", cancelText:"Cerrar" });
       if(print){
-        const html = `<!doctype html><html><head><meta charset="utf-8"><title>Resumen caja</title>${receiptCss()}</head><body><div class="receipt summary"><img class="logo" src="${BUSINESS.logo}"><h2>Resumen caja Ensanbliss</h2><div class="center muted">${today}</div><div class="rule"></div><div class="row"><span>Pagadas</span><b>${paid.length}</b></div><div class="row"><span>Total cobrado</span><b>${money(totalPaid)}</b></div><div class="row"><span>En espera</span><b>${draft.length}</b></div><div class="row"><span>Anuladas</span><b>${cancelled.length}</b></div><div class="rule"></div>${Object.entries(byMethod).map(([k,v])=>`<div class="row"><span>${escapeHtml(k)}</span><b>${money(v)}</b></div>`).join("") || '<div class="center muted">Sin pagos por método.</div>'}<div class="rule"></div><div class="footer">${BUSINESS.web}</div></div></body></html>`;
+        const html = `<!doctype html><html><head><meta charset="utf-8"><title>Resumen caja</title>${receiptCss()}</head><body><div class="receipt summary"><img class="logo" src="${BUSINESS.logo}"><h2>Resumen caja Ensanbliss</h2><div class="center muted">${today}</div><div class="rule"></div><div class="row"><span>Pagadas</span><b>${paid.length}</b></div><div class="row"><span>Total cobrado</span><b>${money(totalPaid)}</b></div><div class="row"><span>En espera</span><b>${draft.length}</b></div><div class="row"><span>Anuladas</span><b>${cancelled.length}</b></div><div class="rule"></div>${Object.entries(byMethod).map(([k,v])=>`<div class="row"><span>${escapeHtml(k)}</span><b>${money(v)}</b></div>`).join("") || '<div class="center muted">Sin pagos por método.</div>'}<div class="rule"></div><div class="footer">${BUSINESS.web}<br>${BUSINESS.phone}<br>Horario habitual: ${BUSINESS.hours}</div></div></body></html>`;
         printHtml(html);
       }
     }catch(e){
@@ -2635,8 +3329,13 @@
 
   ui.ticketClose.addEventListener("click", () => closeModal(ui.ticketModal));
   ui.btnTicketPrint.addEventListener("click", async () => {
-    if (modalSaleId) await printSaleReceipt(modalSaleId);
-    else printCurrentTicket();
+    if (modalSaleId) await printSaleReceipt(modalSaleId, "ticket");
+    else await printCurrentTicket("ticket");
+  });
+
+  ui.btnTicketInvoice.addEventListener("click", async () => {
+    if (modalSaleId) await issueInvoiceForSale(modalSaleId);
+    else await issueInvoiceFromCurrent();
   });
 
   ui.btnTicketLoadTPV.addEventListener("click", async () => {
@@ -2695,10 +3394,13 @@
       const sSubtotal = Number(sale.subtotal ?? computedSubtotal);
       const sTotal = Number(sale.total ?? sSubtotal);
       const sAdj = sTotal - sSubtotal;
+      const sTax = taxBreakdown(sTotal);
 
       ui.ticketViewTotals.innerHTML = `
-        <div class="line"><span>Subtotal</span><b>${money(sSubtotal)}</b></div>
+        <div class="line"><span>Subtotal líneas</span><b>${money(sSubtotal)}</b></div>
         <div class="line"><span>Ajustes</span><b>${money(sAdj)}</b></div>
+        <div class="line"><span>Base imponible</span><b>${money(sTax.base)}</b></div>
+        <div class="line"><span>IVA 21% incluido</span><b>${money(sTax.vat)}</b></div>
         <div class="grand"><span>TOTAL</span><span>${money(sTotal)}</span></div>
       `;
 
