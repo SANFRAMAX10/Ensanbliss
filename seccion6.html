@@ -842,6 +842,31 @@
       .payRegisterCard{max-height:98vh;overflow:auto;}
     }
 
+
+
+    /* ===== AGENDA SUPABASE: selector de citas para TPV ===== */
+    .agendaToolbar{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;
+    }
+    .agendaRows{
+      display:grid;grid-template-columns:1fr;gap:10px;max-height:62vh;overflow:auto;padding-right:4px;
+    }
+    .agendaCard{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:12px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+    .agendaCard:hover{border-color:rgba(212,175,55,.38);background:rgba(212,175,55,.07)}
+    .agendaCard b{display:block;color:rgba(244,228,193,.96);font-size:13px;margin-bottom:4px}
+    .agendaCard small{display:block;color:rgba(244,228,193,.60);font-size:11px;line-height:1.35}
+    .agendaCard .agendaPrice{font-weight:1000;color:var(--gold);font-size:14px;text-align:right;white-space:nowrap;margin-bottom:7px}
+    .agendaCard .agendaActions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
     @media (max-width: 1100px){
       .gridTPV{grid-template-columns:1fr}
       .brand{min-width:auto}
@@ -855,6 +880,7 @@
 </head>
 
 <body class="tpv-tablet-mode">
+<div style="position:fixed;right:10px;bottom:10px;z-index:999999;padding:7px 10px;border-radius:999px;background:#d4af37;color:#111;font:800 11px Inter,Arial;box-shadow:0 8px 24px rgba(0,0,0,.28);">TPV V6 LINE_TOTAL OK</div>
 <!-- CUSTOM DIALOG OVERLAY -->
 <div id="customDialog">
   <div class="dialog-box">
@@ -929,6 +955,7 @@
 
         <div class="assistBar">
           <button type="button" class="assistBtn" id="btnQuickClient"><b>Cliente rápido</b><span>Guardar nombre y preparar ticket</span></button>
+          <button type="button" class="assistBtn" id="btnAgendaPicker"><b>Agenda Supabase</b><span>Cargar cita con suplementos, duración y precio final</span></button>
           <button type="button" class="assistBtn" id="btnDiscountPercent"><b>Descuento %</b><span>Aplica porcentaje al ticket</span></button>
           <button type="button" class="assistBtn" id="btnDeposit"><b>Señal / anticipo</b><span>Resta un importe ya pagado</span></button>
           <button type="button" class="assistBtn" id="btnGiftCard"><b>Bono regalo</b><span>Añade concepto de regalo</span></button>
@@ -1103,6 +1130,33 @@
         </div>
       </div>
     </section>
+  </div>
+</div>
+
+
+<!-- MODAL: AGENDA SUPABASE -->
+<div class="modal" id="agendaModal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <b>Agenda Supabase</b>
+      <button type="button" class="closeX" id="agendaClose">Cerrar</button>
+    </div>
+    <div class="modalBodyFull">
+      <div class="agendaToolbar">
+        <span class="dateFilterLabel">Desde</span>
+        <input class="dateFilter" id="agendaDateFrom" type="date" />
+        <span class="dateFilterLabel">Hasta</span>
+        <input class="dateFilter" id="agendaDateTo" type="date" />
+        <input class="search" id="agendaSearch" placeholder="Buscar cliente, terapia, email, teléfono..." />
+        <button type="button" class="pillBtn" id="btnAgendaRefresh">Actualizar</button>
+        <button type="button" class="pillBtn" id="btnAgendaToday">Hoy</button>
+        <span class="pill gray" id="agendaCount">0 citas</span>
+      </div>
+      <div class="agendaRows" id="agendaRows"></div>
+      <div class="note" style="margin-top:10px;">
+        Al cargar una cita se trae la terapia, duración, suplementos seleccionados, precio final, descuento/código aplicado y cliente. Si la reserva tiene un precio final diferente, se crea una línea de ajuste para cuadrar exactamente con la web.
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1364,7 +1418,7 @@
     try {
       const { data: apt, error } = await sb
         .from("appointments")
-        .select("id, client_id, client_name, therapy_type, final_price, status, sale_id, date, time, duration, supplements_selected")
+        .select("*")
         .eq("id", appointmentId)
         .single();
       if (error) throw error;
@@ -1380,39 +1434,47 @@
       }
 
       ui.clientName.value = (apt.client_name || "").trim();
-      ui.notes.value = `Cita ${apt.date || ""} ${apt.time || ""}`.trim();
+      ui.notes.value = [
+        `Cita agenda ${compactDateTime(apt.date, apt.time)}`,
+        apt.email ? `Email: ${apt.email}` : "",
+        apt.phone ? `Tel: ${apt.phone}` : "",
+        apt.notes ? `Notas: ${apt.notes}` : "",
+        appointmentDiscountMeta(apt)
+      ].filter(Boolean).join(" | ");
 
       cart = [];
-      const therapyTitle = (apt.therapy_type || "").trim();
-      let price = apt.final_price ? Number(apt.final_price) : null;
+      currentSaleId = null;
+      currentStatus = "new";
 
-      if (!price && therapyTitle) {
-        const { data: th, error: thErr } = await sb
+      const therapyTitle = (apt.therapy_type || "").trim();
+      const duration = parseInt(apt.duration || 60, 10) || 60;
+      const th = therapies.find(x => (x.title || "").trim().toLowerCase() === therapyTitle.toLowerCase());
+      let therapyPrice = th ? calculateTherapyPriceLikeWeb(th, duration) : parseDbNumber(apt.final_price, 0);
+
+      if (!th && therapyTitle) {
+        const { data: dbTherapy, error: thErr } = await sb
           .from("therapies")
-          .select("title, price")
+          .select("id,title,price,duration,minimum_duration,image_url,supplements_enabled")
           .eq("title", therapyTitle)
           .maybeSingle();
-        if (!thErr && th?.price != null) price = Number(th.price);
+        if (!thErr && dbTherapy) {
+          therapyPrice = calculateTherapyPriceLikeWeb(dbTherapy, duration);
+        }
       }
-      if (!price) price = 0;
-
-      const selectedSupplements = Array.isArray(apt.supplements_selected) ? apt.supplements_selected : [];
-      let therapyBasePrice = price;
 
       if (therapyTitle) {
-        const th = therapies.find(x => (x.title || "").trim().toLowerCase() === therapyTitle.toLowerCase());
-        if (th?.price != null) therapyBasePrice = Number(th.price || 0);
         cart.push({
           id: crypto.randomUUID(),
           type: "therapy",
           refId: th?.id || null,
           name: therapyTitle,
-          unit: therapyBasePrice,
+          unit: Number(therapyPrice || 0),
           qty: 1,
-          meta: apt.duration ? `${apt.duration} min` : "Cita cargada"
+          meta: `${duration} min • precio calculado como la web`
         });
       }
 
+      const selectedSupplements = parseSupplementsSelected(apt.supplements_selected);
       selectedSupplements.forEach(s => addSupplementLine({
         id: s.supplement_id || s.id || null,
         therapy_id: s.therapy_id || null,
@@ -1423,14 +1485,26 @@
 
       const currentTicketTotal = cart.reduce((acc, x) => acc + Number(x.unit || 0) * Number(x.qty || 1), 0);
       if (apt.final_price != null && Number.isFinite(Number(apt.final_price))) {
-        const diff = Number(apt.final_price) - currentTicketTotal;
+        const finalPrice = Number(apt.final_price);
+        const diff = finalPrice - currentTicketTotal;
         if (Math.abs(diff) >= 0.01) {
-          cart.push({ id: crypto.randomUUID(), type: "adjustment", refId: null, name: "Ajuste precio cita", unit: diff, qty: 1, meta: "Cuadra con final_price de la reserva" });
+          const discountMeta = appointmentDiscountMeta(apt);
+          const name = diff < 0 ? "Descuento / modificación precio reserva" : "Suplemento / modificación precio reserva";
+          cart.push({
+            id: crypto.randomUUID(),
+            type: "adjustment",
+            refId: apt.discount_code_id || apt.discount_id || null,
+            name,
+            unit: diff,
+            qty: 1,
+            meta: discountMeta || "Cuadra con final_price de la reserva"
+          });
         }
       }
 
       renderTicket();
-      log(`Cita cargada en TPV: ${therapyTitle || "sin terapia"}${selectedSupplements.length ? ` + ${selectedSupplements.length} suplemento(s)` : ""}.`);
+      closeModal(ui.agendaModal);
+      log(`Cita cargada desde agenda: ${therapyTitle || "sin terapia"}${selectedSupplements.length ? ` + ${selectedSupplements.length} suplemento(s)` : ""}. Total TPV: ${money(totals().total)}.`);
     } catch (err) {
       console.error(err);
       log(`No se pudo cargar la cita: ${err.message || err}`);
@@ -1454,6 +1528,7 @@
     btnNewSale: document.getElementById("btnNewSale"),
     btnTodaySummary: document.getElementById("btnTodaySummary"),
     btnQuickClient: document.getElementById("btnQuickClient"),
+    btnAgendaPicker: document.getElementById("btnAgendaPicker"),
     btnDiscountPercent: document.getElementById("btnDiscountPercent"),
     btnDeposit: document.getElementById("btnDeposit"),
     btnGiftCard: document.getElementById("btnGiftCard"),
@@ -1520,6 +1595,16 @@
     invoiceCount: document.getElementById("invoiceCount"),
     invoiceRows: document.getElementById("invoiceRows"),
     btnInvoicesRefresh: document.getElementById("btnInvoicesRefresh"),
+
+    agendaModal: document.getElementById("agendaModal"),
+    agendaClose: document.getElementById("agendaClose"),
+    agendaDateFrom: document.getElementById("agendaDateFrom"),
+    agendaDateTo: document.getElementById("agendaDateTo"),
+    agendaSearch: document.getElementById("agendaSearch"),
+    btnAgendaRefresh: document.getElementById("btnAgendaRefresh"),
+    btnAgendaToday: document.getElementById("btnAgendaToday"),
+    agendaCount: document.getElementById("agendaCount"),
+    agendaRows: document.getElementById("agendaRows"),
 
     ticketModal: document.getElementById("ticketModal"),
     ticketClose: document.getElementById("ticketClose"),
@@ -1598,6 +1683,55 @@
     };
   }
 
+
+
+  function parseDbNumber(value, fallback = 0) {
+    if (value === null || value === undefined || value === "") return fallback;
+    const n = Number(String(value).replace(",", "."));
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function durationMinutesFromTherapy(therapy, fallback = 60) {
+    const raw = therapy?.minimum_duration ?? therapy?.duration ?? fallback;
+    if (typeof raw === "number") return Number(raw) || fallback;
+    const match = String(raw || "").match(/\d+/);
+    return match ? Number(match[0]) : fallback;
+  }
+
+  function calculateTherapyPriceLikeWeb(therapy, durationMinutes) {
+    if (!therapy) return 0;
+    const rate = parseDbNumber(therapy.price, 0);
+    const minDuration = durationMinutesFromTherapy(therapy, 60) || 60;
+    const currentDuration = parseInt(durationMinutes || minDuration, 10) || minDuration;
+    return rate + ((currentDuration - minDuration) * (rate / minDuration));
+  }
+
+  function parseSupplementsSelected(value) {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  }
+
+  function appointmentDiscountMeta(apt) {
+    const parts = [];
+    if (apt?.applied_discount_code) parts.push(`Código ${apt.applied_discount_code}`);
+    if (apt?.applied_discount_amount != null) parts.push(`Ahorro ${money(apt.applied_discount_amount)}`);
+    if (apt?.discount_code_id) parts.push(`discount_code_id ${apt.discount_code_id}`);
+    if (apt?.discount_id) parts.push(`discount_id ${apt.discount_id}`);
+    return parts.join(" • ");
+  }
+
+  function compactDateTime(date, time) {
+    return [date || "", String(time || "").slice(0,5)].filter(Boolean).join(" ");
+  }
   function supplementDedupKey(sup) {
     const cleanName = String(sup?.name || "")
       .trim()
@@ -1902,7 +2036,8 @@
 
       const safeTitle = escapeHtml(t.title);
       const safeImg = escapeHtml(t.image_url || "");
-      const meta = (t.duration ? escapeHtml(t.duration) : "Añadir al ticket");
+      const minDuration = durationMinutesFromTherapy(t, 60);
+      const meta = `${minDuration} min${t.supplements_enabled ? " • suplementos" : ""}`;
 
       btn.innerHTML = `
         <div class="thumb">
@@ -1910,16 +2045,16 @@
         </div>
         <div class="name">${safeTitle}</div>
         <div class="price">${money(t.price)}</div>
-        <div class="meta">${meta}</div>
+        <div class="meta">${escapeHtml(meta)}</div>
       `;
 
       btn.addEventListener("click", () => addLine({
         type: "therapy",
         refId: t.id,
         name: t.title,
-        unit: Number(t.price || 0),
+        unit: calculateTherapyPriceLikeWeb(t, minDuration),
         qty: 1,
-        meta: t.supplements_enabled ? "Tiene suplementos disponibles" : (t.duration || "")
+        meta: `Duración base web ${minDuration} min${t.supplements_enabled ? " • tiene suplementos" : ""}`
       }));
       ui.therapyGrid.appendChild(btn);
     });
@@ -2106,8 +2241,101 @@
   }
 
   /* =========================
+     Agenda Supabase picker
+  ========================= */
+  function agendaDefaultRange() {
+    const today = new Date();
+    const end = new Date();
+    end.setDate(today.getDate() + 30);
+    return {
+      from: today.toISOString().split("T")[0],
+      to: end.toISOString().split("T")[0]
+    };
+  }
+
+  async function refreshAgendaAppointments() {
+    try {
+      ui.agendaRows.innerHTML = `<div class="ticket-empty"><b>Cargando agenda...</b></div>`;
+      const from = ui.agendaDateFrom.value || agendaDefaultRange().from;
+      const to = ui.agendaDateTo.value || agendaDefaultRange().to;
+      const q = normalizeForMatch(ui.agendaSearch.value || "");
+
+      let query = sb.from("appointments")
+        .select("*")
+        .gte("date", from)
+        .lte("date", to)
+        .order("date", { ascending: true })
+        .order("time", { ascending: true })
+        .limit(120);
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      let rows = (data || []).filter(apt => !apt.sale_id);
+      if (q) {
+        rows = rows.filter(apt => normalizeForMatch([
+          apt.client_name,
+          apt.therapy_type,
+          apt.email,
+          apt.phone,
+          apt.status,
+          apt.applied_discount_code
+        ].filter(Boolean).join(" ")).includes(q));
+      }
+
+      ui.agendaCount.textContent = `${rows.length} cita(s)`;
+      ui.agendaRows.innerHTML = "";
+
+      if (!rows.length) {
+        ui.agendaRows.innerHTML = `<div class="ticket-empty"><b>No hay citas pendientes de facturar</b><br>Cambia fechas o búsqueda.</div>`;
+        return;
+      }
+
+      rows.forEach(apt => {
+        const selectedSupplements = parseSupplementsSelected(apt.supplements_selected);
+        const discountMeta = appointmentDiscountMeta(apt);
+        const card = document.createElement("div");
+        card.className = "agendaCard";
+        card.innerHTML = `
+          <div>
+            <b>${escapeHtml(apt.client_name || "Cliente sin nombre")} · ${escapeHtml(apt.therapy_type || "Sin terapia")}</b>
+            <small>${escapeHtml(compactDateTime(apt.date, apt.time))} · ${escapeHtml(String(apt.duration || 60))} min · Estado: ${escapeHtml(apt.status || "-")}</small>
+            <small>${selectedSupplements.length ? `Suplementos: ${escapeHtml(selectedSupplements.map(s => s.name).join(", "))}` : "Sin suplementos"}${discountMeta ? ` · ${escapeHtml(discountMeta)}` : ""}</small>
+          </div>
+          <div>
+            <div class="agendaPrice">${money(apt.final_price || 0)}</div>
+            <div class="agendaActions"><button type="button" class="btnSmall ok">Cargar</button></div>
+          </div>
+        `;
+        card.querySelector("button").addEventListener("click", () => loadAppointmentIntoTPV(apt.id));
+        ui.agendaRows.appendChild(card);
+      });
+    } catch (e) {
+      console.error(e);
+      ui.agendaRows.innerHTML = `<div class="ticket-empty"><b>Error cargando agenda</b><br>${escapeHtml(e?.message || e)}</div>`;
+      ui.agendaCount.textContent = "Error";
+    }
+  }
+
+  async function openAgendaPicker() {
+    const range = agendaDefaultRange();
+    if (!ui.agendaDateFrom.value) ui.agendaDateFrom.value = range.from;
+    if (!ui.agendaDateTo.value) ui.agendaDateTo.value = range.to;
+    openModal(ui.agendaModal);
+    await refreshAgendaAppointments();
+  }
+
+  /* =========================
      TPV actions
   ========================= */
+
+  ui.btnAgendaPicker.addEventListener("click", openAgendaPicker);
+  ui.agendaClose.addEventListener("click", () => closeModal(ui.agendaModal));
+  ui.btnAgendaRefresh.addEventListener("click", refreshAgendaAppointments);
+  ui.agendaSearch.addEventListener("input", () => { clearTimeout(window.__agendaSearchTimer); window.__agendaSearchTimer = setTimeout(refreshAgendaAppointments, 250); });
+  ui.agendaDateFrom.addEventListener("change", refreshAgendaAppointments);
+  ui.agendaDateTo.addEventListener("change", refreshAgendaAppointments);
+  ui.btnAgendaToday.addEventListener("click", async () => { const t = isoDate(); ui.agendaDateFrom.value = t; ui.agendaDateTo.value = t; await refreshAgendaAppointments(); });
 
   ui.btnQuickClient.addEventListener("click", async () => {
     const name = await Dialog.prompt("Nombre del cliente para este ticket:", ui.clientName.value || "", "Cliente rápido");
@@ -2168,6 +2396,23 @@
   /* =========================
      Sale persistence
   ========================= */
+  async function insertSaleSafely(basePayload) {
+    const sourceCandidates = ["tpv", "manual", "pos", "appointment", "agenda", null];
+    let lastError = null;
+    for (const sourceValue of sourceCandidates) {
+      const payload = { ...basePayload };
+      if (sourceValue === null) delete payload.source;
+      else payload.source = sourceValue;
+      const { data, error } = await sb.from("sales").insert([payload]).select("id, status").single();
+      if (!error) return data;
+      lastError = error;
+      const msg = String(error.message || "");
+      if (!/source|sales_source_check|column|schema|violates check constraint/i.test(msg)) break;
+      console.warn("[TPV] Reintentando insert sales con otro source:", sourceValue, error);
+    }
+    throw lastError || new Error("No se pudo crear la venta en Supabase");
+  }
+
   async function upsertSale(status) {
     if (cart.length === 0) {
       log("No hay ítems en el ticket.");
@@ -2181,20 +2426,17 @@
     let saleId = currentSaleId;
 
     if (!saleId) {
-      const { data, error } = await sb.from("sales")
-        .insert([{
-          status,
-          payment_method: null,
-          currency: "EUR",
-          subtotal,
-          total,
-          client_name,
-          notes,
-          source: "web",
-          appointment_id: linkedAppointmentId,
-          client_id: selectedClientId
-        }]).select("id, status").single();
-      if (error) throw error;
+      const data = await insertSaleSafely({
+        status,
+        payment_method: null,
+        currency: "EUR",
+        subtotal,
+        total,
+        client_name,
+        notes,
+        appointment_id: linkedAppointmentId,
+        client_id: selectedClientId
+      });
       saleId = data.id;
       currentSaleId = saleId;
       currentStatus = data.status;
@@ -2306,32 +2548,63 @@
   async function loadSaleIntoTPV(saleId) {
     log("Cargando venta " + saleId + "...");
     const { data: sale, error: saleErr } = await sb.from("sales")
-      .select("id, status, client_name, notes")
+      .select("id, status, client_name, notes, subtotal, total, appointment_id, client_id")
       .eq("id", saleId).single();
     if (saleErr) throw saleErr;
 
     const { data: items, error: itemsErr } = await sb.from("sale_items")
-      .select("name, qty, unit_price, item_type")
+      .select("name, qty, unit_price, line_total, item_type, item_ref_id")
       .eq("sale_id", saleId);
     if (itemsErr) throw itemsErr;
 
     currentSaleId = sale.id;
     currentStatus = sale.status;
+    linkedAppointmentId = sale.appointment_id || linkedAppointmentId || null;
+    selectedClientId = sale.client_id || selectedClientId || null;
     ui.clientName.value = sale.client_name || "";
     ui.notes.value = sale.notes || "";
 
-    cart = (items || []).map(it => ({
-      id: crypto.randomUUID(),
-      type: (it.item_type === "therapy" ? "therapy" : it.item_type === "extra" ? "extra" : it.item_type === "supplement" ? "supplement" : "custom"),
-      refId: null,
-      name: it.name,
-      qty: Number(it.qty || 1),
-      unit: Number(it.unit_price || 0),
-    }));
+    // MUY IMPORTANTE: la app agenda puede guardar unit_price como precio base
+    // y line_total como precio final real por duración/descuento.
+    // El TPV debe respetar line_total para que 45 min / suplementos / ajustes
+    // cuadren con appointments.final_price y con sales.total.
+    cart = (items || []).map(it => {
+      const qty = Math.max(1, Number(it.qty || 1));
+      const unitPrice = parseDbNumber(it.unit_price, 0);
+      const lineTotalRaw = it.line_total;
+      const hasLineTotal = lineTotalRaw !== null && lineTotalRaw !== undefined && lineTotalRaw !== "";
+      const lineTotal = hasLineTotal ? parseDbNumber(lineTotalRaw, unitPrice * qty) : unitPrice * qty;
+      const effectiveUnit = qty ? (lineTotal / qty) : lineTotal;
+      const baseDiffers = Math.abs((unitPrice * qty) - lineTotal) >= 0.01;
+      const originalMeta = baseDiffers ? `Precio final real desde Supabase: ${money(lineTotal)}${unitPrice ? ` • base ${money(unitPrice)}` : ""}` : "Desde Supabase";
+      return {
+        id: crypto.randomUUID(),
+        type: (it.item_type === "therapy" ? "therapy" : it.item_type === "extra" ? "extra" : it.item_type === "supplement" ? "supplement" : it.item_type === "adjustment" ? "adjustment" : "custom"),
+        refId: it.item_ref_id || null,
+        name: it.name,
+        qty,
+        unit: Number(effectiveUnit || 0),
+        meta: originalMeta
+      };
+    });
+
+    const ticketTotal = cart.reduce((acc, x) => acc + Number(x.unit || 0) * Number(x.qty || 1), 0);
+    const saleTotal = parseDbNumber(sale.total, NaN);
+    if (Number.isFinite(saleTotal) && Math.abs(saleTotal - ticketTotal) >= 0.01) {
+      cart.push({
+        id: crypto.randomUUID(),
+        type: "adjustment",
+        refId: null,
+        name: saleTotal < ticketTotal ? "Descuento / modificación precio reserva" : "Suplemento / modificación precio reserva",
+        qty: 1,
+        unit: saleTotal - ticketTotal,
+        meta: "Ajuste automático para cuadrar con sales.total / final_price"
+      });
+    }
 
     renderTicket();
     showView("tpv");
-    log("Venta cargada. Puedes modificarla, guardarla en espera o cobrar.");
+    log(`Venta cargada desde Supabase. Total TPV: ${money(totals().total)}. Se respeta line_total/sales.total.`);
   }
 
   ui.btnLoadDraftPicker.addEventListener("click", async () => {
@@ -2522,7 +2795,6 @@
           total,
           client_name,
           notes,
-          source: "web",
           appointment_id: linkedAppointmentId,
           client_id: selectedClientId
         })
@@ -3566,7 +3838,7 @@ for all to anon using (true) with check (true);`;
     log("Cargando terapias y suplementos...");
     const { data, error } = await sb
       .from("therapies")
-      .select("id,title,price,duration,image_url,supplements_enabled")
+      .select("id,title,price,duration,minimum_duration,image_url,supplements_enabled")
       .order("title", { ascending: true });
 
     if (error) throw error;
