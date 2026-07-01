@@ -46,6 +46,7 @@
   </style>
 </head>
 <body>
+<div style="position:fixed;right:10px;bottom:10px;z-index:999999;padding:7px 10px;border-radius:999px;background:#d4af37;color:#111;font:800 11px Inter,Arial;box-shadow:0 8px 24px rgba(0,0,0,.28);">AGENDA V4 TPV SUPABASE</div>
 <div class="bg"></div>
 <div class="app">
   <aside class="panel left">
@@ -483,5 +484,6 @@ async function registerConsent(){try{const a=selectedAppt();if(!a)return;const s
 function downloadConsentPdf(){previewConsent();const el=$('consentDocument');const ref=$('consentRef').value||'consentimiento';html2pdf().set({margin:0,filename:`${ref}.pdf`,image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(el).save()}
 window.addEventListener('DOMContentLoaded',reloadAll);
 </script>
+<script>console.log("AGENDA V4 TPV SUPABASE 20260701");</script>
 </body>
 </html>
