@@ -104,9 +104,9 @@
       <div class="field"><label>Teléfono</label><input id="fPhone" class="input"></div>
       <div class="field"><label>Estado</label><select id="fStatus" class="select"><option value="pending">Pendiente</option><option value="confirmed">Confirmada</option><option value="completed">Completada</option><option value="cancelled">Cancelada</option></select></div>
       <div class="field wide"><label>Terapia</label><select id="fTherapy" class="select" onchange="onFormTherapyChange()"></select></div>
-      <div class="field"><label>Fecha</label><input id="fDate" class="input" type="date"></div>
-      <div class="field"><label>Hora</label><input id="fTime" class="input" type="time"></div>
-      <div class="field"><label>Duración</label><select id="fDuration" class="select" onchange="recalcFormPrice()"></select></div>
+      <div class="field"><label>Fecha</label><input id="fDate" class="input" type="date" onchange="renderTimeOptions(($('fTime')||{}).value||'')"></div>
+      <div class="field"><label>Hora</label><select id="fTime" class="select"></select></div>
+      <div class="field"><label>Duración</label><select id="fDuration" class="select" onchange="recalcFormPrice();renderTimeOptions(($('fTime')||{}).value||'')"></select></div>
       <div class="field"><label>Precio final</label><input id="fPrice" class="input" type="number" step="0.01"></div>
       <div class="field wide"><label>Suplementos</label><div id="supplementBox" class="stack"></div></div>
       <div class="field"><label>Alergias / contraindicaciones</label><textarea id="fAllergies" class="textarea" placeholder="No especificadas"></textarea></div>
@@ -169,8 +169,115 @@ function toast(msg){$('toastCard').innerHTML=msg;$('toast').classList.add('show'
 function openModal(id){$(id).classList.add('show')}function closeModal(id){$(id).classList.remove('show')}
 function statusBadge(s){const map={pending:['warn','Pendiente'],confirmed:['ok','Confirmada'],completed:['info','Completada'],cancelled:['bad','Cancelada']};const v=map[s]||['warn',s||'Pendiente'];return `<span class="badge ${v[0]}"><i class="fas fa-circle"></i>${v[1]}</span>`}
 function hasConsent(a){return !!a.consent_timestamp}
-function getTherapyByTitle(title){return therapies.find(t=>(t.title||'')===title)}
+function therapyTitle(t){return (t?.title || t?.name || t?.therapy_name || t?.label || '').trim()}
+function normText(v){return String(v||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+function getTherapyByTitle(title){const wanted=normText(title);return therapies.find(t=>normText(therapyTitle(t))===wanted)||null}
+function getTherapyById(id){return therapies.find(t=>String(t.id)===String(id))||null}
+function getFormTherapy(){const value=$('fTherapy')?.value||'';return getTherapyById(value)||getTherapyByTitle(value)||null}
+function therapyBaseDuration(t){return durationMinutesFromTherapy(t,60)}
+function therapyBasePrice(t){return parseDbNumber(t?.price,0)}
+function getSelectValueForTherapyTitle(title){const t=getTherapyByTitle(title);return t?.id?String(t.id):(title||'')}
 function selectedAppt(){return appointments.find(a=>a.id===selectedAppointmentId)||null}
+
+
+/* =========================
+   DISPONIBILIDAD HORARIA COMO EN LA WEB
+   - Día abierto de 08:00 a 21:00
+   - Slots cada 30 minutos
+   - Bloqueo de 45 min antes y 45 min después de cada cita pending/confirmed/completed
+   - Al editar una cita, se excluye esa cita del cálculo para no bloquearse a sí misma
+========================= */
+const AGENDA_DAY_START_MINUTES = 8 * 60;
+const AGENDA_DAY_END_MINUTES = 21 * 60;
+const AGENDA_SLOT_STEP_MINUTES = 30;
+const AGENDA_BUFFER_MINUTES = 45;
+const AGENDA_BLOCKING_STATUSES = ['pending','confirmed','completed'];
+
+function timeToMinutes(time){
+  if(!time)return null;
+  const parts=String(time).slice(0,5).split(':').map(Number);
+  if(parts.length<2 || !Number.isFinite(parts[0]) || !Number.isFinite(parts[1])) return null;
+  return parts[0]*60+parts[1];
+}
+function minutesToTime(total){
+  total=Math.max(0,Number(total)||0);
+  const h=Math.floor(total/60)%24;
+  const m=total%60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+function appointmentDurationMinutes(a){
+  let duration=Number(a?.duration||60);
+  if(!Number.isFinite(duration)||duration<=0) duration=60;
+  // Misma protección que la web: datos antiguos <=8 pueden venir en horas.
+  if(duration<=8) duration=duration*60;
+  return duration;
+}
+function isBlockingAppointment(a){
+  return !!a && AGENDA_BLOCKING_STATUSES.includes(a.status||'pending') && !!a.date && !!a.time;
+}
+function getBlockedRangesForDate(date, excludeAppointmentId=null){
+  if(!date)return [];
+  return appointments
+    .filter(a=>String(a.id)!==String(excludeAppointmentId||''))
+    .filter(a=>a.date===date && isBlockingAppointment(a))
+    .map(a=>{
+      const start=timeToMinutes(a.time);
+      if(start===null)return null;
+      const end=start+appointmentDurationMinutes(a);
+      return {
+        start:start-AGENDA_BUFFER_MINUTES,
+        end:end+AGENDA_BUFFER_MINUTES,
+        appt:a
+      };
+    })
+    .filter(Boolean);
+}
+function isSlotBlockedForAgenda(date,time,duration,excludeAppointmentId=null){
+  const start=timeToMinutes(time);
+  if(start===null)return true;
+  const dur=Number(duration||60);
+  const end=start+dur;
+  if(start<AGENDA_DAY_START_MINUTES || end>AGENDA_DAY_END_MINUTES)return true;
+  const ranges=getBlockedRangesForDate(date,excludeAppointmentId);
+  return ranges.some(r=>start<r.end && end>r.start);
+}
+function renderTimeOptions(preferredTime=''){
+  const timeEl=$('fTime');
+  if(!timeEl)return;
+  const date=$('fDate')?.value||isoDate(selectedDate);
+  const duration=Number($('fDuration')?.value||60)||60;
+  const previous=String(preferredTime||timeEl.value||'').slice(0,5);
+  let html='';
+  let firstAvailable='';
+  for(let m=AGENDA_DAY_START_MINUTES;m<=AGENDA_DAY_END_MINUTES;m+=AGENDA_SLOT_STEP_MINUTES){
+    const value=minutesToTime(m);
+    const end=m+duration;
+    const outside=end>AGENDA_DAY_END_MINUTES;
+    const blocked=!outside && isSlotBlockedForAgenda(date,value,duration,editingId);
+    const label=outside
+      ? `${value} · no cabe la duración`
+      : blocked
+        ? `${value} · ocupado / bloqueado`
+        : `${value} · disponible`;
+    const disabled=(outside||blocked) && value!==previous;
+    if(!disabled && !firstAvailable) firstAvailable=value;
+    html+=`<option value="${value}" ${disabled?'disabled':''}>${esc(label)}</option>`;
+  }
+  timeEl.innerHTML=html;
+  if(previous){
+    const exists=Array.from(timeEl.options).some(o=>o.value===previous);
+    if(exists) timeEl.value=previous;
+    else if(firstAvailable) timeEl.value=firstAvailable;
+  }else if(firstAvailable){
+    timeEl.value=firstAvailable;
+  }
+}
+function selectedSlotIsAllowed(){
+  const date=$('fDate')?.value;
+  const time=$('fTime')?.value;
+  const duration=Number($('fDuration')?.value||60)||60;
+  return !isSlotBlockedForAgenda(date,time,duration,editingId);
+}
 
 
 /* =========================
@@ -194,8 +301,24 @@ async function loadTherapies(){const {data,error}=await sb.from('therapies').sel
 async function loadSupplements(){const {data,error}=await sb.from('supplements').select('*').order('sort_order');if(error){console.warn('supplements no disponible',error);supplements=[]}else supplements=data||[]}
 async function loadAppointments(){const start=new Date(selectedDate);start.setDate(start.getDate()-45);const end=new Date(selectedDate);end.setDate(end.getDate()+75);const {data,error}=await sb.from('appointments').select('*').gte('date',isoDate(start)).lte('date',isoDate(end)).order('date',{ascending:true}).order('time',{ascending:true});if(error)throw error;appointments=data||[];if(!selectedAppointmentId&&appointments[0])selectedAppointmentId=appointments[0].id}
 function setupRealtime(){if(realtimeChannel) sb.removeChannel(realtimeChannel); realtimeChannel=sb.channel('seccion5-agenda-appointments').on('postgres_changes',{event:'*',schema:'public',table:'appointments'},()=>loadAppointments().then(renderAll)).subscribe()}
-function populateFilters(){const opts=therapies.map(t=>`<option value="${esc(t.title)}">${esc(t.title)}</option>`).join('');$('therapyFilter').innerHTML='<option value="all">Todas</option>'+opts;$('fTherapy').innerHTML='<option value="">Selecciona terapia</option>'+opts;renderTherapyQuick()}
-function renderTherapyQuick(){$('therapyQuickList').innerHTML=therapies.slice(0,12).map(t=>`<div class="therapy-pill" onclick="quickNewTherapy('${esc(t.title)}')"><span><i class="fas fa-spa"></i> ${esc(t.title)}</span><b>${money(t.price)}</b></div>`).join('')||'<div class="empty">No hay terapias cargadas</div>'}
+function populateFilters(){
+  const filterOpts=therapies.map(t=>{const title=therapyTitle(t);return `<option value="${esc(title)}">${esc(title)}</option>`}).join('');
+  const formOpts=therapies.map(t=>{
+    const title=therapyTitle(t);
+    const dur=therapyBaseDuration(t);
+    const price=therapyBasePrice(t);
+    return `<option value="${esc(t.id)}" data-title="${esc(title)}" data-duration="${dur}" data-price="${price}">${esc(title)} · ${money(price)} · ${dur} min</option>`;
+  }).join('');
+  $('therapyFilter').innerHTML='<option value="all">Todas</option>'+filterOpts;
+  $('fTherapy').innerHTML='<option value="">Selecciona terapia</option>'+formOpts;
+  renderTherapyQuick();
+}
+function renderTherapyQuick(){
+  $('therapyQuickList').innerHTML=therapies.slice(0,12).map(t=>{
+    const title=therapyTitle(t);
+    return `<div class="therapy-pill" onclick="quickNewTherapy('${esc(String(t.id))}')"><span><i class="fas fa-spa"></i> ${esc(title)}</span><b>${money(therapyBasePrice(t))} · ${therapyBaseDuration(t)} min</b></div>`;
+  }).join('')||'<div class="empty">No hay terapias cargadas</div>';
+}
 function filteredAppointments(){let list=[...appointments];const q=$('searchInput').value.trim().toLowerCase();const st=$('statusFilter').value;const th=$('therapyFilter').value;const co=$('consentFilter').value;if(q)list=list.filter(a=>[a.client_name,a.email,a.phone,a.therapy_type,a.notes].join(' ').toLowerCase().includes(q));if(st!=='all')list=list.filter(a=>(a.status||'pending')===st);if(th!=='all')list=list.filter(a=>a.therapy_type===th);if(co==='pending')list=list.filter(a=>!hasConsent(a));if(co==='signed')list=list.filter(a=>hasConsent(a));return list.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))}
 function renderAll(){renderKpis();renderMain();renderDetail()}
 function renderKpis(){const today=isoDate(new Date());const weekStart=new Date();weekStart.setDate(weekStart.getDate()-weekStart.getDay()+1);const weekEnd=new Date(weekStart);weekEnd.setDate(weekStart.getDate()+6);$('kpiToday').textContent=appointments.filter(a=>a.date===today).length;$('kpiPendingConsent').textContent=appointments.filter(a=>!hasConsent(a)&&a.status!=='cancelled').length;$('kpiPending').textContent=appointments.filter(a=>(a.status||'pending')==='pending').length;const inc=appointments.filter(a=>a.date>=isoDate(weekStart)&&a.date<=isoDate(weekEnd)&&a.status!=='cancelled').reduce((s,a)=>s+Number(a.final_price||0),0);$('kpiIncome').textContent=money(inc)}
@@ -207,16 +330,150 @@ function renderList(list){$('mainContent').innerHTML=list.length?`<div class="ag
 function apptHtml(a){const consent=hasConsent(a)?'<span class="badge ok"><i class="fas fa-file-signature"></i>Consentimiento</span>':'<span class="badge warn"><i class="fas fa-triangle-exclamation"></i>Sin consentimiento</span>';return `<div class="appt ${a.id===selectedAppointmentId?'active':''}" onclick="selectAppointment('${a.id}')"><div class="timebox"><b>${(a.time||'--:--').slice(0,5)}</b><span>${a.duration||60} min</span></div><div class="appt-main"><h3>${esc(a.client_name||'Cliente')} · ${esc(a.therapy_type||'Terapia')}</h3><div class="meta"><span><i class="fas fa-calendar"></i> ${dateHuman(a.date)}</span><span><i class="fas fa-envelope"></i> ${esc(a.email||'Sin email')}</span><span><i class="fas fa-phone"></i> ${esc(a.phone||'Sin teléfono')}</span><span><i class="fas fa-euro-sign"></i> ${money(a.final_price)}</span></div></div><div class="state">${statusBadge(a.status)}${consent}</div></div>`}
 function selectAppointment(id){selectedAppointmentId=id;renderAll()}
 function renderCalendar(list){const start=new Date(selectedDate);start.setHours(0,0,0,0);const dows=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];let html=`<div class="calendar">${dows.map(d=>`<div class="dow">${d}</div>`).join('')}`;const gridStart=startOfWeek(start);for(let i=0;i<35;i++){const d=addDays(gridStart,i);const ds=isoDate(d);const dayList=list.filter(a=>a.date===ds);html+=`<div class="day ${ds===isoDate(new Date())?'today':''} ${ds===isoDate(selectedDate)?'selected':''}" onclick="selectedDate=new Date('${ds}T00:00:00');setView('day')"><div class="daynum"><b>${d.getDate()}</b>${dayList.length?`<span class="count">${dayList.length}</span>`:''}</div>${dayList.slice(0,4).map(a=>`<div class="mini">${(a.time||'').slice(0,5)} · ${esc(a.client_name||'Cliente')}</div>`).join('')}</div>`}html+='</div>';$('mainContent').innerHTML=html}
-function renderDetail(){const a=selectedAppt();if(!a){$('detailBox').innerHTML='<div class="empty"><i class="fas fa-hand-pointer"></i>Selecciona una reserva para ver su ficha operativa</div>';return}const sups=Array.isArray(a.supplements_selected)?a.supplements_selected:[];$('detailBox').innerHTML=`<div class="detail-head"><h2>${esc(a.client_name||'Cliente')}</h2><div class="row wrap">${statusBadge(a.status)}${hasConsent(a)?'<span class="badge ok"><i class="fas fa-check"></i>Consentimiento firmado</span>':'<span class="badge warn"><i class="fas fa-file-circle-exclamation"></i>Consentimiento pendiente</span>'}</div></div><div class="detail-card"><h3>Reserva</h3><div class="info-grid"><div class="info-item"><span>Terapia</span><b>${esc(a.therapy_type||'-')}</b></div><div class="info-item"><span>Precio</span><b>${money(a.final_price)}</b></div><div class="info-item"><span>Fecha</span><b>${dateHuman(a.date)}</b></div><div class="info-item"><span>Hora</span><b>${(a.time||'--:--').slice(0,5)} - ${(a.end_time||'').slice(0,5)}</b></div><div class="info-item"><span>Duración</span><b>${a.duration||60} min</b></div><div class="info-item"><span>Origen</span><b>Supabase / Web</b></div></div></div><div class="detail-card"><h3>Cliente</h3><div class="info-grid"><div class="info-item"><span>Email</span><b>${esc(a.email||'-')}</b></div><div class="info-item"><span>Teléfono</span><b>${esc(a.phone||'-')}</b></div></div><div class="divider"></div><p class="muted"><b>Alergias / contraindicaciones:</b><br>${esc(a.allergies||'No especificadas')}</p><div class="divider"></div><p class="muted"><b>Notas:</b><br>${esc(a.notes||'Sin notas')}</p></div><div class="detail-card"><h3>Suplementos</h3>${sups.length?sups.map(s=>`<div class="badge info">${esc(s.name)} · ${money(s.price)}</div>`).join(' '):'<p class="muted">Sin suplementos asociados.</p>'}</div><div class="detail-card"><h3>Acciones de agenda</h3><div class="actions-grid"><button class="btn gold" onclick="openConsent('${a.id}')"><i class="fas fa-file-signature"></i> Consentimiento</button><button class="btn" onclick="openAppointmentModal('${a.id}')"><i class="fas fa-pen"></i> Editar</button><button class="btn ghost" onclick="setStatus('${a.id}','confirmed')"><i class="fas fa-check"></i> Confirmar</button><button class="btn ghost" onclick="syncAppointmentToTPVDraft('${a.id}')"><i class="fas fa-cash-register"></i> TPV espera</button><button class="btn ghost" onclick="openLinkedSaleInTPV('${a.id}')"><i class="fas fa-receipt"></i> Abrir TPV</button><button class="btn ghost" onclick="setStatus('${a.id}','completed')"><i class="fas fa-spa"></i> Completar</button><button class="btn ghost" onclick="duplicateAppointment('${a.id}')"><i class="fas fa-copy"></i> Repetir</button><button class="btn danger" onclick="setStatus('${a.id}','cancelled')"><i class="fas fa-ban"></i> Cancelar</button></div></div>`}
-function quickNewTherapy(title){openAppointmentModal();$('fTherapy').value=title;onFormTherapyChange()}
-function openAppointmentModal(id=null){editingId=id;$('appointmentModalTitle').textContent=id?'Editar reserva':'Nueva reserva / sesión';$('deleteApptBtn').classList.toggle('hidden',!id);const a=id?appointments.find(x=>x.id===id):{};$('fClient').value=a.client_name||'';$('fEmail').value=a.email||'';$('fPhone').value=a.phone||'';$('fStatus').value=a.status||'pending';$('fTherapy').value=a.therapy_type||'';$('fDate').value=a.date||isoDate(selectedDate);$('fTime').value=(a.time||'').slice(0,5);$('fAllergies').value=a.allergies||'';$('fNotes').value=a.notes||'';onFormTherapyChange(a.duration||null,a.final_price||null,a.supplements_selected||[]);openModal('appointmentModal')}
-function onFormTherapyChange(existingDuration=null, existingPrice=null, existingSupps=[]){const t=getTherapyByTitle($('fTherapy').value);const min=parseInt(t?.minimum_duration)||60;let opts='';for(let d=min;d<=min+120;d+=15)opts+=`<option value="${d}">${d} min</option>`;$('fDuration').innerHTML=opts;$('fDuration').value=existingDuration||min;const relS=supplements.filter(s=>s.therapy_id===t?.id);$('supplementBox').innerHTML=relS.length?relS.map(s=>`<label class="therapy-pill"><span><input type="checkbox" class="suppCheck" data-id="${s.id}" data-name="${esc(s.name)}" data-price="${s.price||0}" ${existingSupps.some(x=>x.supplement_id===s.id||x.id===s.id||x.name===s.name)?'checked':''}> ${esc(s.name)}</span><b>+${money(s.price)}</b></label>`).join(''):'<div class="notice">Esta terapia no tiene suplementos asociados.</div>';$('supplementBox').querySelectorAll('input').forEach(i=>i.addEventListener('change',recalcFormPrice));recalcFormPrice(existingPrice)}
-function recalcFormPrice(existingPrice=null){if(existingPrice!==null){$('fPrice').value=Number(existingPrice).toFixed(2);return}const t=getTherapyByTitle($('fTherapy').value);const min=parseInt(t?.minimum_duration)||60;const dur=parseInt($('fDuration').value)||min;const base=parseFloat(t?.price)||0;let price=base+((dur-min)*(base/min));document.querySelectorAll('.suppCheck:checked').forEach(i=>price+=Number(i.dataset.price||0));$('fPrice').value=Math.max(0,price).toFixed(2)}
+function renderDetail(){const a=selectedAppt();if(!a){$('detailBox').innerHTML='<div class="empty"><i class="fas fa-hand-pointer"></i>Selecciona una reserva para ver su ficha operativa</div>';return}const sups=Array.isArray(a.supplements_selected)?a.supplements_selected:[];$('detailBox').innerHTML=`<div class="detail-head"><h2>${esc(a.client_name||'Cliente')}</h2><div class="row wrap">${statusBadge(a.status)}${hasConsent(a)?'<span class="badge ok"><i class="fas fa-check"></i>Consentimiento firmado</span>':'<span class="badge warn"><i class="fas fa-file-circle-exclamation"></i>Consentimiento pendiente</span>'}</div></div><div class="detail-card"><h3>Reserva</h3><div class="info-grid"><div class="info-item"><span>Terapia</span><b>${esc(a.therapy_type||'-')}</b></div><div class="info-item"><span>Precio</span><b>${money(a.final_price)}</b></div><div class="info-item"><span>Fecha</span><b>${dateHuman(a.date)}</b></div><div class="info-item"><span>Hora</span><b>${(a.time||'--:--').slice(0,5)} - ${(a.end_time||'').slice(0,5)}</b></div><div class="info-item"><span>Duración</span><b>${a.duration||60} min</b></div><div class="info-item"><span>Origen</span><b>Supabase / Web</b></div></div></div><div class="detail-card"><h3>Cliente</h3><div class="info-grid"><div class="info-item"><span>Email</span><b>${esc(a.email||'-')}</b></div><div class="info-item"><span>Teléfono</span><b>${esc(a.phone||'-')}</b></div></div><div class="divider"></div><p class="muted"><b>Alergias / contraindicaciones:</b><br>${esc(a.allergies||'No especificadas')}</p><div class="divider"></div><p class="muted"><b>Notas:</b><br>${esc(a.notes||'Sin notas')}</p></div><div class="detail-card"><h3>Suplementos</h3>${sups.length?sups.map(s=>`<div class="badge info">${esc(s.name)} · ${money(s.price)}</div>`).join(' '):'<p class="muted">Sin suplementos asociados.</p>'}</div><div class="detail-card"><h3>Acciones de agenda</h3><div class="actions-grid"><button class="btn gold" onclick="openConsent('${a.id}')"><i class="fas fa-file-signature"></i> Consentimiento</button><button class="btn" onclick="openAppointmentModal('${a.id}')"><i class="fas fa-pen"></i> Editar</button><button class="btn ghost" onclick="setStatus('${a.id}','confirmed')"><i class="fas fa-check"></i> Confirmar</button><button class="btn ghost" onclick="syncAppointmentToTPVDraft('${a.id}')"><i class="fas fa-cash-register"></i> TPV espera</button><button class="btn ghost" onclick="openLinkedSaleInTPV('${a.id}')"><i class="fas fa-receipt"></i> Abrir TPV</button><button class="btn ghost" onclick="setStatus('${a.id}','completed')"><i class="fas fa-spa"></i> Completar</button><button class="btn ghost" onclick="duplicateAppointment('${a.id}')"><i class="fas fa-copy"></i> Repetir</button><button class="btn danger" onclick="deleteAppointment('${a.id}')"><i class="fas fa-trash"></i> Borrar Supabase</button><button class="btn danger" onclick="setStatus('${a.id}','cancelled')"><i class="fas fa-ban"></i> Cancelar</button></div></div>`}
+function quickNewTherapy(therapyId){openAppointmentModal();$('fTherapy').value=String(therapyId||'');onFormTherapyChange()}
+function openAppointmentModal(id=null){
+  editingId=id;
+  $('appointmentModalTitle').textContent=id?'Editar reserva':'Nueva reserva / sesión';
+  $('deleteApptBtn').classList.toggle('hidden',!id);
+  const a=id?appointments.find(x=>x.id===id):{};
+  $('fClient').value=a.client_name||'';
+  $('fEmail').value=a.email||'';
+  $('fPhone').value=a.phone||'';
+  $('fStatus').value=a.status||'pending';
+  $('fTherapy').value=getSelectValueForTherapyTitle(a.therapy_type||'');
+  $('fDate').value=a.date||isoDate(selectedDate);
+  $('fTime').innerHTML='';
+  $('fAllergies').value=a.allergies||'';
+  $('fNotes').value=a.notes||'';
+  onFormTherapyChange(a.duration||null,a.final_price??null,a.supplements_selected||[]);
+  renderTimeOptions((a.time||'').slice(0,5));
+  openModal('appointmentModal');
+}
+function onFormTherapyChange(existingDuration=null, existingPrice=null, existingSupps=[]){
+  const t=getFormTherapy();
+  const min=therapyBaseDuration(t);
+  let opts='';
+  for(let d=min;d<=min+120;d+=15)opts+=`<option value="${d}">${d} min</option>`;
+  $('fDuration').innerHTML=opts;
+  $('fDuration').value=existingDuration||min;
+  const selectedSupps=parseSupplementsSelected(existingSupps);
+  const relS=t?supplements.filter(s=>String(s.therapy_id)===String(t.id)):[];
+  $('supplementBox').innerHTML=relS.length?relS.map(s=>`<label class="therapy-pill"><span><input type="checkbox" class="suppCheck" data-id="${esc(String(s.id))}" data-therapy-id="${esc(String(s.therapy_id||''))}" data-name="${esc(s.name||'Suplemento')}" data-price="${parseDbNumber(s.price,0)}" ${selectedSupps.some(x=>String(x.supplement_id||x.id)===String(s.id)||normText(x.name)===normText(s.name))?'checked':''}> ${esc(s.name||'Suplemento')}</span><b>+${money(s.price)}</b></label>`).join(''):'<div class="notice">Esta terapia no tiene suplementos asociados.</div>';
+  $('supplementBox').querySelectorAll('input').forEach(i=>i.addEventListener('change',()=>recalcFormPrice()));
+  recalcFormPrice(existingPrice);
+  renderTimeOptions(($('fTime')||{}).value||'');
+}
+function recalcFormPrice(existingPrice=null){
+  if(existingPrice!==null&&existingPrice!==undefined&&existingPrice!==''){
+    $('fPrice').value=Number(existingPrice).toFixed(2);
+    return;
+  }
+  const t=getFormTherapy();
+  const min=therapyBaseDuration(t);
+  const dur=parseInt($('fDuration').value)||min;
+  const base=therapyBasePrice(t);
+  let price=t?calculateTherapyPriceLikeWeb(t,dur):0;
+  document.querySelectorAll('.suppCheck:checked').forEach(i=>price+=parseDbNumber(i.dataset.price,0));
+  $('fPrice').value=Math.max(0,price).toFixed(2);
+}
 function calcEnd(time,duration){if(!time)return'';const [h,m]=time.split(':').map(Number);const d=new Date();d.setHours(h,m+Number(duration||60),0,0);return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
-async function saveAppointment(){try{const duration=parseInt($('fDuration').value)||60;const selectedSupps=Array.from(document.querySelectorAll('.suppCheck:checked')).map(i=>({supplement_id:i.dataset.id,name:i.dataset.name,price:Number(i.dataset.price||0)}));const payload={client_name:$('fClient').value.trim(),email:$('fEmail').value.trim(),phone:$('fPhone').value.trim(),therapy_type:$('fTherapy').value,date:$('fDate').value,time:$('fTime').value,end_time:calcEnd($('fTime').value,duration),duration,status:$('fStatus').value,final_price:Number($('fPrice').value||0),allergies:$('fAllergies').value.trim()||'No especificadas',notes:$('fNotes').value.trim(),supplements_selected:selectedSupps};if(!payload.client_name||!payload.therapy_type||!payload.date||!payload.time) return toast('Completa cliente, terapia, fecha y hora.');let res;if(editingId)res=await sb.from('appointments').update(payload).eq('id',editingId).select().single();else res=await sb.from('appointments').insert(payload).select().single();if(res.error)throw res.error;selectedAppointmentId=res.data.id;if((res.data.status||payload.status)==='confirmed'){await syncAppointmentToTPVDraft(res.data,{silent:false});}closeModal('appointmentModal');await loadAppointments();renderAll();toast((res.data.status||payload.status)==='confirmed'?'Reserva confirmada y ticket enviado al TPV en espera.':'Reserva guardada correctamente en Supabase.')}catch(e){console.error(e);toast('Error guardando reserva: '+esc(e.message||e))}}
-async function deleteAppointment(){if(!editingId||!confirm('¿Eliminar definitivamente esta reserva?'))return;const {error}=await sb.from('appointments').delete().eq('id',editingId);if(error)return toast('Error eliminando: '+esc(error.message));closeModal('appointmentModal');selectedAppointmentId=null;await loadAppointments();renderAll();toast('Reserva eliminada.')}
+async function saveAppointment(){
+  try{
+    const therapy=getFormTherapy();
+    const therapyName=therapyTitle(therapy)||($('fTherapy').selectedOptions[0]?.dataset.title||'').trim();
+    const duration=parseInt($('fDuration').value)||therapyBaseDuration(therapy);
+    const selectedSupps=Array.from(document.querySelectorAll('.suppCheck:checked')).map(i=>({
+      supplement_id:i.dataset.id,
+      therapy_id:i.dataset.therapyId||therapy?.id||null,
+      name:i.dataset.name,
+      price:Number(i.dataset.price||0)
+    }));
+    const calculatedPrice=therapy?calculateTherapyPriceLikeWeb(therapy,duration):0;
+    const manualFinal=Number($('fPrice').value||0);
+    const payload={
+      client_name:$('fClient').value.trim(),
+      email:$('fEmail').value.trim(),
+      phone:$('fPhone').value.trim(),
+      therapy_type:therapyName,
+      date:$('fDate').value,
+      time:$('fTime').value,
+      end_time:calcEnd($('fTime').value,duration),
+      duration,
+      status:$('fStatus').value,
+      final_price:Number.isFinite(manualFinal)?manualFinal:(calculatedPrice+selectedSupps.reduce((a,s)=>a+Number(s.price||0),0)),
+      allergies:$('fAllergies').value.trim()||'No especificadas',
+      notes:$('fNotes').value.trim(),
+      supplements_selected:selectedSupps
+    };
+    if(!payload.client_name||!payload.therapy_type||!payload.date||!payload.time) return toast('Completa cliente, terapia, fecha y hora.');
+    if(!selectedSlotIsAllowed()){
+      renderTimeOptions(payload.time);
+      return toast('Esa hora no está disponible: se solapa con otra cita o con el bloqueo de 45 min antes/después.');
+    }
+    let res;
+    if(editingId)res=await sb.from('appointments').update(payload).eq('id',editingId).select().single();
+    else res=await sb.from('appointments').insert(payload).select().single();
+    if(res.error)throw res.error;
+    selectedAppointmentId=res.data.id;
+    if((res.data.status||payload.status)==='confirmed'){
+      await syncAppointmentToTPVDraft(res.data,{silent:false});
+    }
+    closeModal('appointmentModal');
+    await loadAppointments();
+    renderAll();
+    toast((res.data.status||payload.status)==='confirmed'?'Reserva confirmada y ticket enviado al TPV en espera.':'Reserva guardada correctamente en Supabase.');
+  }catch(e){
+    console.error(e);
+    toast('Error guardando reserva: '+esc(e.message||e));
+  }
+}
+async function deleteLinkedDraftSaleForAppointment(a){
+  if(!a)return;
+  try{
+    let sale=null;
+    if(a.sale_id){
+      const {data,error}=await sb.from('sales').select('id,status').eq('id',a.sale_id).maybeSingle();
+      if(!error) sale=data;
+    }
+    if(!sale){
+      const {data,error}=await sb.from('sales').select('id,status').eq('appointment_id',a.id).maybeSingle();
+      if(!error) sale=data;
+    }
+    if(!sale)return;
+    if(['draft','pending','hold'].includes(sale.status||'draft')){
+      await sb.from('sale_items').delete().eq('sale_id',sale.id);
+      await sb.from('sales').delete().eq('id',sale.id);
+    }else{
+      // Si la venta ya está pagada/cerrada, no se borra caja: solo se desvincula si la tabla lo permite.
+      await sb.from('sales').update({appointment_id:null}).eq('id',sale.id);
+    }
+  }catch(e){
+    console.warn('No se pudo limpiar la venta vinculada:',e);
+  }
+}
+async function deleteAppointment(id=null){
+  const targetId=id||editingId||selectedAppointmentId;
+  if(!targetId)return;
+  const a=appointments.find(x=>String(x.id)===String(targetId))||{id:targetId};
+  if(!confirm('¿Eliminar definitivamente esta reserva de la agenda y de Supabase?'))return;
+  await deleteLinkedDraftSaleForAppointment(a);
+  let {error}=await sb.from('appointments').delete().eq('id',targetId);
+  if(error && /foreign key|violates|constraint/i.test(String(error.message||''))){
+    try{await sb.from('sales').update({appointment_id:null}).eq('appointment_id',targetId);}catch(e){console.warn(e)}
+    const retry=await sb.from('appointments').delete().eq('id',targetId);
+    error=retry.error;
+  }
+  if(error)return toast('Error eliminando en Supabase: '+esc(error.message));
+  closeModal('appointmentModal');
+  selectedAppointmentId=null;
+  editingId=null;
+  await loadAppointments();
+  renderAll();
+  toast('Reserva eliminada definitivamente de Supabase.');
+}
 async function setStatus(id,status){const {data,error}=await sb.from('appointments').update({status}).eq('id',id).select().single();if(error)return toast('Error actualizando estado');if(status==='confirmed')await syncAppointmentToTPVDraft(data,{silent:false});await loadAppointments();renderAll()}
-function duplicateAppointment(id){const a=appointments.find(x=>x.id===id);if(!a)return;openAppointmentModal();$('fClient').value=a.client_name||'';$('fEmail').value=a.email||'';$('fPhone').value=a.phone||'';$('fTherapy').value=a.therapy_type||'';$('fAllergies').value=a.allergies||'';$('fNotes').value=a.notes||'';onFormTherapyChange(a.duration,null,a.supplements_selected||[])}
+function duplicateAppointment(id){const a=appointments.find(x=>x.id===id);if(!a)return;openAppointmentModal();$('fClient').value=a.client_name||'';$('fEmail').value=a.email||'';$('fPhone').value=a.phone||'';$('fTherapy').value=getSelectValueForTherapyTitle(a.therapy_type||'');$('fAllergies').value=a.allergies||'';$('fNotes').value=a.notes||'';onFormTherapyChange(a.duration,null,a.supplements_selected||[])}
 function openConsent(id){selectedAppointmentId=id;const a=selectedAppt();if(!a)return;$('consentSigner').value=a.signature_name||a.client_name||'';$('consentRef').value=docRef(a);signatureDataUrl=a.consent_signature||null;openModal('consentModal');setTimeout(initCanvas,80);previewConsent()}
 function docRef(a){const d=new Date();return `ENS-CONS-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(a?.id||'00000000').slice(0,8).toUpperCase()}`}
 function previewConsent(){const a=selectedAppt();if(!a)return;const signer=$('consentSigner').value||a.client_name||'Cliente';const ref=$('consentRef').value||docRef(a);const today=new Date().toLocaleDateString('es-ES');$('consentPrintable').innerHTML=`<div id="consentDocument" class="consent-wrap"><div class="consent-head"><img src="${BRAND_LOGO}" crossorigin="anonymous"><div><h1>CONSENTIMIENTO INFORMADO PARA TERAPIA<br><span style="font-weight:400;color:#555">INFORMED CONSENT FOR THERAPY</span></h1><p style="font-size:10px;margin-top:7px;text-align:right;color:#666">Therapies & Wellness · Ensanbliss</p></div></div><div class="consent-info"><div><span>Cliente</span><b>${esc(a.client_name)}</b></div><div><span>Fecha</span><b>${esc(dateHuman(a.date))}</b></div><div><span>Hora</span><b>${esc((a.time||'').slice(0,5))}</b></div><div><span>Terapia</span><b>${esc(a.therapy_type)}</b></div><div><span>Precio</span><b>${money(a.final_price)}</b></div></div><div style="font-size:11px;margin:10px 0"><b>Alergias/contraindicaciones declaradas:</b> ${esc(a.allergies||'No especificadas')}<br><b>Notas:</b> ${esc(a.notes||'Sin notas')}</div><div class="legal"><p><b>Yo, ${esc(a.client_name)},</b> solicito y consiento voluntariamente recibir la terapia indicada. <i>I voluntarily request and consent to receive the indicated therapy.</i></p>${consentTextES.map((t,i)=>`<p><b>${i+1}.</b> ${esc(t)}<br><i style="color:#555">${esc(consentTextEN[i])}</i></p>`).join('')}</div><div class="sign-area"><div class="sig-box"><div class="sig-frame">${signatureDataUrl?`<img src="${signatureDataUrl}">`:'<span style="color:#bbb">Firma / Signature</span>'}</div><div class="sig-line">Firma del cliente / Client signature<br>${esc(signer)}</div></div><div class="date-box"><div class="sig-frame"><b>${today}</b></div><div class="sig-line">Fecha / Date</div></div></div><div class="doc-foot"><span>ENSANBLISS-CONSENT-2026-V2</span><span>REF: ${esc(ref)}</span><span>Página 1/1</span></div></div>`}
