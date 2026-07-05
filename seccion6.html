@@ -1,135 +1,3984 @@
-[APP AGENDA → TPV] sale payload insert attempt {status: 'draft', payment_method: null, currency: 'EUR', subtotal: 35, total: 35, …}
-requests.js:1  POST https://lywjxvrvvpmthmavueyq.supabase.co/rest/v1/sales?columns=%22status%22%2C%22payment_method%22%2C%22currency%22%2C%22subtotal%22%2C%22total%22%2C%22discount_total%22%2C%22client_name%22%2C%22notes%22%2C%22client_id%22&select=id%2Cstatus 400 (Bad Request)
-s.fetch @ chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js:1
-(anónimo) @ chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/executors/200.js:1
-(anónimo) @ cdn.jsdelivr.net/npm/@supabase/supabase-js@2:13
-(anónimo) @ cdn.jsdelivr.net/npm/@supabase/supabase-js@2:13
-await in (anónimo)
-(anónimo) @ cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7
-then @ cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7
-seccion5.html:451 [APP AGENDA → TPV] insert attempt failed {code: 'PGRST204', details: null, hint: null, message: "Could not find the 'discount_total' column of 'sales' in the schema cache"}
-insertSaleWithFallback @ sanframax10.github.io/Ensanbliss/seccion5.html:451
-await in insertSaleWithFallback
-syncAppointmentToTPVDraft @ sanframax10.github.io/Ensanbliss/seccion5.html:580
-await in syncAppointmentToTPVDraft
-onclick @ sanframax10.github.io/Ensanbliss/seccion5.html:1
-seccion5.html:447 [APP AGENDA → TPV] sale payload insert attempt {status: 'draft', payment_method: null, currency: 'EUR', subtotal: 35, total: 35, …}
-requests.js:1  POST https://lywjxvrvvpmthmavueyq.supabase.co/rest/v1/sales?columns=%22status%22%2C%22payment_method%22%2C%22currency%22%2C%22subtotal%22%2C%22total%22%2C%22discount_total%22%2C%22client_name%22%2C%22notes%22&select=id%2Cstatus 400 (Bad Request)
-s.fetch @ chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js:1
-(anónimo) @ chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/executors/200.js:1
-(anónimo) @ cdn.jsdelivr.net/npm/@supabase/supabase-js@2:13
-(anónimo) @ cdn.jsdelivr.net/npm/@supabase/supabase-js@2:13
-await in (anónimo)
-(anónimo) @ cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7
-then @ cdn.jsdelivr.net/npm/@supabase/supabase-js@2:7
-seccion5.html:451 [APP AGENDA → TPV] insert attempt failed {code: 'PGRST204', details: null, hint: null, message: "Could not find the 'discount_total' column of 'sales' in the schema cache"}
-insertSaleWithFallback @ sanframax10.github.io/Ensanbliss/seccion5.html:451
-await in insertSaleWithFallback
-syncAppointmentToTPVDraft @ sanframax10.github.io/Ensanbliss/seccion5.html:580
-await in syncAppointmentToTPVDraft
-onclick @ sanframax10.github.io/Ensanbliss/seccion5.html:1
-seccion5.html:599 [APP AGENDA → TPV] ERROR {code: 'PGRST204', details: null, hint: null, message: "Could not find the 'discount_total' column of 'sales' in the schema cache"}
-syncAppointmentToTPVDraft @ sanframax10.github.io/Ensanbliss/seccion5.html:599
-await in syncAppointmentToTPVDraft
-onclick @ sanframax10.github.io/Ensanbliss/seccion5.html:1
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
- `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
 
-If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>TPV Ensanbliss Pro - Caja, Tickets y Ventas</title>
 
-For more information, see https://radix-ui.com/primitives/docs/components/dialog
-console.error @ ensanbliss.es/:133
-(anónimo) @ /assets/index-Cp17VcgW.js:642
-ds @ /assets/index-Cp17VcgW.js:8
-k @ /assets/index-Cp17VcgW.js:8
-zw @ /assets/index-Cp17VcgW.js:8
-uh @ /assets/index-Cp17VcgW.js:8
-Nv @ /assets/index-Cp17VcgW.js:8
-ye @ /assets/index-Cp17VcgW.js:6
-(anónimo) @ /assets/index-Cp17VcgW.js:8
- Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
-(anónimo) @ /assets/index-Cp17VcgW.js:642
-ds @ /assets/index-Cp17VcgW.js:8
-k @ /assets/index-Cp17VcgW.js:8
-zw @ /assets/index-Cp17VcgW.js:8
-uh @ /assets/index-Cp17VcgW.js:8
-Nv @ /assets/index-Cp17VcgW.js:8
-ye @ /assets/index-Cp17VcgW.js:6
-(anónimo) @ /assets/index-Cp17VcgW.js:8
-[Violation] Forced reflow while executing JavaScript took 50ms
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
- Consent Debug - State: {isRegistered: true, isDigitallySigned: true, consent_signature: null, effectiveAppointment: {…}}
-2 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
-(anónimo) @ /assets/index-Cp17VcgW.js:642
-ds @ /assets/index-Cp17VcgW.js:8
-k @ /assets/index-Cp17VcgW.js:8
-zw @ /assets/index-Cp17VcgW.js:8
-uh @ /assets/index-Cp17VcgW.js:8
-Nv @ /assets/index-Cp17VcgW.js:8
-ye @ /assets/index-Cp17VcgW.js:6
-(anónimo) @ /assets/index-Cp17VcgW.js:8
- [AuthContext] Auth state changed: SIGNED_IN
-sanframax10.github.io/Ensanbliss/:323 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
-    at updateClock (sanframax10.github.io/Ensanbliss/:323:54)
-    at sanframax10.github.io/Ensanbliss/:325:5
-updateClock @ sanframax10.github.io/Ensanbliss/:323
-(anónimo) @ sanframax10.github.io/Ensanbliss/:325
-sanframax10.github.io/Ensanbliss/seccion5.html:860 AGENDA V5 APP→TPV OK 20260701
-sanframax10.github.io/Ensanbliss/seccion5.html:391 [APP AGENDA → TPV] appointment loaded {id: '2695e9f7-6bfe-4627-a4b0-79e2c8023bf4', client_name: 'paco', email: 'test', phone: 'test', therapy_type: 'Masaje Facial', …}
-sanframax10.github.io/Ensanbliss/seccion5.html:394 [APP AGENDA → TPV] therapy resolved {id: '1624070a-bf6f-4f51-8364-8e521f84b61c', title: 'Masaje Facial', description: 'Técnicas delicadas para rejuvenecer y relajar los …productos o traer los tuyos para mayor comodidad ', duration: '60 min', price: 35, …}
-sanframax10.github.io/Ensanbliss/seccion5.html:415 [APP AGENDA → TPV] supplements []
-sanframax10.github.io/Ensanbliss/seccion5.html:445 [APP AGENDA → TPV] sale items [{…}]
-sanframax10.github.io/Ensanbliss/seccion5.html:446 [APP AGENDA → TPV] final price 35
-sanframax10.github.io/Ensanbliss/seccion5.html:468 [APP AGENDA → TPV] sale payload insert attempt {status: 'draft', payment_method: null, currency: 'EUR', subtotal: 35, total: 35, …}
-sanframax10.github.io/Ensanbliss/:323 Uncaught TypeError: Cannot set properties of null (setting 'textContent')
-    at updateClock (sanframax10.github.io/Ensanbliss/:323:54)
-    at sanframax10.github.io/Ensanbliss/:325:5
-updateClock @ sanframax10.github.io/Ensanbliss/:323
-(anónimo) @ sanframax10.github.io/Ensanbliss/:325
-requests.js:1  PATCH https://lywjxvrvvpmthmavueyq.supabase.co/rest/v1/appointments?id=eq.16af3983-e1a6-42c3-a0cd-4c45e213b0c2 400 (Bad Request)
-s.fetch @ requests.js:1
-(anónimo) @ 200.js:1
-(anónimo) @ supabase-js@2:13
-(anónimo) @ supabase-js@2:13
-await in (anónimo)
-(anónimo) @ supabase-js@2:7
-then @ supabase-js@2:7
-requests.js:1  PATCH https://lywjxvrvvpmthmavueyq.supabase.co/rest/v1/appointments?id=eq.16af3983-e1a6-42c3-a0cd-4c45e213b0c2 400 (Bad Request)
-s.fetch @ requests.js:1
-(anónimo) @ 200.js:1
-(anónimo) @ supabase-js@2:13
-(anónimo) @ supabase-js@2:13
-await in (anónimo)
-(anónimo) @ supabase-js@2:7
-then @ supabase-js@2:7
-requests.js:1  PATCH https://lywjxvrvvpmthmavueyq.supabase.co/rest/v1/appointments?id=eq.16af3983-e1a6-42c3-a0cd-4c45e213b0c2 400 (Bad Request)
-s.fetch @ requests.js:1
-(anónimo) @ 200.js:1
-(anónimo) @ supabase-js@2:13
-(anónimo) @ supabase-js@2:13
-await in (anónimo)
-(anónimo) @ supabase-js@2:7
-then @ supabase-js@2:7
-requests.js:1  PATCH https://lywjxvrvvpmthmavueyq.supabase.co/rest/v1/appointments?id=eq.16af3983-e1a6-42c3-a0cd-4c45e213b0c2 400 (Bad Request)
-s.fetch @ requests.js:1
-(anónimo) @ 200.js:1
-(anónimo) @ supabase-js@2:13
-(anónimo) @ supabase-js@2:13
-await in (anónimo)
-(anónimo) @ supabase-js@2:7
-then @ supabase-js@2:7
-requests.js:1  PATCH https://lywjxvrvvpmthmavueyq.supabase.co/rest/v1/appointments?id=eq.16af3983-e1a6-42c3-a0cd-4c45e213b0c2 400 (Bad Request)
-s.fetch @ requests.js:1
-(anónimo) @ 200.js:1
-(anónimo) @ supabase-js@2:13
-(anónimo) @ supabase-js@2:13
-await in (anónimo)
-(anónimo) @ supabase-js@2:7
-then @ supabase-js@2:7
-2 [AuthContext] Auth state changed: SIGNED_IN
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --line:rgba(212,175,55,.18);
+      --gold:#d4af37;
+      --text:#f4e4c1;
+      --muted:rgba(244,228,193,.70);
+      --muted2:rgba(244,228,193,.55);
+      --danger:#ff5a5f;
+      --ok:#2bd576;
+      --shadow:0 12px 44px rgba(0,0,0,.55);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 900px at 40% -10%, rgba(212,175,55,.18), transparent 60%),
+        radial-gradient(900px 700px at 110% 10%, rgba(212,175,55,.10), transparent 55%),
+        linear-gradient(180deg,#0b0908,#120e0c 35%, #0b0908);
+      color:var(--text);
+      min-height:100vh;
+      overflow:hidden;
+    }
+
+    .top{
+      height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 18px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(90deg, rgba(26,20,16,.92), rgba(21,17,15,.92));
+      box-shadow:0 6px 22px rgba(0,0,0,.4);
+      gap:12px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:420px}
+    .brand .logo{
+      width:46px;height:46px;border-radius:16px;
+      border:1px solid rgba(212,175,55,.25);
+      background:rgba(0,0,0,.25);
+      display:grid;place-items:center;
+      box-shadow:0 8px 24px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .brand .logo img{width:100%;height:100%;object-fit:cover;opacity:.95}
+    .brand .title{display:flex;flex-direction:column;line-height:1.05}
+    .brand .title h1{
+      margin:0;
+      font-family:Allura,cursive;
+      font-size:36px;
+      color:var(--gold);
+      letter-spacing:1px;
+      text-shadow:0 0 18px rgba(212,175,55,.35);
+    }
+    .brand .title span{font-size:12px;color:var(--muted)}
+
+    .tabs{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .tabBtn{
+      text-decoration:none;
+      color:var(--text);
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      padding:11px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:12px;
+      transition:.18s ease;
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
+    .tabBtn:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.35)}
+    .tabBtn.active{
+      background:rgba(212,175,55,.14);
+      border-color:rgba(212,175,55,.45);
+      color:var(--gold);
+    }
+
+    .actionsTop{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+    .pillBtn{
+      padding:11px 13px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.20);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+    .pillBtn:hover{border-color:rgba(212,175,55,.38);transform:translateY(-1px)}
+    .pillBtn.primary{
+      background:linear-gradient(180deg, var(--gold), #f1d889);
+      color:#18120e;border:none;
+    }
+    .pillBtn.primary:hover{filter:brightness(1.05)}
+    .status-pill{
+      display:flex;align-items:center;gap:8px;
+      padding:11px 13px;border-radius:14px;
+      background:rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      font-size:12px;color:var(--muted);
+      min-width:240px;justify-content:flex-end;
+    }
+    .dot{width:10px;height:10px;border-radius:99px;background:#888}
+    .dot.ok{background:var(--ok);box-shadow:0 0 12px rgba(43,213,118,.35)}
+    .dot.bad{background:var(--danger);box-shadow:0 0 12px rgba(255,90,95,.35)}
+
+    .view{
+      height:calc(100vh - 76px);
+      padding:14px;
+      display:none;
+    }
+    .view.active{display:block}
+    .gridTPV{
+      height:100%;
+      display:grid;
+      grid-template-columns: 1.35fr .95fr;
+      gap:14px;
+      min-height:0;
+    }
+    .panel{
+      background:linear-gradient(180deg, rgba(21,17,15,.88), rgba(15,12,10,.92));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    .panel-header{
+      padding:14px 14px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      background:linear-gradient(180deg, rgba(26,20,16,.92), rgba(21,17,15,.92));
+    }
+    .panel-header h2{margin:0;font-size:13px;letter-spacing:.4px;color:rgba(244,228,193,.92)}
+    .panel-header small{color:var(--muted)}
+    .panel-body{padding:14px;overflow:auto;min-height:0;}
+
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.30);
+      color:var(--text);
+      outline:none;
+      font-weight:700;
+    }
+    .input::placeholder{color:rgba(244,228,193,.5)}
+    label{display:block;margin:10px 0 7px;color:rgba(244,228,193,.85);font-size:12px;font-weight:900}
+
+    .sectionTitle{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px;}
+    .sectionTitle h3{margin:0;font-size:12px;color:rgba(244,228,193,.9);letter-spacing:.4px}
+    .sectionTitle .hint{font-size:11px;color:rgba(244,228,193,.55)}
+
+    .btnGrid{display:grid;grid-template-columns: repeat(4, 1fr);gap:10px;}
+
+    .btnCard{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:12px;
+      cursor:pointer;
+      transition:.18s ease;
+      display:flex;flex-direction:column;gap:8px;
+      min-height:78px;
+      overflow:hidden;
+    }
+    .btnCard:hover{transform:translateY(-2px);border-color:rgba(212,175,55,.35);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .btnCard .name{font-weight:900;font-size:12px;color:rgba(244,228,193,.95)}
+    .btnCard .price{font-weight:900;font-size:12px;color:var(--gold)}
+    .btnCard .meta{font-size:11px;color:rgba(244,228,193,.55)}
+    .btnCard.customTherapyCard{
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      border-color:rgba(212,175,55,.34);
+      background:linear-gradient(180deg, rgba(212,175,55,.12), rgba(0,0,0,.24));
+    }
+    .customTherapyIcon{
+      width:42px;
+      height:42px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      color:#18120e;
+      background:linear-gradient(180deg, var(--gold), #f1d889);
+      box-shadow:0 10px 24px rgba(212,175,55,.20);
+      font-size:18px;
+      margin-bottom:2px;
+    }
+    .btnCard.customTherapyCard .price{color:rgba(244,228,193,.82)}
+
+    .btnCard .thumb{
+      width:100%;
+      height:110px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      overflow:hidden;
+      background:rgba(0,0,0,.22);
+    }
+    .btnCard .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      opacity:.95;
+    }
+
+    .extrasGrid{display:grid;grid-template-columns: repeat(2, 1fr);gap:10px;}
+    .supplementsGrid{display:grid;grid-template-columns: repeat(3, 1fr);gap:10px;}
+    .supplementCard{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:11px;
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      cursor:pointer;
+      transition:.18s ease;
+      min-height:92px;
+    }
+    .supplementCard:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.38);background:rgba(212,175,55,.08)}
+    .supplementCard b{font-size:12px;color:rgba(244,228,193,.95)}
+    .supplementCard span{font-size:11px;color:rgba(244,228,193,.60);line-height:1.25}
+    .supplementCard strong{font-size:12px;color:var(--gold)}
+    .extraLine{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .extraLine .left{display:flex;flex-direction:column;gap:4px}
+    .extraLine .left b{font-size:12px}
+    .extraLine .left span{font-size:11px;color:rgba(244,228,193,.55)}
+    .extraLine .right{display:flex;align-items:center;gap:8px}
+    .mini{
+      width:120px;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.30);
+      color:var(--text);
+      font-weight:900;
+    }
+
+    .ticket{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
+      border:1px dashed rgba(212,175,55,.25);
+      border-radius:16px;
+      padding:12px;
+      box-shadow:0 10px 32px rgba(0,0,0,.35);
+    }
+    .ticket h3{
+      margin:0 0 10px;
+      font-family:Allura,cursive;
+      font-size:30px;
+      color:var(--gold);
+      text-align:center;
+      text-shadow:0 0 14px rgba(212,175,55,.25);
+    }
+    .ticket .sub{text-align:center;color:rgba(244,228,193,.65);font-size:11px;margin-bottom:10px}
+    .ticket .row{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      padding:9px 0;
+      border-bottom:1px dashed rgba(212,175,55,.18);
+      align-items:start;
+    }
+    .ticket .row:last-child{border-bottom:none}
+    .itemName{font-weight:900;font-size:12px;color:rgba(244,228,193,.95)}
+    .itemMeta{font-size:11px;color:rgba(244,228,193,.55);margin-top:3px}
+    .priceVal{font-weight:900;color:var(--gold);font-size:12px;white-space:nowrap}
+
+    .qtyCtrls{display:flex;gap:6px;margin-top:8px;align-items:center}
+    .qtyBtn{
+      width:26px;height:26px;border-radius:10px;
+      border:1px solid rgba(212,175,55,.22);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+    }
+    .qtyBtn:hover{border-color:rgba(212,175,55,.40)}
+    .removeBtn{
+      margin-left:auto;
+      padding:6px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,90,95,.35);
+      background:rgba(255,90,95,.10);
+      color:#ffb2b5;
+      cursor:pointer;
+      font-weight:900;
+      font-size:11px;
+    }
+
+    .totals{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(212,175,55,.22)}
+    .totals .line{display:flex;justify-content:space-between;gap:12px;margin:7px 0;font-size:12px;color:rgba(244,228,193,.82)}
+    .totals .grand{margin-top:10px;font-size:15px;font-weight:1000;color:var(--gold)}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .btn{
+      padding:12px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.22);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      transition:.18s ease;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.36)}
+    .btn.primary{background:linear-gradient(180deg, var(--gold), #f1d889);color:#18120e;border:none}
+    .btn.primary:hover{filter:brightness(1.05)}
+    .btn.danger{border-color:rgba(255,90,95,.35);background:rgba(255,90,95,.10);color:#ffb2b5}
+
+    .note{color:rgba(244,228,193,.65);font-size:11px;line-height:1.35em}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;}
+
+    .salesWrap{
+      height:100%;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+      max-width:1300px;
+      margin:0 auto;
+      min-height:0;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid rgba(212,175,55,.15);
+      background:rgba(0,0,0,.18);
+    }
+    th,td{padding:12px 10px;border-bottom:1px solid rgba(212,175,55,.10);font-size:12px}
+    th{color:rgba(244,228,193,.85);text-align:left;background:rgba(0,0,0,.25)}
+    tr:hover td{background:rgba(255,255,255,.03)}
+    tr.clickable{cursor:pointer}
+    .pill{
+      display:inline-block;padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(212,175,55,.10);
+      color:var(--gold);
+      font-weight:900;
+      font-size:11px;
+    }
+    .pill.gray{color:rgba(244,228,193,.75);background:rgba(255,255,255,.04);border-color:rgba(212,175,55,.10)}
+    .btnSmall{
+      padding:9px 10px;border-radius:12px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      font-size:11px;
+      margin-right:6px;
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+    .btnSmall:hover{border-color:rgba(212,175,55,.35);transform:translateY(-1px)}
+    .btnSmall.danger{border-color:rgba(255,90,95,.35);background:rgba(255,90,95,.10);color:#ffb2b5}
+    .btnSmall.ok{border-color:rgba(43,213,118,.35);background:rgba(43,213,118,.10);color:#bff7d6}
+
+    .search{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      outline:none;
+      width:360px;
+      font-weight:800;
+    }
+    .dateFilter{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      outline:none;
+      width:150px;
+      font-weight:900;
+      color-scheme:dark;
+    }
+    .dateFilterLabel{
+      color:rgba(244,228,193,.70);
+      font-size:11px;
+      font-weight:1000;
+      text-transform:uppercase;
+      letter-spacing:.25px;
+      margin-left:4px;
+    }
+    .rowFlex{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .spacer{flex:1}
+
+    .modal{
+      position:fixed;inset:0;
+      background:rgba(0,0,0,.66);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:99;
+    }
+    .modal.open{display:flex}
+    .modalCard{
+      width:min(980px, 96vw);
+      border-radius:22px;
+      border:1px solid rgba(212,175,55,.22);
+      background:linear-gradient(180deg, rgba(26,20,16,.96), rgba(15,12,10,.96));
+      box-shadow:0 20px 70px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding:14px 16px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid rgba(212,175,55,.18);
+      background:linear-gradient(180deg, rgba(26,20,16,.96), rgba(21,17,15,.96));
+      gap:10px;
+    }
+    .modalHead b{letter-spacing:.4px}
+    .closeX{
+      padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .modalBody{
+      padding:16px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+    .payMethod{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:18px;
+      padding:14px;
+    }
+    .payMethod h4{margin:0 0 10px;font-size:12px;color:rgba(244,228,193,.9)}
+    .methodGrid{display:grid;grid-template-columns: 1fr 1fr;gap:10px}
+    .methodBtn{
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(212,175,55,.22);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:1000;
+      display:flex;align-items:center;justify-content:space-between;
+      transition:.18s ease;
+    }
+    .methodBtn:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.38)}
+    .methodBtn.active{
+      background:rgba(212,175,55,.16);
+      border-color:rgba(212,175,55,.45);
+      color:var(--gold);
+    }
+    .qrBox{
+      display:none;
+      margin-top:12px;
+      border:1px dashed rgba(212,175,55,.25);
+      border-radius:18px;
+      padding:12px;
+      text-align:center;
+      background:rgba(0,0,0,.20);
+    }
+    .qrBox.show{display:block}
+    .qrBox img{
+      max-width:320px;width:100%;
+      border-radius:16px;
+      border:1px solid rgba(212,175,55,.18);
+      box-shadow:0 12px 28px rgba(0,0,0,.4);
+      background:#fff;
+      padding:10px;
+    }
+    .qrBox p{margin:10px 0 0;color:rgba(244,228,193,.75);font-size:12px}
+    .modalFoot{
+      padding:14px 16px;
+      border-top:1px solid rgba(212,175,55,.18);
+      display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;
+      background:linear-gradient(180deg, rgba(21,17,15,.96), rgba(15,12,10,.96));
+    }
+
+    .modalBodyFull{
+      padding:16px;
+    }
+    .ticketViewMeta{
+      display:flex;gap:10px;flex-wrap:wrap;
+      color:rgba(244,228,193,.75);
+      font-size:12px;
+      margin-bottom:10px;
+    }
+    .ticketLines{
+      border:1px dashed rgba(212,175,55,.22);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(0,0,0,.20);
+    }
+    .tLine{
+      display:flex;justify-content:space-between;gap:12px;
+      padding:9px 0;border-bottom:1px dashed rgba(212,175,55,.16);
+    }
+    .tLine:last-child{border-bottom:none}
+    .tLeft b{font-size:12px;color:rgba(244,228,193,.95)}
+    .tLeft div{font-size:11px;color:rgba(244,228,193,.55);margin-top:3px}
+    .tRight{font-weight:900;color:var(--gold);font-size:12px;white-space:nowrap}
+    .tTotals{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(212,175,55,.22)}
+    .tTotals .line{display:flex;justify-content:space-between;margin:6px 0;color:rgba(244,228,193,.85);font-size:12px}
+    .tTotals .grand{font-size:15px;color:var(--gold);font-weight:1000;margin-top:10px}
+
+    /* ========================================
+       CUSTOM DIALOG SYSTEM (alert/confirm/prompt)
+    ======================================== */
+    #customDialog {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+    #customDialog.show {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .dialog-box {
+      width: min(540px, 92vw);
+      border-radius: 22px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      background: linear-gradient(180deg, rgba(26, 20, 16, 0.98), rgba(15, 12, 10, 0.98));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.75);
+      overflow: hidden;
+      animation: slideUp 0.3s ease;
+    }
+    .dialog-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      background: linear-gradient(180deg, rgba(26, 20, 16, 0.96), rgba(21, 17, 15, 0.96));
+    }
+    .dialog-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      color: var(--gold);
+      text-shadow: 0 0 14px rgba(212, 175, 55, 0.3);
+    }
+    .dialog-body {
+      padding: 24px 20px;
+    }
+    .dialog-message {
+      color: rgba(244, 228, 193, 0.92);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 0;
+      white-space: pre-wrap;
+    }
+    .dialog-input {
+      width: 100%;
+      padding: 12px 14px;
+      margin-top: 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      outline: none;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+    }
+    .dialog-input:focus {
+      border-color: rgba(212, 175, 55, 0.45);
+      background: rgba(0, 0, 0, 0.45);
+    }
+    .dialog-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(212, 175, 55, 0.18);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      background: linear-gradient(180deg, rgba(21, 17, 15, 0.96), rgba(15, 12, 10, 0.96));
+    }
+    .dialog-btn {
+      padding: 11px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--text);
+      font-weight: 900;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+    }
+    .dialog-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212, 175, 55, 0.40);
+    }
+    .dialog-btn.primary {
+      background: linear-gradient(180deg, var(--gold), #f1d889);
+      color: #18120e;
+      border: none;
+    }
+    .dialog-btn.primary:hover {
+      filter: brightness(1.08);
+    }
+    .dialog-btn.danger {
+      border-color: rgba(255, 90, 95, 0.4);
+      background: rgba(255, 90, 95, 0.12);
+      color: #ffb2b5;
+    }
+    .dialog-btn.danger:hover {
+      border-color: rgba(255, 90, 95, 0.6);
+      background: rgba(255, 90, 95, 0.18);
+    }
+
+
+    /* ===== ENSANBLISS TPV PRO: mejoras funcionales ===== */
+    .proBadge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(212,175,55,.22);
+      background:rgba(212,175,55,.10);
+      color:var(--gold);font-weight:1000;font-size:11px;
+      letter-spacing:.35px;text-transform:uppercase;
+    }
+    .assistBar{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+    }
+    .assistBtn{
+      padding:11px 12px;border-radius:14px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
+      transition:.18s ease;
+      text-align:left;
+    }
+    .assistBtn:hover{transform:translateY(-1px);border-color:rgba(212,175,55,.38);background:rgba(212,175,55,.08)}
+    .assistBtn b{display:block;color:var(--gold);font-size:12px;margin-bottom:3px}
+    .assistBtn span{display:block;color:rgba(244,228,193,.62);font-size:11px;font-weight:700;line-height:1.25}
+    .ticket-empty{
+      text-align:center;
+      padding:22px 12px;
+      color:rgba(244,228,193,.58);
+      border:1px dashed rgba(212,175,55,.16);
+      border-radius:14px;
+      background:rgba(0,0,0,.16);
+      margin:8px 0;
+      line-height:1.35;
+    }
+    .ticket-empty b{color:var(--gold)}
+    .paymentSteps{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;
+    }
+    .paymentStep{
+      border:1px solid rgba(212,175,55,.18);
+      border-radius:14px;
+      padding:10px;
+      background:rgba(0,0,0,.18);
+      color:rgba(244,228,193,.62);
+      font-size:11px;
+      font-weight:900;
+      text-align:center;
+    }
+    .paymentStep.active{background:rgba(212,175,55,.12);color:var(--gold);border-color:rgba(212,175,55,.36)}
+    .cashQuickGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+    .cashQuickGrid button{
+      padding:10px 8px;border-radius:12px;
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.24);
+      color:var(--text);font-weight:900;cursor:pointer;
+    }
+    .cashQuickGrid button:hover{border-color:rgba(212,175,55,.38);color:var(--gold)}
+    .printHint{
+      display:flex;align-items:center;gap:9px;margin-top:10px;
+      color:rgba(244,228,193,.72);font-size:12px;font-weight:800;
+      padding:10px;border-radius:14px;border:1px solid rgba(212,175,55,.14);background:rgba(0,0,0,.18)
+    }
+    .printHint input{width:18px;height:18px;accent-color:#d4af37}
+    .quickTotalBox{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 12px 0;
+    }
+    .quickTotalCard{
+      border:1px solid rgba(212,175,55,.16);
+      background:rgba(0,0,0,.18);
+      border-radius:16px;
+      padding:12px;
+    }
+    .quickTotalCard small{display:block;color:rgba(244,228,193,.55);font-size:11px;font-weight:900;margin-bottom:6px}
+    .quickTotalCard b{display:block;color:var(--gold);font-size:18px}
+    .receiptMiniLogo{
+      width:48px;height:48px;border-radius:16px;object-fit:cover;display:block;margin:0 auto 8px;
+    }
+    @media (max-width: 1100px){
+      .assistBar{grid-template-columns:1fr 1fr;}
+      .quickTotalBox{grid-template-columns:1fr;}
+      .cashQuickGrid{grid-template-columns:repeat(2,1fr)}
+    }
+
+
+
+    /* ===== TABLET CASH REGISTER MODE: compacto, elegante, una pantalla ===== */
+    body.tpv-tablet-mode .top{height:62px;padding:0 12px;gap:8px;}
+    body.tpv-tablet-mode .brand{min-width:250px;gap:9px;}
+    body.tpv-tablet-mode .brand .logo{width:40px;height:40px;border-radius:12px;}
+    body.tpv-tablet-mode .brand .title h1{font-size:29px;}
+    body.tpv-tablet-mode .brand .title span{display:none;}
+    body.tpv-tablet-mode .tabBtn,
+    body.tpv-tablet-mode .pillBtn{padding:9px 10px;border-radius:12px;font-size:11px;}
+    body.tpv-tablet-mode .status-pill{min-width:auto;padding:9px 10px;font-size:11px;}
+    body.tpv-tablet-mode .view{height:calc(100vh - 62px);padding:9px;}
+    body.tpv-tablet-mode .gridTPV{grid-template-columns:minmax(0,1.18fr) minmax(320px,.82fr);gap:9px;}
+    body.tpv-tablet-mode .panel{border-radius:14px;}
+    body.tpv-tablet-mode .panel-header{padding:9px 10px;}
+    body.tpv-tablet-mode .panel-header h2{font-size:12px;}
+    body.tpv-tablet-mode .panel-header small,
+    body.tpv-tablet-mode .sectionTitle .hint,
+    body.tpv-tablet-mode .note{display:none;}
+    body.tpv-tablet-mode .panel-body{padding:10px;overflow:auto;}
+    body.tpv-tablet-mode label{margin:6px 0 5px;font-size:11px;}
+    body.tpv-tablet-mode .input{padding:9px 10px;border-radius:11px;font-size:12px;}
+    body.tpv-tablet-mode .sectionTitle{margin:8px 0 7px;}
+    body.tpv-tablet-mode .btnGrid{grid-template-columns:repeat(5, minmax(92px,1fr));gap:7px;}
+    body.tpv-tablet-mode .btnCard{min-height:82px;padding:7px;border-radius:12px;gap:5px;}
+    body.tpv-tablet-mode .btnCard .thumb{height:44px;border-radius:10px;}
+    body.tpv-tablet-mode .btnCard .name{font-size:11px;line-height:1.12;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    body.tpv-tablet-mode .btnCard .price{font-size:12px;}
+    body.tpv-tablet-mode .btnCard .meta{display:none;}
+    body.tpv-tablet-mode .customTherapyIcon{width:32px;height:32px;border-radius:12px;font-size:14px;margin:0;}
+    body.tpv-tablet-mode .btnCard.customTherapyCard{min-height:82px;}
+    body.tpv-tablet-mode .extrasGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
+    body.tpv-tablet-mode .supplementsGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
+    body.tpv-tablet-mode .supplementCard{min-height:72px;padding:8px;border-radius:12px;gap:5px;}
+    body.tpv-tablet-mode .supplementCard span{display:none;}
+    body.tpv-tablet-mode .extraLine{padding:7px;border-radius:12px;display:grid;grid-template-columns:1fr;gap:6px;}
+    body.tpv-tablet-mode .extraLine .left span{display:none;}
+    body.tpv-tablet-mode .extraLine .right{gap:5px;}
+    body.tpv-tablet-mode .mini{width:70px;padding:8px;border-radius:10px;font-size:12px;}
+    body.tpv-tablet-mode .assistBar{grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px;}
+    body.tpv-tablet-mode .assistBtn{padding:8px 9px;border-radius:11px;font-size:11px;text-align:center;}
+    body.tpv-tablet-mode .assistBtn span{display:none;}
+    body.tpv-tablet-mode .ticket{padding:9px;border-radius:13px;}
+    body.tpv-tablet-mode .ticket h3{font-size:26px;margin-bottom:3px;}
+    body.tpv-tablet-mode .ticket .sub{font-size:10px;margin-bottom:5px;}
+    body.tpv-tablet-mode .ticket .row{padding:7px 0;}
+    body.tpv-tablet-mode .itemName,
+    body.tpv-tablet-mode .priceVal{font-size:11px;}
+    body.tpv-tablet-mode .itemMeta{font-size:10px;}
+    body.tpv-tablet-mode .qtyCtrls{margin-top:5px;gap:5px;}
+    body.tpv-tablet-mode .qtyBtn{width:24px;height:24px;border-radius:8px;}
+    body.tpv-tablet-mode .removeBtn{padding:5px 8px;font-size:10px;}
+    body.tpv-tablet-mode .totals{margin-top:8px;padding-top:8px;}
+    body.tpv-tablet-mode .totals .line{margin:5px 0;font-size:11px;}
+    body.tpv-tablet-mode .totals .grand{font-size:15px;}
+    body.tpv-tablet-mode .actions{gap:7px;margin-top:8px;}
+    body.tpv-tablet-mode .btn{padding:10px;border-radius:12px;font-size:12px;}
+
+    .payRegisterCard{width:min(860px,96vw);max-height:94vh;border-radius:20px;}
+    .payRegisterBody{padding:12px;display:grid;grid-template-columns:.88fr 1.12fr;gap:12px;}
+    .payBox{border:1px solid rgba(212,175,55,.18);background:rgba(0,0,0,.22);border-radius:16px;padding:12px;}
+    .payBox h4{margin:0 0 8px;font-size:12px;letter-spacing:.35px;color:rgba(244,228,193,.86);}
+    .payTotalDisplay{border:1px solid rgba(212,175,55,.22);border-radius:16px;padding:12px;background:linear-gradient(180deg,rgba(212,175,55,.12),rgba(0,0,0,.22));text-align:center;margin-bottom:10px;}
+    .payTotalDisplay span{display:block;font-size:11px;color:rgba(244,228,193,.68);font-weight:900;text-transform:uppercase;}
+    .payTotalDisplay b{display:block;font-size:34px;color:var(--gold);letter-spacing:.5px;margin-top:2px;}
+    .methodGrid.cashRegisterMethods{grid-template-columns:repeat(2,1fr);gap:8px;}
+    .cashRegisterMethods .methodBtn{padding:11px 10px;border-radius:13px;font-size:12px;}
+    .payCompactSummary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+    .payMiniStat{padding:10px;border:1px solid rgba(212,175,55,.15);background:rgba(0,0,0,.18);border-radius:13px;}
+    .payMiniStat span{display:block;font-size:10px;color:rgba(244,228,193,.62);font-weight:900;text-transform:uppercase;}
+    .payMiniStat b{display:block;color:var(--gold);font-size:16px;margin-top:3px;}
+    .cashDisplayInput{font-size:30px!important;text-align:right;color:var(--gold);font-weight:1000!important;padding:13px!important;border-radius:15px!important;letter-spacing:1px;}
+    .cashRegisterKeypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px;}
+    .cashKey{min-height:54px;border-radius:16px;border:1px solid rgba(212,175,55,.22);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.24));color:var(--text);font-size:22px;font-weight:1000;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.24);}
+    .cashKey:active{transform:translateY(1px);filter:brightness(1.08);}
+    .cashKey.fn{font-size:14px;color:var(--gold);}
+    .cashKey.ok{background:linear-gradient(180deg,var(--gold),#f1d889);color:#18120e;border:none;grid-column:span 2;}
+    .cashKey.danger{color:#ffb2b5;border-color:rgba(255,90,95,.35);background:rgba(255,90,95,.10);}
+    .payChangeDisplay{margin-top:8px;padding:10px;border-radius:14px;border:1px solid rgba(212,175,55,.16);background:rgba(0,0,0,.20);font-size:15px;font-weight:1000;text-align:center;color:rgba(244,228,193,.86);min-height:40px;}
+    .payChangeDisplay.ok{color:#bff7d6;border-color:rgba(43,213,118,.35);background:rgba(43,213,118,.10);}
+    .payChangeDisplay.bad{color:#ffb2b5;border-color:rgba(255,90,95,.35);background:rgba(255,90,95,.10);}
+    .cashQuickGrid.compactCash{grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px;}
+    .cashQuickGrid.compactCash button{padding:9px 6px;border-radius:11px;font-size:12px;}
+    .printHint.compact{padding:8px 10px;border-radius:12px;font-size:11px;margin-top:8px;}
+    .payRegisterFoot{padding:10px 12px;}
+    .payRegisterFoot .btn{min-width:150px;}
+    @media (max-width: 1100px){
+      body.tpv-tablet-mode .gridTPV{grid-template-columns:1fr .72fr;}
+      body.tpv-tablet-mode .btnGrid{grid-template-columns:repeat(4,1fr);}
+      body.tpv-tablet-mode .extrasGrid{grid-template-columns:repeat(2,1fr);}
+      body.tpv-tablet-mode .supplementsGrid{grid-template-columns:repeat(2,1fr);}
+      .payRegisterBody{grid-template-columns:1fr 1fr;}
+    }
+    @media (max-width: 900px){
+      body.tpv-tablet-mode .gridTPV{grid-template-columns:1fr;}
+      .payRegisterBody{grid-template-columns:1fr;}
+      .payRegisterCard{max-height:98vh;overflow:auto;}
+    }
+
+
+
+    /* ===== AGENDA SUPABASE: selector de citas para TPV ===== */
+    .agendaToolbar{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;
+    }
+    .agendaRows{
+      display:grid;grid-template-columns:1fr;gap:10px;max-height:62vh;overflow:auto;padding-right:4px;
+    }
+    .agendaCard{
+      border:1px solid rgba(212,175,55,.18);
+      background:rgba(0,0,0,.22);
+      border-radius:16px;
+      padding:12px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+    }
+    .agendaCard:hover{border-color:rgba(212,175,55,.38);background:rgba(212,175,55,.07)}
+    .agendaCard b{display:block;color:rgba(244,228,193,.96);font-size:13px;margin-bottom:4px}
+    .agendaCard small{display:block;color:rgba(244,228,193,.60);font-size:11px;line-height:1.35}
+    .agendaCard .agendaPrice{font-weight:1000;color:var(--gold);font-size:14px;text-align:right;white-space:nowrap;margin-bottom:7px}
+    .agendaCard .agendaActions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+    @media (max-width: 1100px){
+      .gridTPV{grid-template-columns:1fr}
+      .brand{min-width:auto}
+      .status-pill{min-width:auto}
+      .btnGrid{grid-template-columns: repeat(2, 1fr);}
+      .extrasGrid{grid-template-columns: 1fr;}
+      .modalBody{grid-template-columns:1fr}
+      .search{width:min(92vw,360px)}
+    }
+  </style>
+</head>
+
+<body class="tpv-tablet-mode">
+<div style="position:fixed;right:10px;bottom:10px;z-index:999999;padding:7px 10px;border-radius:999px;background:#d4af37;color:#111;font:800 11px Inter,Arial;box-shadow:0 8px 24px rgba(0,0,0,.28);">TPV V6 COBRO SAFE OK</div>
+<!-- CUSTOM DIALOG OVERLAY -->
+<div id="customDialog">
+  <div class="dialog-box">
+    <div class="dialog-header">
+      <h3 id="dialogTitle">Mensaje</h3>
+    </div>
+    <div class="dialog-body">
+      <p class="dialog-message" id="dialogMessage"></p>
+      <input type="text" class="dialog-input" id="dialogInput" style="display:none;" />
+    </div>
+    <div class="dialog-footer" id="dialogFooter">
+      <!-- Buttons dynamically inserted -->
+    </div>
+  </div>
+</div>
+
+<div class="top">
+  <div class="brand">
+    <div class="logo">
+      <img alt="Ensanbliss" src="https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/refs/heads/main/Negro.png">
+    </div>
+    <div class="title">
+      <h1> Ensanbliss</h1>
+      <span>TPV Pro • Caja intuitiva • Tickets imprimibles • Ventas • Finanzas</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button type="button" class="tabBtn active" id="tabTPV">TPV</button>
+    <button type="button" class="tabBtn" id="tabSales">Ventas</button>
+    <button type="button" class="tabBtn" id="tabInvoices">Facturas</button>
+  </div>
+
+  <div class="actionsTop">
+    <span class="proBadge">Modo profesional</span>
+    <button type="button" class="pillBtn" id="btnTodaySummary">Resumen caja</button>
+    <button type="button" class="pillBtn" id="btnReload">Recargar catálogo</button>
+    <button type="button" class="pillBtn primary" id="btnNewSale">Nueva venta</button>
+    <div class="status-pill">
+      <span class="dot" id="sbDot"></span>
+      <span id="sbText">Conectando a Supabase...</span>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW: TPV -->
+<div class="view active" id="viewTPV">
+  <div class="gridTPV">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Catálogo y ajustes</h2>
+          <small>Botonera para añadir ítems al ticket</small>
+        </div>
+        <div class="rowFlex">
+          <span class="note" id="saleIdLabel">Venta: —</span>
+          <span class="pill gray" id="saleStatusLabel">Estado: new</span>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div class="grid2">
+          <div>
+            <label>Cliente (opcional)</label>
+            <input class="input" id="clientName" placeholder="Nombre del cliente" />
+          </div>
+          <div>
+            <label>Notas (opcional)</label>
+            <input class="input" id="notes" placeholder="Ej: pack, observaciones..." />
+          </div>
+        </div>
+
+        <div class="assistBar">
+          <button type="button" class="assistBtn" id="btnQuickClient"><b>Cliente rápido</b><span>Guardar nombre y preparar ticket</span></button>
+          <button type="button" class="assistBtn" id="btnAgendaPicker"><b>Agenda Supabase</b><span>Cargar cita con suplementos, duración y precio final</span></button>
+          <button type="button" class="assistBtn" id="btnDiscountPercent"><b>Descuento %</b><span>Aplica porcentaje al ticket</span></button>
+          <button type="button" class="assistBtn" id="btnDeposit"><b>Señal / anticipo</b><span>Resta un importe ya pagado</span></button>
+          <button type="button" class="assistBtn" id="btnGiftCard"><b>Bono regalo</b><span>Añade concepto de regalo</span></button>
+        </div>
+
+        <div class="sectionTitle" style="margin-top:14px;">
+          <h3>Terapias</h3>
+          <div class="hint">Pulsa para añadir al ticket</div>
+        </div>
+        <div class="btnGrid" id="therapyGrid"></div>
+
+        <div class="sectionTitle" style="margin-top:18px;">
+          <h3>Suplementos</h3>
+          <div class="hint">Incluye suplementos de Supabase y transporte con importe manual</div>
+        </div>
+        <div class="supplementsGrid" id="supplementsGrid"></div>
+
+        <div class="sectionTitle" style="margin-top:18px;">
+          <h3>Descuento / Incremento</h3>
+          <div class="hint">Negativo = descuento • Positivo = suplemento</div>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <label>Concepto ajuste</label>
+            <input class="input" id="adjName" placeholder="Ej: descuento, suplemento..." value="Ajuste" />
+          </div>
+          <div>
+            <label>Importe (€)</label>
+            <input class="input" id="adjAmount" type="number" step="0.01" value="0" />
+          </div>
+        </div>
+
+        <div class="rowFlex" style="margin-top:12px;">
+          <button type="button" class="pillBtn" id="btnAddAdj">Añadir ajuste</button>
+          <button type="button" class="pillBtn" id="btnAddCustom">Ítem personalizado</button>
+          <div class="spacer"></div>
+          <button type="button" class="pillBtn" id="btnSaveDraft">Guardar en espera</button>
+          <button type="button" class="pillBtn" id="btnLoadDraftPicker">Cargar en espera</button>
+        </div>
+
+        <div class="note" style="margin-top:12px;">
+          Después de cobrar, el TPV se vacía automáticamente. El ticket cobrado queda disponible en la pestaña "Ventas".
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Ticket</h2>
+          <small>Vista de caja • líneas • cantidades</small>
+        </div>
+        <div class="rowFlex">
+          <span class="pill gray" id="ticketItemsCount">0 ítems</span>
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div class="ticket">
+          <h3>Ensanbliss</h3>
+          <div class="sub" id="ticketMeta">—</div>
+
+          <div id="ticketLines"></div>
+
+          <div class="totals">
+            <div class="line"><span>Subtotal líneas</span><b id="subTotal">€0.00</b></div>
+            <div class="line"><span>Ajustes</span><b id="adjTotal">€0.00</b></div>
+            <div class="line"><span>Base imponible</span><b id="taxBaseTotal">€0.00</b></div>
+            <div class="line"><span>IVA 21% incluido</span><b id="taxVatTotal">€0.00</b></div>
+            <div class="line grand"><span>TOTAL</span><span id="grandTotal">€0.00</span></div>
+          </div>
+
+          <div class="actions">
+            <button type="button" class="btn danger" id="btnClear">Vaciar</button>
+            <button type="button" class="btn" id="btnHold">Dejar en espera</button>
+            <button type="button" class="btn primary" id="btnPay">Pagar</button>
+            <button type="button" class="btn" id="btnPrint">Ticket</button>
+            <button type="button" class="btn" id="btnInvoice">Factura</button>
+          </div>
+
+          <div class="note" style="margin-top:10px;" id="debugBox">Listo.</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- VIEW: SALES -->
+<div class="view" id="viewSales">
+  <div class="salesWrap">
+    <section class="panel" style="height:100%;">
+      <div class="panel-header">
+        <div class="rowFlex" style="width:100%;">
+          <div class="rowFlex">
+            <button type="button" class="tabBtn active" id="salesDraft">En espera</button>
+            <button type="button" class="tabBtn" id="salesPaid">Pagadas</button>
+            <button type="button" class="tabBtn" id="salesCancelled">Anuladas</button>
+          </div>
+          <div class="spacer"></div>
+          <input class="search" id="salesSearch" placeholder="Buscar por cliente / notas / id..." />
+          <span class="dateFilterLabel">Desde</span>
+          <input class="dateFilter" id="salesDateFrom" type="date" />
+          <span class="dateFilterLabel">Hasta</span>
+          <input class="dateFilter" id="salesDateTo" type="date" />
+          <button type="button" class="pillBtn" id="btnSalesClearDates">Limpiar fechas</button>
+          <span class="pill gray" id="salesCount">0</span>
+          <button type="button" class="pillBtn" id="btnSalesRefresh">Actualizar</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <table>
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Método</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody id="salesRows"></tbody>
+        </table>
+
+        <div class="note" style="margin-top:10px;">
+          Puedes ver el ticket de cualquier venta haciendo clic en la fila o usando "Ver ticket".
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- VIEW: INVOICES -->
+<div class="view" id="viewInvoices">
+  <div class="salesWrap">
+    <section class="panel" style="height:100%;">
+      <div class="panel-header">
+        <div class="rowFlex" style="width:100%;">
+          <div class="rowFlex">
+            <span class="proBadge">Facturas emitidas</span>
+          </div>
+          <div class="spacer"></div>
+          <input class="search" id="invoiceSearch" placeholder="Buscar por cliente / NIF / nº factura..." />
+          <span class="dateFilterLabel">Desde</span>
+          <input class="dateFilter" id="invoiceDateFrom" type="date" />
+          <span class="dateFilterLabel">Hasta</span>
+          <input class="dateFilter" id="invoiceDateTo" type="date" />
+          <button type="button" class="pillBtn" id="btnInvoiceClearDates">Limpiar fechas</button>
+          <span class="pill gray" id="invoiceCount">0</span>
+          <button type="button" class="pillBtn" id="btnInvoicesRefresh">Actualizar</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <table>
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>N.º factura</th>
+            <th>Cliente</th>
+            <th>NIF / DNI / NIE</th>
+            <th>Total</th>
+            <th>Tipo</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody id="invoiceRows"></tbody>
+        </table>
+        <div class="note" style="margin-top:10px;">
+          Las facturas emitidas quedan guardadas en Supabase. No se eliminan; si hay que corregir una, genera una factura de devolución.
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+
+<!-- MODAL: AGENDA SUPABASE -->
+<div class="modal" id="agendaModal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <b>Agenda Supabase</b>
+      <button type="button" class="closeX" id="agendaClose">Cerrar</button>
+    </div>
+    <div class="modalBodyFull">
+      <div class="agendaToolbar">
+        <span class="dateFilterLabel">Desde</span>
+        <input class="dateFilter" id="agendaDateFrom" type="date" />
+        <span class="dateFilterLabel">Hasta</span>
+        <input class="dateFilter" id="agendaDateTo" type="date" />
+        <input class="search" id="agendaSearch" placeholder="Buscar cliente, terapia, email, teléfono..." />
+        <button type="button" class="pillBtn" id="btnAgendaRefresh">Actualizar</button>
+        <button type="button" class="pillBtn" id="btnAgendaToday">Hoy</button>
+        <span class="pill gray" id="agendaCount">0 citas</span>
+      </div>
+      <div class="agendaRows" id="agendaRows"></div>
+      <div class="note" style="margin-top:10px;">
+        Al cargar una cita se trae la terapia, duración, suplementos seleccionados, precio final, descuento/código aplicado y cliente. Si la reserva tiene un precio final diferente, se crea una línea de ajuste para cuadrar exactamente con la web.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PAYMENT -->
+<div class="modal" id="payModal">
+  <div class="modalCard payRegisterCard">
+    <div class="modalHead">
+      <b>Cobro</b>
+      <button type="button" class="closeX" id="payClose">Cerrar</button>
+    </div>
+
+    <div class="payRegisterBody">
+      <div class="payBox">
+        <div class="payTotalDisplay">
+          <span>Total a cobrar</span>
+          <b id="payTotal">€0.00</b>
+        </div>
+
+        <h4>Método</h4>
+        <div class="methodGrid cashRegisterMethods">
+          <button type="button" class="methodBtn" data-method="cash">Efectivo <span>✓</span></button>
+          <button type="button" class="methodBtn" data-method="card">Tarjeta <span>✓</span></button>
+          <button type="button" class="methodBtn" data-method="bizum">Bizum <span>✓</span></button>
+          <button type="button" class="methodBtn" data-method="paypal">PayPal <span>QR</span></button>
+          <button type="button" class="methodBtn" data-method="groupon">Groupon <span>0€</span></button>
+        </div>
+
+        <div class="qrBox" id="paypalQR">
+          <img alt="PayPal QR" src="https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/main/qrcode.png">
+          <p>Escanear y confirmar.</p>
+        </div>
+
+        <div class="payCompactSummary">
+          <div class="payMiniStat"><span>Ticket</span><b id="paySummary">—</b></div>
+          <div class="payMiniStat"><span>Cliente</span><b id="payClientSummary">—</b></div>
+        </div>
+      </div>
+
+      <div class="payBox">
+        <h4>Importe recibido</h4>
+        <input class="input cashDisplayInput" id="received" type="text" inputmode="decimal" placeholder="0.00" readonly />
+
+        <div class="cashQuickGrid compactCash" id="cashQuickGrid">
+          <button type="button" data-cash="exact">Exacto</button>
+          <button type="button" data-cash="10">10€</button>
+          <button type="button" data-cash="20">20€</button>
+          <button type="button" data-cash="50">50€</button>
+        </div>
+
+        <div class="cashRegisterKeypad" id="cashKeypad">
+          <button type="button" class="cashKey" data-key="7">7</button>
+          <button type="button" class="cashKey" data-key="8">8</button>
+          <button type="button" class="cashKey" data-key="9">9</button>
+          <button type="button" class="cashKey" data-key="4">4</button>
+          <button type="button" class="cashKey" data-key="5">5</button>
+          <button type="button" class="cashKey" data-key="6">6</button>
+          <button type="button" class="cashKey" data-key="1">1</button>
+          <button type="button" class="cashKey" data-key="2">2</button>
+          <button type="button" class="cashKey" data-key="3">3</button>
+          <button type="button" class="cashKey fn" data-key=".">.</button>
+          <button type="button" class="cashKey" data-key="0">0</button>
+          <button type="button" class="cashKey danger" data-key="back">⌫</button>
+          <button type="button" class="cashKey fn" data-key="clear">C</button>
+          <button type="button" class="cashKey ok" data-key="confirm">Cobrar</button>
+        </div>
+
+        <div class="payChangeDisplay" id="changeBox"></div>
+        <label class="printHint compact"><input type="checkbox" id="printAfterPay" checked> Imprimir al cobrar</label>
+      </div>
+    </div>
+
+    <div class="modalFoot payRegisterFoot">
+      <button type="button" class="btn" id="btnConfirmHold">En espera</button>
+      <button type="button" class="btn primary" id="btnConfirmPay">Confirmar pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VIEW TICKET -->
+<div class="modal" id="ticketModal">
+  <div class="modalCard">
+    <div class="modalHead">
+      <b id="ticketModalTitle">Ticket</b>
+      <div class="rowFlex" style="margin-left:auto;">
+        <button type="button" class="pillBtn" id="btnTicketLoadTPV">Cargar al TPV</button>
+        <button type="button" class="pillBtn" id="btnTicketReopenDraft" style="display:none;">Pasar a espera</button>
+        <button type="button" class="closeX" id="ticketClose">Cerrar</button>
+      </div>
+    </div>
+    <div class="modalBodyFull">
+      <div class="ticketViewMeta" id="ticketViewMeta">—</div>
+      <div class="ticketLines" id="ticketViewLines"></div>
+      <div class="tTotals" id="ticketViewTotals"></div>
+    </div>
+    <div class="modalFoot">
+      <button type="button" class="btn" id="btnTicketPrint">Ticket</button>
+      <button type="button" class="btn primary" id="btnTicketInvoice">Factura</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* =========================
+     CUSTOM DIALOG SYSTEM
+  ========================= */
+  const Dialog = {
+    el: null,
+    title: null,
+    message: null,
+    input: null,
+    footer: null,
+    resolve: null,
+
+    init() {
+      this.el = document.getElementById('customDialog');
+      this.title = document.getElementById('dialogTitle');
+      this.message = document.getElementById('dialogMessage');
+      this.input = document.getElementById('dialogInput');
+      this.footer = document.getElementById('dialogFooter');
+    },
+
+    show() {
+      this.el.classList.add('show');
+    },
+
+    hide() {
+      this.el.classList.remove('show');
+      this.input.style.display = 'none';
+      this.input.value = '';
+    },
+
+    alert(message, title = 'Aviso') {
+      return new Promise(resolve => {
+        this.resolve = resolve;
+        this.title.textContent = title;
+        this.message.textContent = message;
+        this.input.style.display = 'none';
+
+        this.footer.innerHTML = `
+          <button type="button" class="dialog-btn primary" onclick="Dialog.resolveOk()">Aceptar</button>
+        `;
+
+        this.show();
+      });
+    },
+
+    confirm(message, title = 'Confirmar', options = {}) {
+      return new Promise(resolve => {
+        this.resolve = resolve;
+        this.title.textContent = title;
+        this.message.textContent = message;
+        this.input.style.display = 'none';
+
+        const confirmClass = options.danger ? 'danger' : 'primary';
+        const confirmText = options.confirmText || 'Aceptar';
+        const cancelText = options.cancelText || 'Cancelar';
+
+        this.footer.innerHTML = `
+          <button type="button" class="dialog-btn" onclick="Dialog.resolveCancel()">${cancelText}</button>
+          <button type="button" class="dialog-btn ${confirmClass}" onclick="Dialog.resolveOk()">${confirmText}</button>
+        `;
+
+        this.show();
+      });
+    },
+
+    prompt(message, defaultValue = '', title = 'Ingrese valor') {
+      return new Promise(resolve => {
+        this.resolve = resolve;
+        this.title.textContent = title;
+        this.message.textContent = message;
+        this.input.style.display = 'block';
+        this.input.value = defaultValue;
+
+        this.footer.innerHTML = `
+          <button type="button" class="dialog-btn" onclick="Dialog.resolveCancel()">Cancelar</button>
+          <button type="button" class="dialog-btn primary" onclick="Dialog.resolvePrompt()">Aceptar</button>
+        `;
+
+        this.show();
+        setTimeout(() => this.input.focus(), 100);
+
+        // Allow Enter key
+        this.input.onkeydown = (e) => {
+          if (e.key === 'Enter') this.resolvePrompt();
+          if (e.key === 'Escape') this.resolveCancel();
+        };
+      });
+    },
+
+    resolveOk() {
+      this.hide();
+      if (this.resolve) this.resolve(true);
+    },
+
+    resolveCancel() {
+      this.hide();
+      if (this.resolve) this.resolve(false);
+    },
+
+    resolvePrompt() {
+      const val = this.input.value.trim();
+      this.hide();
+      if (this.resolve) this.resolve(val || null);
+    }
+  };
+
+  // Initialize on load
+  Dialog.init();
+
+  async function promptAmount(message, defaultValue = "", title = "Importe") {
+    const previousType = Dialog.input.getAttribute("type") || "text";
+    const previousInputMode = Dialog.input.getAttribute("inputmode") || "";
+    Dialog.input.setAttribute("type", "number");
+    Dialog.input.setAttribute("inputmode", "decimal");
+    Dialog.input.setAttribute("step", "0.01");
+    const value = await Dialog.prompt(message, defaultValue, title);
+    Dialog.input.setAttribute("type", previousType);
+    if (previousInputMode) Dialog.input.setAttribute("inputmode", previousInputMode);
+    else Dialog.input.removeAttribute("inputmode");
+    Dialog.input.removeAttribute("step");
+    if (value === null || value === false) return null;
+    const parsed = Number(String(value).replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  /* =========================
+     SAFETY: botones sin descarga ni submit accidental
+     Evita que cualquier botón normal actúe como submit/enlace en tablets o WebViews.
+  ========================= */
+  document.addEventListener('click', function(ev){
+    const btn = ev.target.closest('button');
+    if (!btn) return;
+    if (!btn.getAttribute('type')) btn.setAttribute('type', 'button');
+    if (btn.getAttribute('type') !== 'submit') ev.preventDefault();
+  }, true);
+
+
+  /* =========================
+     SUPABASE
+  ========================= */
+  const SUPABASE_URL = "https://lywjxvrvvpmthmavueyq.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_SeLWhzg88bK4tmD_ODovrg_yD43dfkw";
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  /* =========================
+     Deep-link support
+  ========================= */
+  function getParam(name) {
+    try {
+      return new URLSearchParams(window.location.search).get(name);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function loadAppointmentIntoTPV(appointmentId) {
+    if (!appointmentId) return;
+    try {
+      const { data: apt, error } = await sb
+        .from("appointments")
+        .select("*")
+        .eq("id", appointmentId)
+        .single();
+      if (error) throw error;
+      if (!apt) return;
+
+      linkedAppointmentId = apt.id;
+      selectedClientId = apt.client_id || null;
+
+      if (apt.sale_id) {
+        await loadSaleIntoTPV(apt.sale_id);
+        log(`Cita ya facturada. Ticket ${apt.sale_id} cargado.`);
+        return;
+      }
+
+      ui.clientName.value = (apt.client_name || "").trim();
+      ui.notes.value = [
+        `Cita agenda ${compactDateTime(apt.date, apt.time)}`,
+        apt.email ? `Email: ${apt.email}` : "",
+        apt.phone ? `Tel: ${apt.phone}` : "",
+        apt.notes ? `Notas: ${apt.notes}` : "",
+        appointmentDiscountMeta(apt)
+      ].filter(Boolean).join(" | ");
+
+      cart = [];
+      currentSaleId = null;
+      currentStatus = "new";
+
+      const therapyTitle = (apt.therapy_type || "").trim();
+      const duration = parseInt(apt.duration || 60, 10) || 60;
+      const th = therapies.find(x => (x.title || "").trim().toLowerCase() === therapyTitle.toLowerCase());
+      let therapyPrice = th ? calculateTherapyPriceLikeWeb(th, duration) : parseDbNumber(apt.final_price, 0);
+
+      if (!th && therapyTitle) {
+        const { data: dbTherapy, error: thErr } = await sb
+          .from("therapies")
+          .select("id,title,price,duration,minimum_duration,image_url,supplements_enabled")
+          .eq("title", therapyTitle)
+          .maybeSingle();
+        if (!thErr && dbTherapy) {
+          therapyPrice = calculateTherapyPriceLikeWeb(dbTherapy, duration);
+        }
+      }
+
+      if (therapyTitle) {
+        cart.push({
+          id: crypto.randomUUID(),
+          type: "therapy",
+          refId: th?.id || null,
+          name: therapyTitle,
+          unit: Number(therapyPrice || 0),
+          qty: 1,
+          meta: `${duration} min • precio calculado como la web`
+        });
+      }
+
+      const selectedSupplements = parseSupplementsSelected(apt.supplements_selected);
+      selectedSupplements.forEach(s => addSupplementLine({
+        id: s.supplement_id || s.id || null,
+        therapy_id: s.therapy_id || null,
+        name: s.name || "Suplemento",
+        price: Number(s.price || 0),
+        description: s.description || ""
+      }, "appointment"));
+
+      const currentTicketTotal = cart.reduce((acc, x) => acc + Number(x.unit || 0) * Number(x.qty || 1), 0);
+      if (apt.final_price != null && Number.isFinite(Number(apt.final_price))) {
+        const finalPrice = Number(apt.final_price);
+        const diff = finalPrice - currentTicketTotal;
+        if (Math.abs(diff) >= 0.01) {
+          const discountMeta = appointmentDiscountMeta(apt);
+          const name = diff < 0 ? "Descuento / modificación precio reserva" : "Suplemento / modificación precio reserva";
+          cart.push({
+            id: crypto.randomUUID(),
+            type: "adjustment",
+            refId: apt.discount_code_id || apt.discount_id || null,
+            name,
+            unit: diff,
+            qty: 1,
+            meta: discountMeta || "Cuadra con final_price de la reserva"
+          });
+        }
+      }
+
+      renderTicket();
+      closeModal(ui.agendaModal);
+      log(`Cita cargada desde agenda: ${therapyTitle || "sin terapia"}${selectedSupplements.length ? ` + ${selectedSupplements.length} suplemento(s)` : ""}. Total TPV: ${money(totals().total)}.`);
+    } catch (err) {
+      console.error(err);
+      log(`No se pudo cargar la cita: ${err.message || err}`);
+    }
+  }
+
+  /* =========================
+     UI refs
+  ========================= */
+  const ui = {
+    tabTPV: document.getElementById("tabTPV"),
+    tabSales: document.getElementById("tabSales"),
+    tabInvoices: document.getElementById("tabInvoices"),
+    viewTPV: document.getElementById("viewTPV"),
+    viewSales: document.getElementById("viewSales"),
+    viewInvoices: document.getElementById("viewInvoices"),
+
+    sbDot: document.getElementById("sbDot"),
+    sbText: document.getElementById("sbText"),
+    btnReload: document.getElementById("btnReload"),
+    btnNewSale: document.getElementById("btnNewSale"),
+    btnTodaySummary: document.getElementById("btnTodaySummary"),
+    btnQuickClient: document.getElementById("btnQuickClient"),
+    btnAgendaPicker: document.getElementById("btnAgendaPicker"),
+    btnDiscountPercent: document.getElementById("btnDiscountPercent"),
+    btnDeposit: document.getElementById("btnDeposit"),
+    btnGiftCard: document.getElementById("btnGiftCard"),
+
+    saleIdLabel: document.getElementById("saleIdLabel"),
+    saleStatusLabel: document.getElementById("saleStatusLabel"),
+    clientName: document.getElementById("clientName"),
+    notes: document.getElementById("notes"),
+    therapyGrid: document.getElementById("therapyGrid"),
+    supplementsGrid: document.getElementById("supplementsGrid"),
+    extrasGrid: document.getElementById("extrasGrid"),
+    adjName: document.getElementById("adjName"),
+    adjAmount: document.getElementById("adjAmount"),
+    btnAddAdj: document.getElementById("btnAddAdj"),
+    btnAddCustom: document.getElementById("btnAddCustom"),
+    btnSaveDraft: document.getElementById("btnSaveDraft"),
+    btnLoadDraftPicker: document.getElementById("btnLoadDraftPicker"),
+
+    ticketLines: document.getElementById("ticketLines"),
+    subTotal: document.getElementById("subTotal"),
+    adjTotal: document.getElementById("adjTotal"),
+    taxBaseTotal: document.getElementById("taxBaseTotal"),
+    taxVatTotal: document.getElementById("taxVatTotal"),
+    grandTotal: document.getElementById("grandTotal"),
+    ticketMeta: document.getElementById("ticketMeta"),
+    ticketItemsCount: document.getElementById("ticketItemsCount"),
+    debugBox: document.getElementById("debugBox"),
+    btnClear: document.getElementById("btnClear"),
+    btnHold: document.getElementById("btnHold"),
+    btnPay: document.getElementById("btnPay"),
+    btnPrint: document.getElementById("btnPrint"),
+    btnInvoice: document.getElementById("btnInvoice"),
+
+    payModal: document.getElementById("payModal"),
+    payClose: document.getElementById("payClose"),
+    paypalQR: document.getElementById("paypalQR"),
+    methodBtns: Array.from(document.querySelectorAll(".methodBtn")),
+    paySummary: document.getElementById("paySummary"),
+    payClientSummary: document.getElementById("payClientSummary"),
+    payTotal: document.getElementById("payTotal"),
+    received: document.getElementById("received"),
+    changeBox: document.getElementById("changeBox"),
+    cashQuickGrid: document.getElementById("cashQuickGrid"),
+    cashKeypad: document.getElementById("cashKeypad"),
+    printAfterPay: document.getElementById("printAfterPay"),
+    btnConfirmHold: document.getElementById("btnConfirmHold"),
+    btnConfirmPay: document.getElementById("btnConfirmPay"),
+
+    salesDraft: document.getElementById("salesDraft"),
+    salesPaid: document.getElementById("salesPaid"),
+    salesCancelled: document.getElementById("salesCancelled"),
+    salesSearch: document.getElementById("salesSearch"),
+    salesDateFrom: document.getElementById("salesDateFrom"),
+    salesDateTo: document.getElementById("salesDateTo"),
+    btnSalesClearDates: document.getElementById("btnSalesClearDates"),
+    salesCount: document.getElementById("salesCount"),
+    salesRows: document.getElementById("salesRows"),
+    btnSalesRefresh: document.getElementById("btnSalesRefresh"),
+
+    invoiceSearch: document.getElementById("invoiceSearch"),
+    invoiceDateFrom: document.getElementById("invoiceDateFrom"),
+    invoiceDateTo: document.getElementById("invoiceDateTo"),
+    btnInvoiceClearDates: document.getElementById("btnInvoiceClearDates"),
+    invoiceCount: document.getElementById("invoiceCount"),
+    invoiceRows: document.getElementById("invoiceRows"),
+    btnInvoicesRefresh: document.getElementById("btnInvoicesRefresh"),
+
+    agendaModal: document.getElementById("agendaModal"),
+    agendaClose: document.getElementById("agendaClose"),
+    agendaDateFrom: document.getElementById("agendaDateFrom"),
+    agendaDateTo: document.getElementById("agendaDateTo"),
+    agendaSearch: document.getElementById("agendaSearch"),
+    btnAgendaRefresh: document.getElementById("btnAgendaRefresh"),
+    btnAgendaToday: document.getElementById("btnAgendaToday"),
+    agendaCount: document.getElementById("agendaCount"),
+    agendaRows: document.getElementById("agendaRows"),
+
+    ticketModal: document.getElementById("ticketModal"),
+    ticketClose: document.getElementById("ticketClose"),
+    ticketModalTitle: document.getElementById("ticketModalTitle"),
+    ticketViewMeta: document.getElementById("ticketViewMeta"),
+    ticketViewLines: document.getElementById("ticketViewLines"),
+    ticketViewTotals: document.getElementById("ticketViewTotals"),
+    btnTicketLoadTPV: document.getElementById("btnTicketLoadTPV"),
+    btnTicketReopenDraft: document.getElementById("btnTicketReopenDraft"),
+    btnTicketPrint: document.getElementById("btnTicketPrint"),
+    btnTicketInvoice: document.getElementById("btnTicketInvoice"),
+  };
+
+  /* =========================
+     Helpers
+  ========================= */
+  const BUSINESS = {
+    name: "Ensanbliss",
+    subtitle: "Body & Soul Care",
+    web: "ensanblisss.es",
+    email: "info@ensanbliss.es",
+    phone: "+34 607 496 297",
+    hours: "Todos los días de 09:00 a 21:00",
+    logo: "https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/refs/heads/main/Logo%20B%26W.png",
+    footer: "Gracias por confiar en Ensanbliss. Tu bienestar, nuestra inspiración."
+  };
+
+  const VAT_RATE = 0.21;
+
+  function money(n) {
+    return "€" + Number(n || 0).toFixed(2);
+  }
+
+  function taxBreakdown(total) {
+    const gross = Number(total || 0);
+    const base = gross / (1 + VAT_RATE);
+    const vat = gross - base;
+    return { base, vat, gross };
+  }
+
+  function nowStr() {
+    return new Date().toLocaleString();
+  }
+
+  function isoDate() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? "").replace(/[&<>"']/g, (m) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[m]));
+  }
+
+  function log(msg) {
+    ui.debugBox.textContent = msg;
+  }
+
+  function getTherapyTitleById(id) {
+    const th = therapies.find(t => String(t.id) === String(id));
+    return th?.title || "Suplemento general";
+  }
+
+  function normalizeSupplement(raw) {
+    return {
+      id: raw.id,
+      therapy_id: raw.therapy_id || null,
+      name: raw.name || raw.title || "Suplemento",
+      price: Number(raw.price || raw.amount || 0),
+      description: raw.description || "",
+      sort_order: Number(raw.sort_order || 0)
+    };
+  }
+
+
+
+  function parseDbNumber(value, fallback = 0) {
+    if (value === null || value === undefined || value === "") return fallback;
+    const n = Number(String(value).replace(",", "."));
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function durationMinutesFromTherapy(therapy, fallback = 60) {
+    const raw = therapy?.minimum_duration ?? therapy?.duration ?? fallback;
+    if (typeof raw === "number") return Number(raw) || fallback;
+    const match = String(raw || "").match(/\d+/);
+    return match ? Number(match[0]) : fallback;
+  }
+
+  function calculateTherapyPriceLikeWeb(therapy, durationMinutes) {
+    if (!therapy) return 0;
+    const rate = parseDbNumber(therapy.price, 0);
+    const minDuration = durationMinutesFromTherapy(therapy, 60) || 60;
+    const currentDuration = parseInt(durationMinutes || minDuration, 10) || minDuration;
+    return rate + ((currentDuration - minDuration) * (rate / minDuration));
+  }
+
+  function parseSupplementsSelected(value) {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  }
+
+  function appointmentDiscountMeta(apt) {
+    const parts = [];
+    if (apt?.applied_discount_code) parts.push(`Código ${apt.applied_discount_code}`);
+    if (apt?.applied_discount_amount != null) parts.push(`Ahorro ${money(apt.applied_discount_amount)}`);
+    if (apt?.discount_code_id) parts.push(`discount_code_id ${apt.discount_code_id}`);
+    if (apt?.discount_id) parts.push(`discount_id ${apt.discount_id}`);
+    return parts.join(" • ");
+  }
+
+  function compactDateTime(date, time) {
+    return [date || "", String(time || "").slice(0,5)].filter(Boolean).join(" ");
+  }
+  function supplementDedupKey(sup) {
+    const cleanName = String(sup?.name || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ");
+    return `${cleanName}|${Number(sup?.price || 0).toFixed(2)}`;
+  }
+
+  function uniqueSupplementsByNameAndPrice(list) {
+    const map = new Map();
+
+    (list || []).forEach(sup => {
+      const key = supplementDedupKey(sup);
+      if (!map.has(key)) {
+        map.set(key, {
+          ...sup,
+          therapy_ids: sup.therapy_id ? [sup.therapy_id] : [],
+          duplicate_count: 1
+        });
+        return;
+      }
+
+      const existing = map.get(key);
+      existing.duplicate_count += 1;
+      if (sup.therapy_id && !existing.therapy_ids.some(id => String(id) === String(sup.therapy_id))) {
+        existing.therapy_ids.push(sup.therapy_id);
+      }
+      if (!existing.description && sup.description) existing.description = sup.description;
+      if (Number(sup.sort_order || 0) < Number(existing.sort_order || 0)) existing.sort_order = Number(sup.sort_order || 0);
+    });
+
+    return Array.from(map.values()).sort((a, b) => {
+      const orderDiff = Number(a.sort_order || 0) - Number(b.sort_order || 0);
+      if (orderDiff) return orderDiff;
+      return String(a.name || "").localeCompare(String(b.name || ""), "es", { sensitivity: "base" });
+    });
+  }
+
+  function supplementMetaText(sup) {
+    if (Array.isArray(sup.therapy_ids) && sup.therapy_ids.length > 1) {
+      return `Disponible para ${sup.therapy_ids.length} terapias`;
+    }
+    if (Array.isArray(sup.therapy_ids) && sup.therapy_ids.length === 1) {
+      return getTherapyTitleById(sup.therapy_ids[0]);
+    }
+    return getTherapyTitleById(sup.therapy_id);
+  }
+
+  function addSupplementLine(sup, source = "manual") {
+    addLine({
+      type: "supplement",
+      refId: sup.id || null,
+      name: `Suplemento: ${sup.name}`,
+      unit: Number(sup.price || 0),
+      qty: 1,
+      meta: source === "appointment" ? "Suplemento incluido en la cita" : supplementMetaText(sup)
+    });
+  }
+
+  function paymentLabel(method) {
+    const labels = { cash: "Efectivo", card: "Tarjeta", bizum: "Bizum", paypal: "PayPal", groupon: "Groupon" };
+    return labels[method] || method || "—";
+  }
+
+  /* =========================
+     Groupon: pago en caja 0€ + beneficio contable real
+     Reglas:
+     - Terapias Groupon estándar con PVP 60€ => beneficio Ensanbliss 26,52€
+     - Terapias Afrodita / Apolo con PVP 70€ => beneficio Ensanbliss 34,10€
+     - El cliente no paga en caja: received = 0 y método = Groupon
+     - La venta/factura/contabilidad se guardan por el beneficio neto real.
+  ========================= */
+  const GROUPON_RULES = {
+    standardPvp: 60,
+    standardBenefit: 26.52,
+    apoloAfroditaPvp: 70,
+    apoloAfroditaBenefit: 34.10
+  };
+
+  function normalizeForMatch(value) {
+    return String(value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function isApoloAfroditaLine(line) {
+    const name = normalizeForMatch(line?.name);
+    return name.includes("apolo") || name.includes("afrodita");
+  }
+
+  function grouponBenefitForLine(line) {
+    if (!line || line.type !== "therapy") return 0;
+    const qty = Number(line.qty || 1);
+    const unit = Number(line.unit || 0);
+
+    if (isApoloAfroditaLine(line)) {
+      return GROUPON_RULES.apoloAfroditaBenefit * qty;
+    }
+
+    if (Math.abs(unit - GROUPON_RULES.standardPvp) < 0.01 || unit >= 59) {
+      return GROUPON_RULES.standardBenefit * qty;
+    }
+
+    // Si se marca Groupon sobre una terapia sin precio reconocido, se aplica la regla estándar.
+    return GROUPON_RULES.standardBenefit * qty;
+  }
+
+  function grouponTotalsFromCart() {
+    const original = totals();
+    const benefit = cart.reduce((acc, line) => acc + grouponBenefitForLine(line), 0);
+    const nonTherapyTotal = cart
+      .filter(line => line.type !== "therapy")
+      .reduce((acc, line) => acc + Number(line.unit || 0) * Number(line.qty || 1), 0);
+    const accountingTotal = Math.max(0, benefit + nonTherapyTotal);
+    return {
+      cashSubtotal: 0,
+      cashTotal: 0,
+      accountingSubtotal: accountingTotal,
+      accountingTotal,
+      benefit,
+      originalSubtotal: original.subtotal,
+      originalAdj: original.adj,
+      originalTotal: original.total
+    };
+  }
+
+  function buildGrouponSaleItems(saleId) {
+    const items = [];
+
+    cart.forEach(line => {
+      const qty = Number(line.qty || 1);
+      const originalLineTotal = Number(line.unit || 0) * qty;
+
+      if (line.type === "therapy") {
+        const benefit = grouponBenefitForLine(line);
+        const pvpGroupon = isApoloAfroditaLine(line)
+          ? GROUPON_RULES.apoloAfroditaPvp
+          : GROUPON_RULES.standardPvp;
+
+        items.push({
+          sale_id: saleId,
+          item_type: "therapy",
+          item_ref_id: line.refId || null,
+          name: `${line.name} — Groupon: pagado por el cliente en Groupon, cobro en caja 0€`,
+          qty,
+          unit_price: 0,
+          line_total: 0
+        });
+
+        items.push({
+          sale_id: saleId,
+          item_type: "custom",
+          item_ref_id: null,
+          name: `Beneficio neto Groupon ${line.name} — PVP ${money(pvpGroupon)} / liquidación Ensanbliss`,
+          qty: 1,
+          unit_price: benefit,
+          line_total: benefit
+        });
+        return;
+      }
+
+      // Si hay suplementos/ajustes no Groupon, se mantienen como líneas normales.
+      let itemType = line.type;
+      if (line.type === "adjustment") itemType = "custom";
+      if (!["therapy", "extra", "supplement"].includes(line.type)) itemType = "custom";
+
+      items.push({
+        sale_id: saleId,
+        item_type: itemType,
+        item_ref_id: line.refId || null,
+        name: line.name,
+        qty,
+        unit_price: Number(line.unit || 0),
+        line_total: originalLineTotal
+      });
+    });
+
+    return items;
+  }
+
+  async function replaceSaleItemsForGroupon(saleId) {
+    const items = buildGrouponSaleItems(saleId);
+    const { error: delErr } = await sb.from("sale_items").delete().eq("sale_id", saleId);
+    if (delErr) throw delErr;
+    if (items.length) {
+      const { error: insErr } = await sb.from("sale_items").insert(items);
+      if (insErr) throw insErr;
+    }
+  }
+
+  function totalsForPayment(method = selectedPayMethod) {
+    const base = totals();
+    if (method === "groupon") {
+      const groupon = grouponTotalsFromCart();
+      return {
+        subtotal: groupon.accountingSubtotal,
+        adj: 0,
+        total: groupon.accountingTotal,
+        cashSubtotal: groupon.cashSubtotal,
+        cashTotal: groupon.cashTotal,
+        grouponBenefit: groupon.benefit,
+        originalSubtotal: groupon.originalSubtotal,
+        originalAdj: groupon.originalAdj,
+        originalTotal: groupon.originalTotal
+      };
+    }
+    return { ...base, cashSubtotal: base.subtotal, cashTotal: base.total, grouponBenefit: 0, originalSubtotal: base.subtotal, originalAdj: base.adj, originalTotal: base.total };
+  }
+
+  /* =========================
+     State
+  ========================= */
+  let therapies = [];
+  let supplements = [];
+  let extras = [
+    { key: "transport", title: "Transporte", desc: "Desplazamiento", price: 0 },
+    { key: "materials", title: "Materiales", desc: "Consumibles/desechables", price: 0 },
+    { key: "infrared", title: "Infrarrojos", desc: "Extra de sesión", price: 0 },
+    { key: "volcanic", title: "Piedra volcánica", desc: "Extra de sesión", price: 0 },
+  ];
+
+  let cart = [];
+  let currentSaleId = null;
+  let currentStatus = "new";
+  let selectedPayMethod = "cash";
+  let linkedAppointmentId = null;
+  let selectedClientId = null;
+
+  let salesStatus = "draft";
+  let salesAll = [];
+  let invoicesAll = [];
+
+  let modalSaleId = null;
+  let modalSaleStatus = null;
+
+  /* =========================
+     View routing
+  ========================= */
+  function showView(which) {
+    const isTPV = which === "tpv";
+    const isSales = which === "sales";
+    const isInvoices = which === "invoices";
+    ui.viewTPV.classList.toggle("active", isTPV);
+    ui.viewSales.classList.toggle("active", isSales);
+    ui.viewInvoices.classList.toggle("active", isInvoices);
+    ui.tabTPV.classList.toggle("active", isTPV);
+    ui.tabSales.classList.toggle("active", isSales);
+    ui.tabInvoices.classList.toggle("active", isInvoices);
+  }
+
+  ui.tabTPV.addEventListener("click", () => showView("tpv"));
+  ui.tabSales.addEventListener("click", async () => {
+    showView("sales");
+    await refreshSales();
+  });
+  ui.tabInvoices.addEventListener("click", async () => {
+    showView("invoices");
+    await refreshInvoices();
+  });
+
+  /* =========================
+     Supabase connectivity
+  ========================= */
+  async function pingSupabase() {
+    try {
+      const { error } = await sb.from("therapies").select("id").limit(1);
+      if (error) throw error;
+      ui.sbDot.className = "dot ok";
+      ui.sbText.textContent = "Supabase OK";
+    } catch (e) {
+      ui.sbDot.className = "dot bad";
+      ui.sbText.textContent = "Supabase ERROR";
+      log("Supabase: " + (e?.message || e));
+    }
+  }
+
+  /* =========================
+     Catalog rendering
+  ========================= */
+  function renderTherapies() {
+    ui.therapyGrid.innerHTML = "";
+
+    const customBtn = document.createElement("div");
+    customBtn.className = "btnCard customTherapyCard";
+    customBtn.innerHTML = `
+      <div class="customTherapyIcon"><i class="fa-solid fa-plus"></i></div>
+      <div class="name">Custom</div>
+      <div class="price">Precio manual</div>
+      <div class="meta">Academy, productos u otros conceptos</div>
+    `;
+    customBtn.addEventListener("click", addCustomTicketLine);
+    ui.therapyGrid.appendChild(customBtn);
+
+    therapies.forEach(t => {
+      const btn = document.createElement("div");
+      btn.className = "btnCard";
+
+      const safeTitle = escapeHtml(t.title);
+      const safeImg = escapeHtml(t.image_url || "");
+      const minDuration = durationMinutesFromTherapy(t, 60);
+      const meta = `${minDuration} min${t.supplements_enabled ? " • suplementos" : ""}`;
+
+      btn.innerHTML = `
+        <div class="thumb">
+          ${safeImg ? `<img src="${safeImg}" alt="${safeTitle}" onerror="this.style.display='none'">` : ``}
+        </div>
+        <div class="name">${safeTitle}</div>
+        <div class="price">${money(t.price)}</div>
+        <div class="meta">${escapeHtml(meta)}</div>
+      `;
+
+      btn.addEventListener("click", () => addLine({
+        type: "therapy",
+        refId: t.id,
+        name: t.title,
+        unit: calculateTherapyPriceLikeWeb(t, minDuration),
+        qty: 1,
+        meta: `Duración base web ${minDuration} min${t.supplements_enabled ? " • tiene suplementos" : ""}`
+      }));
+      ui.therapyGrid.appendChild(btn);
+    });
+  }
+
+  function renderSupplements() {
+    ui.supplementsGrid.innerHTML = "";
+
+    const transportCard = document.createElement("button");
+    transportCard.type = "button";
+    transportCard.className = "supplementCard";
+    transportCard.innerHTML = `
+      <b>Transporte</b>
+      <span>Importe manual</span>
+      <strong>Precio libre</strong>
+    `;
+    transportCard.addEventListener("click", addTransportLine);
+    ui.supplementsGrid.appendChild(transportCard);
+
+    const visibleSupplements = uniqueSupplementsByNameAndPrice(supplements);
+
+    if (!visibleSupplements.length) {
+      const empty = document.createElement("div");
+      empty.className = "ticket-empty";
+      empty.style.gridColumn = "1 / -1";
+      empty.innerHTML = `<b>Sin suplementos de Supabase</b><br>Solo está disponible Transporte con importe manual.`;
+      ui.supplementsGrid.appendChild(empty);
+      return;
+    }
+
+    visibleSupplements.forEach(sup => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "supplementCard";
+      const meta = sup.description || supplementMetaText(sup);
+      card.innerHTML = `
+        <b>${escapeHtml(sup.name)}</b>
+        <span>${escapeHtml(meta)}</span>
+        <strong>${money(sup.price)}</strong>
+      `;
+      card.addEventListener("click", () => addSupplementLine(sup));
+      ui.supplementsGrid.appendChild(card);
+    });
+  }
+
+  function renderExtras() {
+    // Bloque eliminado: los extras fijos ya no se muestran.
+    // Transporte vive ahora dentro de Suplementos y abre teclado numérico.
+    if (ui.extrasGrid) ui.extrasGrid.innerHTML = "";
+  }
+
+  async function addTransportLine() {
+    const price = await promptAmount("Introduce el importe del transporte (€)", "0.00", "Transporte");
+    if (price === null) return;
+    if (price < 0) {
+      await Dialog.alert("El transporte no puede tener importe negativo.", "Importe no válido");
+      return;
+    }
+    addLine({
+      type: "supplement",
+      refId: "transport",
+      name: "Transporte",
+      unit: price,
+      qty: 1
+    });
+  }
+
+  async function addCustomTicketLine() {
+    const title = await Dialog.prompt("Título del concepto:", "Ensanbliss Academy", "Custom");
+    if (!title) return;
+
+    const description = await Dialog.prompt("Descripción para el ticket:", "", "Descripción");
+    if (description === false) return;
+
+    const val = await Dialog.prompt("Valor / precio (€):", "0", "Importe");
+    if (val === null) return;
+
+    const price = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(price) || price < 0) {
+      await Dialog.alert("El importe no es válido.", "Importe no válido");
+      return;
+    }
+
+    addLine({
+      type: "custom",
+      refId: null,
+      name: title.trim(),
+      unit: price,
+      qty: 1,
+      meta: (description || "").trim()
+    });
+  }
+
+  /* =========================
+     Ticket: cart ops
+  ========================= */
+  function addLine({ type, refId, name, unit, qty, meta }) {
+    cart.push({
+      id: crypto.randomUUID(),
+      type,
+      refId: refId ?? null,
+      name,
+      unit: Number(unit || 0),
+      qty: Math.max(1, parseInt(qty || 1, 10)),
+      meta: meta || "",
+    });
+    renderTicket();
+  }
+
+  function removeLine(id) {
+    cart = cart.filter(x => x.id !== id);
+    renderTicket();
+  }
+
+  function setQty(id, delta) {
+    const line = cart.find(x => x.id === id);
+    if (!line) return;
+    line.qty = Math.max(1, line.qty + delta);
+    renderTicket();
+  }
+
+  function totals() {
+    const subtotal = cart
+      .filter(x => x.type !== "adjustment")
+      .reduce((acc, x) => acc + (Number(x.unit || 0) * Number(x.qty || 1)), 0);
+
+    const adj = cart
+      .filter(x => x.type === "adjustment")
+      .reduce((acc, x) => acc + (Number(x.unit || 0) * Number(x.qty || 1)), 0);
+
+    const total = Math.max(0, subtotal + adj);
+    return { subtotal, adj, total };
+  }
+
+  function renderTicket() {
+    ui.ticketLines.innerHTML = "";
+    ui.ticketMeta.textContent = `${nowStr()} • ${cart.length} ítem(s)`;
+    ui.ticketItemsCount.textContent = `${cart.length} ítems`;
+
+    if (!cart.length) {
+      ui.ticketLines.innerHTML = `<div class="ticket-empty"><b>Ticket vacío</b><br>Selecciona una terapia, extra o bono para empezar. El flujo recomendado es: cliente → terapia → extras → pago → imprimir.</div>`;
+    }
+
+    cart.forEach(line => {
+      const lineTotal = Number(line.unit || 0) * Number(line.qty || 1);
+
+      const row = document.createElement("div");
+      row.className = "row";
+
+      const left = document.createElement("div");
+      left.innerHTML = `
+        <div class="itemName">${escapeHtml(line.name)}</div>
+        <div class="itemMeta">${escapeHtml(line.type.toUpperCase())} • ${money(line.unit)} x ${line.qty}${line.meta ? ` • ${escapeHtml(line.meta)}` : ""}</div>
+        <div class="qtyCtrls">
+          <button type="button" class="qtyBtn" data-act="minus">-</button>
+          <button type="button" class="qtyBtn" data-act="plus">+</button>
+          <button type="button" class="removeBtn">Eliminar</button>
+        </div>
+      `;
+      const right = document.createElement("div");
+      right.className = "priceVal";
+      right.textContent = money(lineTotal);
+
+      row.appendChild(left);
+      row.appendChild(right);
+
+      left.querySelector('[data-act="minus"]').addEventListener("click", () => setQty(line.id, -1));
+      left.querySelector('[data-act="plus"]').addEventListener("click", () => setQty(line.id, +1));
+      left.querySelector(".removeBtn").addEventListener("click", () => removeLine(line.id));
+
+      ui.ticketLines.appendChild(row);
+    });
+
+    const t = totals();
+    const tax = taxBreakdown(t.total);
+    ui.subTotal.textContent = money(t.subtotal);
+    ui.adjTotal.textContent = money(t.adj);
+    ui.taxBaseTotal.textContent = money(tax.base);
+    ui.taxVatTotal.textContent = money(tax.vat);
+    ui.grandTotal.textContent = money(t.total);
+
+    ui.saleIdLabel.textContent = `Venta: ${currentSaleId ? currentSaleId : "Sin guardar"}`;
+    ui.saleStatusLabel.textContent = `Estado: ${currentStatus}`;
+  }
+
+  /* =========================
+     Agenda Supabase picker
+  ========================= */
+  function agendaDefaultRange() {
+    const today = new Date();
+    const end = new Date();
+    end.setDate(today.getDate() + 30);
+    return {
+      from: today.toISOString().split("T")[0],
+      to: end.toISOString().split("T")[0]
+    };
+  }
+
+  async function refreshAgendaAppointments() {
+    try {
+      ui.agendaRows.innerHTML = `<div class="ticket-empty"><b>Cargando agenda...</b></div>`;
+      const from = ui.agendaDateFrom.value || agendaDefaultRange().from;
+      const to = ui.agendaDateTo.value || agendaDefaultRange().to;
+      const q = normalizeForMatch(ui.agendaSearch.value || "");
+
+      let query = sb.from("appointments")
+        .select("*")
+        .gte("date", from)
+        .lte("date", to)
+        .order("date", { ascending: true })
+        .order("time", { ascending: true })
+        .limit(120);
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      let rows = (data || []).filter(apt => !apt.sale_id);
+      if (q) {
+        rows = rows.filter(apt => normalizeForMatch([
+          apt.client_name,
+          apt.therapy_type,
+          apt.email,
+          apt.phone,
+          apt.status,
+          apt.applied_discount_code
+        ].filter(Boolean).join(" ")).includes(q));
+      }
+
+      ui.agendaCount.textContent = `${rows.length} cita(s)`;
+      ui.agendaRows.innerHTML = "";
+
+      if (!rows.length) {
+        ui.agendaRows.innerHTML = `<div class="ticket-empty"><b>No hay citas pendientes de facturar</b><br>Cambia fechas o búsqueda.</div>`;
+        return;
+      }
+
+      rows.forEach(apt => {
+        const selectedSupplements = parseSupplementsSelected(apt.supplements_selected);
+        const discountMeta = appointmentDiscountMeta(apt);
+        const card = document.createElement("div");
+        card.className = "agendaCard";
+        card.innerHTML = `
+          <div>
+            <b>${escapeHtml(apt.client_name || "Cliente sin nombre")} · ${escapeHtml(apt.therapy_type || "Sin terapia")}</b>
+            <small>${escapeHtml(compactDateTime(apt.date, apt.time))} · ${escapeHtml(String(apt.duration || 60))} min · Estado: ${escapeHtml(apt.status || "-")}</small>
+            <small>${selectedSupplements.length ? `Suplementos: ${escapeHtml(selectedSupplements.map(s => s.name).join(", "))}` : "Sin suplementos"}${discountMeta ? ` · ${escapeHtml(discountMeta)}` : ""}</small>
+          </div>
+          <div>
+            <div class="agendaPrice">${money(apt.final_price || 0)}</div>
+            <div class="agendaActions"><button type="button" class="btnSmall ok">Cargar</button></div>
+          </div>
+        `;
+        card.querySelector("button").addEventListener("click", () => loadAppointmentIntoTPV(apt.id));
+        ui.agendaRows.appendChild(card);
+      });
+    } catch (e) {
+      console.error(e);
+      ui.agendaRows.innerHTML = `<div class="ticket-empty"><b>Error cargando agenda</b><br>${escapeHtml(e?.message || e)}</div>`;
+      ui.agendaCount.textContent = "Error";
+    }
+  }
+
+  async function openAgendaPicker() {
+    const range = agendaDefaultRange();
+    if (!ui.agendaDateFrom.value) ui.agendaDateFrom.value = range.from;
+    if (!ui.agendaDateTo.value) ui.agendaDateTo.value = range.to;
+    openModal(ui.agendaModal);
+    await refreshAgendaAppointments();
+  }
+
+  /* =========================
+     TPV actions
+  ========================= */
+
+  ui.btnAgendaPicker.addEventListener("click", openAgendaPicker);
+  ui.agendaClose.addEventListener("click", () => closeModal(ui.agendaModal));
+  ui.btnAgendaRefresh.addEventListener("click", refreshAgendaAppointments);
+  ui.agendaSearch.addEventListener("input", () => { clearTimeout(window.__agendaSearchTimer); window.__agendaSearchTimer = setTimeout(refreshAgendaAppointments, 250); });
+  ui.agendaDateFrom.addEventListener("change", refreshAgendaAppointments);
+  ui.agendaDateTo.addEventListener("change", refreshAgendaAppointments);
+  ui.btnAgendaToday.addEventListener("click", async () => { const t = isoDate(); ui.agendaDateFrom.value = t; ui.agendaDateTo.value = t; await refreshAgendaAppointments(); });
+
+  ui.btnQuickClient.addEventListener("click", async () => {
+    const name = await Dialog.prompt("Nombre del cliente para este ticket:", ui.clientName.value || "", "Cliente rápido");
+    if (!name) return;
+    ui.clientName.value = name;
+    log("Cliente asignado: " + name);
+  });
+
+  ui.btnDiscountPercent.addEventListener("click", async () => {
+    const { subtotal } = totals();
+    if (subtotal <= 0) { log("Añade primero una terapia o producto para calcular el descuento."); return; }
+    const val = await Dialog.prompt("Porcentaje de descuento (%):", "10", "Descuento porcentual");
+    if (val === null) return;
+    const pct = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(pct) || pct <= 0) { log("Porcentaje no válido."); return; }
+    const discount = -Math.abs(subtotal * pct / 100);
+    addLine({ type: "adjustment", refId: null, name: `Descuento ${pct}%`, unit: discount, qty: 1 });
+  });
+
+  ui.btnDeposit.addEventListener("click", async () => {
+    const val = await Dialog.prompt("Importe de señal/anticipo ya pagado (€):", "0", "Señal / anticipo");
+    if (val === null) return;
+    const amount = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(amount) || amount <= 0) { log("Importe no válido."); return; }
+    addLine({ type: "adjustment", refId: null, name: "Señal / anticipo", unit: -Math.abs(amount), qty: 1 });
+  });
+
+  ui.btnGiftCard.addEventListener("click", async () => {
+    const name = await Dialog.prompt("Nombre del bono regalo:", "Bono regalo Ensanbliss", "Bono regalo");
+    if (!name) return;
+    const val = await Dialog.prompt("Importe del bono regalo (€):", "50", "Importe del bono");
+    if (val === null) return;
+    const amount = Number(String(val).replace(",", "."));
+    if (!Number.isFinite(amount) || amount <= 0) { log("Importe no válido."); return; }
+    addLine({ type: "custom", refId: null, name, unit: amount, qty: 1 });
+  });
+
+  ui.btnAddAdj.addEventListener("click", () => {
+    const name = (ui.adjName.value || "Ajuste").trim();
+    const amt = Number(ui.adjAmount.value || 0);
+    if (!amt) {
+      log("Indica un importe de ajuste (negativo=descuento).");
+      return;
+    }
+    addLine({ type: "adjustment", refId: null, name, unit: amt, qty: 1 });
+    ui.adjAmount.value = "0";
+  });
+
+  ui.btnAddCustom.addEventListener("click", addCustomTicketLine);
+
+  ui.btnClear.addEventListener("click", async () => {
+    const confirmed = await Dialog.confirm("¿Vaciar el ticket actual?", "Vaciar ticket", { danger: true, confirmText: "Vaciar" });
+    if (!confirmed) return;
+    cart = [];
+    renderTicket();
+  });
+
+  /* =========================
+     Sale persistence
+  ========================= */
+  function removeKeysObj(obj, keys) {
+    const out = { ...(obj || {}) };
+    (keys || []).forEach(k => delete out[k]);
+    return out;
+  }
+
+  function missingColumnFromSupabaseError(error) {
+    const msg = String(error?.message || error?.details || "");
+    const patterns = [
+      /Could not find the '([^']+)' column/i,
+      /column "([^"]+)" .* does not exist/i,
+      /'([^']+)' column of/i
+    ];
+    for (const p of patterns) {
+      const m = msg.match(p);
+      if (m && m[1]) return m[1];
+    }
+    return null;
+  }
+
+  function salesPayloadVariants(basePayload) {
+    const base = removeKeysObj(basePayload, ["discount_total"]); // Compatibilidad con tu tabla sales actual.
+    return [
+      { ...base, source: "tpv" },
+      { ...base, source: "manual" },
+      { ...base, source: "pos" },
+      { ...base, source: "appointment" },
+      { ...base, source: "agenda" },
+      removeKeysObj(base, ["source"]),
+      removeKeysObj(base, ["source", "appointment_id"]),
+      removeKeysObj(base, ["source", "appointment_id", "client_id"])
+    ];
+  }
+
+  async function insertSaleSafely(basePayload) {
+    let queue = salesPayloadVariants(basePayload);
+    let lastError = null;
+    const seen = new Set();
+
+    while (queue.length) {
+      const payload = queue.shift();
+      const key = JSON.stringify(Object.keys(payload).sort()) + "|" + JSON.stringify(payload);
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      const { data, error } = await sb.from("sales").insert([payload]).select("id, status").single();
+      if (!error) return data;
+
+      lastError = error;
+      const msg = String(error.message || error.details || "");
+      console.warn("[TPV] Reintentando insert sales con payload compatible:", payload, error);
+
+      const missing = missingColumnFromSupabaseError(error);
+      if (missing && Object.prototype.hasOwnProperty.call(payload, missing)) {
+        queue.unshift(removeKeysObj(payload, [missing]));
+        continue;
+      }
+
+      if (!/source|sales_source_check|column|schema|violates check constraint|could not find/i.test(msg)) break;
+    }
+
+    throw lastError || new Error("No se pudo crear la venta en Supabase");
+  }
+
+  async function updateSaleSafely(saleId, basePayload) {
+    let queue = salesPayloadVariants(basePayload);
+    let lastError = null;
+    const seen = new Set();
+
+    while (queue.length) {
+      const payload = queue.shift();
+      const key = JSON.stringify(Object.keys(payload).sort()) + "|" + JSON.stringify(payload);
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      const { error } = await sb.from("sales").update(payload).eq("id", saleId);
+      if (!error) return;
+
+      lastError = error;
+      const msg = String(error.message || error.details || "");
+      console.warn("[TPV] Reintentando update sales con payload compatible:", payload, error);
+
+      const missing = missingColumnFromSupabaseError(error);
+      if (missing && Object.prototype.hasOwnProperty.call(payload, missing)) {
+        queue.unshift(removeKeysObj(payload, [missing]));
+        continue;
+      }
+
+      if (!/source|sales_source_check|column|schema|violates check constraint|could not find/i.test(msg)) break;
+    }
+
+    throw lastError || new Error("No se pudo actualizar la venta en Supabase");
+  }
+
+  async function upsertSale(status) {
+    if (cart.length === 0) {
+      log("No hay ítems en el ticket.");
+      return null;
+    }
+
+    const { subtotal, total } = totals();
+    const client_name = (ui.clientName.value || "").trim() || null;
+    const notes = (ui.notes.value || "").trim() || null;
+
+    let saleId = currentSaleId;
+
+    if (!saleId) {
+      const data = await insertSaleSafely({
+        status,
+        payment_method: null,
+        currency: "EUR",
+        subtotal,
+        total,
+        client_name,
+        notes,
+        appointment_id: linkedAppointmentId,
+        client_id: selectedClientId
+      });
+      saleId = data.id;
+      currentSaleId = saleId;
+      currentStatus = data.status;
+    } else {
+      await updateSaleSafely(saleId, { status, subtotal, total, client_name, notes, appointment_id: linkedAppointmentId, client_id: selectedClientId });
+
+      const { error: delErr } = await sb.from("sale_items").delete().eq("sale_id", saleId);
+      if (delErr) throw delErr;
+
+      currentStatus = status;
+    }
+
+    const items = cart.map(line => {
+      const lt = Number(line.unit || 0) * Number(line.qty || 1);
+      let itemType = line.type;
+      if (line.type === "adjustment") itemType = "custom";
+      if (!["therapy", "extra", "supplement"].includes(line.type)) itemType = "custom";
+
+      const persistedName = (itemType === "custom" && line.meta) ? `${line.name} — ${line.meta}` : line.name;
+
+      return {
+        sale_id: saleId,
+        item_type: itemType,
+        item_ref_id: line.refId || null,
+        name: persistedName,
+        qty: line.qty,
+        unit_price: line.unit,
+        line_total: lt
+      };
+    });
+
+    const { error: insErr } = await sb.from("sale_items").insert(items);
+    if (insErr) throw insErr;
+
+    renderTicket();
+    return saleId;
+  }
+
+  ui.btnSaveDraft.addEventListener("click", async () => {
+    try {
+      log("Guardando venta en espera...");
+      const id = await upsertSale("draft");
+      log("OK. Venta guardada: " + id);
+    } catch (e) {
+      log("Error guardando: " + (e?.message || e));
+    }
+  });
+
+  ui.btnHold.addEventListener("click", async () => {
+    try {
+      log("Dejando en espera...");
+      const id = await upsertSale("draft");
+      log("OK. En espera: " + id);
+    } catch (e) {
+      log("Error: " + (e?.message || e));
+    }
+  });
+
+  ui.btnNewSale.addEventListener("click", async () => {
+    if (cart.length) {
+      const confirmed = await Dialog.confirm(
+        "¿Crear nueva venta y perder el ticket actual (si no está guardado)?",
+        "Nueva venta",
+        { danger: true }
+      );
+      if (!confirmed) return;
+    }
+    resetTPV();
+    log("Nueva venta lista.");
+  });
+
+  function resetTPV() {
+    currentSaleId = null;
+    currentStatus = "new";
+    cart = [];
+    ui.clientName.value = "";
+    ui.notes.value = "";
+    renderTicket();
+  }
+
+  /* =========================
+     Load draft picker
+  ========================= */
+  async function pickDraftId() {
+    const { data, error } = await sb.from("sales")
+      .select("id, created_at, total, client_name, notes")
+      .eq("status", "draft")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (error) throw error;
+    const list = (data || []).map((s, i) => `${i + 1}) ${s.id} • €${Number(s.total || 0).toFixed(2)} • ${new Date(s.created_at).toLocaleString()} • ${s.client_name || "—"}`).join("\n");
+
+    const choice = await Dialog.prompt(
+      "Ventas en espera (elige número):\n\n" + (list || "No hay ventas en espera."),
+      "1",
+      "Cargar venta en espera"
+    );
+
+    if (!choice) return null;
+    const idx = parseInt(choice, 10) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= data.length) return null;
+    return data[idx].id;
+  }
+
+  async function loadSaleIntoTPV(saleId) {
+    log("Cargando venta " + saleId + "...");
+    const { data: sale, error: saleErr } = await sb.from("sales")
+      .select("id, status, client_name, notes, subtotal, total, appointment_id, client_id")
+      .eq("id", saleId).single();
+    if (saleErr) throw saleErr;
+
+    const { data: items, error: itemsErr } = await sb.from("sale_items")
+      .select("name, qty, unit_price, line_total, item_type, item_ref_id")
+      .eq("sale_id", saleId);
+    if (itemsErr) throw itemsErr;
+
+    currentSaleId = sale.id;
+    currentStatus = sale.status;
+    linkedAppointmentId = sale.appointment_id || linkedAppointmentId || null;
+    selectedClientId = sale.client_id || selectedClientId || null;
+    ui.clientName.value = sale.client_name || "";
+    ui.notes.value = sale.notes || "";
+
+    // MUY IMPORTANTE: la app agenda puede guardar unit_price como precio base
+    // y line_total como precio final real por duración/descuento.
+    // El TPV debe respetar line_total para que 45 min / suplementos / ajustes
+    // cuadren con appointments.final_price y con sales.total.
+    cart = (items || []).map(it => {
+      const qty = Math.max(1, Number(it.qty || 1));
+      const unitPrice = parseDbNumber(it.unit_price, 0);
+      const lineTotalRaw = it.line_total;
+      const hasLineTotal = lineTotalRaw !== null && lineTotalRaw !== undefined && lineTotalRaw !== "";
+      const lineTotal = hasLineTotal ? parseDbNumber(lineTotalRaw, unitPrice * qty) : unitPrice * qty;
+      const effectiveUnit = qty ? (lineTotal / qty) : lineTotal;
+      const baseDiffers = Math.abs((unitPrice * qty) - lineTotal) >= 0.01;
+      const originalMeta = baseDiffers ? `Precio final real desde Supabase: ${money(lineTotal)}${unitPrice ? ` • base ${money(unitPrice)}` : ""}` : "Desde Supabase";
+      return {
+        id: crypto.randomUUID(),
+        type: (it.item_type === "therapy" ? "therapy" : it.item_type === "extra" ? "extra" : it.item_type === "supplement" ? "supplement" : it.item_type === "adjustment" ? "adjustment" : "custom"),
+        refId: it.item_ref_id || null,
+        name: it.name,
+        qty,
+        unit: Number(effectiveUnit || 0),
+        meta: originalMeta
+      };
+    });
+
+    const ticketTotal = cart.reduce((acc, x) => acc + Number(x.unit || 0) * Number(x.qty || 1), 0);
+    const saleTotal = parseDbNumber(sale.total, NaN);
+    if (Number.isFinite(saleTotal) && Math.abs(saleTotal - ticketTotal) >= 0.01) {
+      cart.push({
+        id: crypto.randomUUID(),
+        type: "adjustment",
+        refId: null,
+        name: saleTotal < ticketTotal ? "Descuento / modificación precio reserva" : "Suplemento / modificación precio reserva",
+        qty: 1,
+        unit: saleTotal - ticketTotal,
+        meta: "Ajuste automático para cuadrar con sales.total / final_price"
+      });
+    }
+
+    renderTicket();
+    showView("tpv");
+    log(`Venta cargada desde Supabase. Total TPV: ${money(totals().total)}. Se respeta line_total/sales.total.`);
+  }
+
+  ui.btnLoadDraftPicker.addEventListener("click", async () => {
+    try {
+      const id = await pickDraftId();
+      if (!id) return;
+      await loadSaleIntoTPV(id);
+    } catch (e) {
+      log("Error cargando: " + (e?.message || e));
+    }
+  });
+
+  /* =========================
+     Payment modal
+  ========================= */
+  function openPayModal() {
+    const baseTotals = totals();
+    if (!cart.length) {
+      log("No hay ítems en el ticket.");
+      return;
+    }
+    if (baseTotals.total <= 0 && selectedPayMethod !== "groupon") {
+      log("No hay nada que cobrar.");
+      return;
+    }
+    const { total, cashTotal } = totalsForPayment(selectedPayMethod);
+    ui.payTotal.textContent = money(selectedPayMethod === "groupon" ? cashTotal : total);
+    ui.paySummary.textContent = `${cart.length} ítem(s)`;
+    ui.payClientSummary.textContent = (ui.clientName.value || "—").trim() || "—";
+    ui.received.value = "";
+    updateChangeBox();
+    setPayMethod(selectedPayMethod);
+    ui.payModal.classList.add("open");
+  }
+
+  function closePayModal() {
+    ui.payModal.classList.remove("open");
+  }
+
+  function setPayMethod(m) {
+    selectedPayMethod = m;
+    ui.methodBtns.forEach(b => b.classList.toggle("active", b.dataset.method === m));
+    ui.paypalQR.classList.toggle("show", m === "paypal");
+    const { total, originalTotal, cashTotal } = totalsForPayment(m);
+    ui.payTotal.textContent = money(m === "groupon" ? cashTotal : total);
+    if (m === "groupon") {
+      ui.received.value = "0.00";
+      ui.changeBox.textContent = `Groupon: caja ${money(0)} · beneficio contable ${money(total)} · PVP original ${money(originalTotal)}`;
+      ui.changeBox.classList.remove("bad");
+      ui.changeBox.classList.add("ok");
+      return;
+    }
+    if (m !== "cash") {
+      ui.received.value = Number(total || 0).toFixed(2);
+    } else if (!ui.received.value) {
+      ui.received.value = "";
+    }
+    updateChangeBox();
+  }
+
+  ui.methodBtns.forEach(btn => btn.addEventListener("click", () => setPayMethod(btn.dataset.method)));
+  ui.payClose.addEventListener("click", closePayModal);
+  ui.btnPay.addEventListener("click", openPayModal);
+
+  function parseCashInputValue(){
+    const raw = String(ui.received.value || "").replace(",", ".");
+    const n = Number(raw || 0);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function updateChangeBox(){
+    const received = parseCashInputValue();
+    const { total, originalTotal } = totalsForPayment(selectedPayMethod);
+    ui.changeBox.classList.remove("ok", "bad");
+    if (selectedPayMethod === "groupon") {
+      ui.changeBox.textContent = `Groupon: caja ${money(0)} · beneficio contable ${money(total)} · PVP original ${money(originalTotal)}`;
+      ui.changeBox.classList.add("ok");
+      return;
+    }
+    if (!received) {
+      ui.changeBox.textContent = selectedPayMethod === "cash" ? "Introduce recibido" : "No hace falta efectivo";
+      return;
+    }
+    const change = received - total;
+    if (change >= 0) {
+      ui.changeBox.textContent = `Cambio: ${money(change)}`;
+      ui.changeBox.classList.add("ok");
+    } else {
+      ui.changeBox.textContent = `Falta: ${money(Math.abs(change))}`;
+      ui.changeBox.classList.add("bad");
+    }
+  }
+
+  ui.received.addEventListener("input", updateChangeBox);
+
+  ui.cashQuickGrid.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button[data-cash]");
+    if (!btn) return;
+    const { total, cashTotal } = totalsForPayment(selectedPayMethod);
+    const val = btn.dataset.cash === "exact" ? (selectedPayMethod === "groupon" ? cashTotal : total) : Number(btn.dataset.cash || 0);
+    ui.received.value = Number(val || 0).toFixed(2);
+    updateChangeBox();
+  });
+
+  ui.cashKeypad.addEventListener("click", async (ev) => {
+    const btn = ev.target.closest("button[data-key]");
+    if (!btn) return;
+    const key = btn.dataset.key;
+
+    if (key === "confirm") {
+      ui.btnConfirmPay.click();
+      return;
+    }
+    if (key === "clear") {
+      ui.received.value = "";
+      updateChangeBox();
+      return;
+    }
+    if (key === "back") {
+      ui.received.value = String(ui.received.value || "").slice(0, -1);
+      updateChangeBox();
+      return;
+    }
+    if (key === ".") {
+      if (!ui.received.value.includes(".")) ui.received.value = (ui.received.value || "0") + ".";
+      updateChangeBox();
+      return;
+    }
+
+    const next = String(ui.received.value || "") + key;
+    const parts = next.split(".");
+    if (parts[1] && parts[1].length > 2) return;
+    if (Number(next) > 99999) return;
+    ui.received.value = next.replace(/^0+(?=\d)/, "");
+    updateChangeBox();
+  });
+
+  ui.btnConfirmHold.addEventListener("click", async () => {
+    try {
+      log("Guardando en espera...");
+      await upsertSale("draft");
+      closePayModal();
+      log("OK. Venta en espera.");
+    } catch (e) {
+      log("Error: " + (e?.message || e));
+    }
+  });
+
+  async function updateAppointmentAfterPaymentSafely(appointmentId, saleId) {
+    const attempts = [
+      { status: "completed", completed_at: new Date().toISOString(), sale_id: saleId },
+      { status: "completed", completed_at: new Date().toISOString() },
+      { status: "completed" }
+    ];
+
+    for (const payload of attempts) {
+      const { error } = await sb.from("appointments").update(payload).eq("id", appointmentId);
+      if (!error) return;
+      console.warn("[TPV] No se pudo actualizar appointment con este payload:", payload, error);
+      const msg = String(error.message || error.details || "");
+      if (!/column|schema cache|could not find/i.test(msg)) return; // No bloquear cobro por incidencias no críticas de la cita.
+    }
+  }
+
+  /* =========================
+     Confirm pay
+  ========================= */
+  ui.btnConfirmPay.addEventListener("click", async () => {
+    try {
+      const payTotals = totalsForPayment(selectedPayMethod);
+      const { subtotal, total, originalTotal, cashTotal, grouponBenefit } = payTotals;
+      if (!cart.length) {
+        log("Nada que cobrar.");
+        return;
+      }
+      if (total <= 0 && selectedPayMethod !== "groupon") {
+        log("Nada que cobrar.");
+        return;
+      }
+
+      const received = selectedPayMethod === "groupon" ? 0 : parseCashInputValue();
+      if (selectedPayMethod === "cash" && received > 0 && received < total) {
+        log("El efectivo recibido es inferior al total.");
+        return;
+      }
+
+      log("Confirmando pago...");
+      await upsertSale("pending_payment");
+
+      const client_name = (ui.clientName.value || "").trim() || null;
+      const notesRaw = (ui.notes.value || "").trim();
+      const notes = selectedPayMethod === "groupon"
+        ? [
+            notesRaw,
+            `Pago realizado a través de Groupon. Cobro en caja: €0.00. PVP original: ${money(originalTotal || 0)}. Beneficio neto Ensanbliss para facturación/contabilidad: ${money(grouponBenefit || total || 0)}.`
+          ].filter(Boolean).join(" | ")
+        : (notesRaw || null);
+
+      await updateSaleSafely(currentSaleId, {
+        status: "paid",
+        payment_method: selectedPayMethod,
+        subtotal,
+        total,
+        client_name,
+        notes,
+        appointment_id: linkedAppointmentId,
+        client_id: selectedClientId
+      });
+
+      if (selectedPayMethod === "groupon") {
+        await replaceSaleItemsForGroupon(currentSaleId);
+      }
+
+      const txDesc = selectedPayMethod === "groupon"
+        ? `TPV (Groupon) • Sale ${currentSaleId} • PVP original ${money(originalTotal)} • cobro caja €0.00 • beneficio neto ${money(grouponBenefit || total || 0)}`
+        : `TPV (${paymentLabel(selectedPayMethod)}) • Sale ${currentSaleId} • ${cart.map(x => x.name).slice(0, 3).join(" + ")}${cart.length > 3 ? " +" : ""}`;
+
+      const txRow = {
+        sale_id: currentSaleId,
+        appointment_id: linkedAppointmentId,
+        type: "income",
+        amount: selectedPayMethod === "groupon" ? Number(grouponBenefit || total || 0) : total,
+        description: txDesc,
+        date: isoDate()
+      };
+
+      const { error: txErr } = await sb
+        .from("transactions")
+        .upsert([txRow], { onConflict: "sale_id" });
+      if (txErr) throw txErr;
+
+      if (linkedAppointmentId) {
+        await updateAppointmentAfterPaymentSafely(linkedAppointmentId, currentSaleId);
+      }
+
+      closePayModal();
+
+      const paidId = currentSaleId;
+      const shouldPrint = !!ui.printAfterPay.checked;
+      if (shouldPrint) {
+        await printSaleReceipt(paidId);
+      }
+      resetTPV();
+      log(`Pago registrado. Venta ${paidId} guardada en "Ventas". TPV limpio.`);
+
+    } catch (e) {
+      log("Error confirmando pago: " + (e?.message || e));
+    }
+  });
+
+  ui.btnPrint.addEventListener("click", () => printCurrentTicket("ticket"));
+  ui.btnInvoice.addEventListener("click", () => issueInvoiceFromCurrent());
+
+  /* =========================
+     Sales view
+  ========================= */
+  function setSalesStatus(st) {
+    salesStatus = st;
+    ui.salesDraft.classList.toggle("active", st === "draft");
+    ui.salesPaid.classList.toggle("active", st === "paid");
+    ui.salesCancelled.classList.toggle("active", st === "cancelled");
+  }
+
+  ui.salesDraft.addEventListener("click", async () => {
+    setSalesStatus("draft");
+    await refreshSales();
+  });
+  ui.salesPaid.addEventListener("click", async () => {
+    setSalesStatus("paid");
+    await refreshSales();
+  });
+  ui.salesCancelled.addEventListener("click", async () => {
+    setSalesStatus("cancelled");
+    await refreshSales();
+  });
+  ui.btnSalesRefresh.addEventListener("click", refreshSales);
+  ui.salesSearch.addEventListener("input", renderSales);
+  ui.salesDateFrom.addEventListener("change", refreshSales);
+  ui.salesDateTo.addEventListener("change", refreshSales);
+  ui.btnSalesClearDates.addEventListener("click", async () => {
+    ui.salesDateFrom.value = "";
+    ui.salesDateTo.value = "";
+    await refreshSales();
+  });
+
+  function dateStartISO(dateValue) {
+    if (!dateValue) return null;
+    return `${dateValue}T00:00:00`;
+  }
+
+  function dateEndISO(dateValue) {
+    if (!dateValue) return null;
+    return `${dateValue}T23:59:59.999`;
+  }
+
+  async function refreshSales() {
+    try {
+      let query = sb.from("sales")
+        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+        .eq("status", salesStatus);
+
+      const from = dateStartISO(ui.salesDateFrom.value);
+      const to = dateEndISO(ui.salesDateTo.value);
+
+      if (from) query = query.gte("created_at", from);
+      if (to) query = query.lte("created_at", to);
+
+      const { data, error } = await query
+        .order("created_at", { ascending: false })
+        .limit(500);
+
+      if (error) throw error;
+      salesAll = data || [];
+      renderSales();
+    } catch (e) {
+      ui.salesRows.innerHTML = `<tr><td colspan="7" style="color:rgba(244,228,193,.55);padding:18px">Error: ${escapeHtml(e?.message || e)}</td></tr>`;
+    }
+  }
+
+  function renderSales() {
+    const q = (ui.salesSearch.value || "").toLowerCase().trim();
+    const filtered = salesAll.filter(s => {
+      const blob = `${s.id} ${s.client_name || ""} ${s.notes || ""}`.toLowerCase();
+      return !q || blob.includes(q);
+    });
+
+    const dateInfo = [ui.salesDateFrom.value ? `desde ${ui.salesDateFrom.value}` : "", ui.salesDateTo.value ? `hasta ${ui.salesDateTo.value}` : ""].filter(Boolean).join(" · ");
+    ui.salesCount.textContent = dateInfo ? `${filtered.length} (${dateInfo})` : filtered.length;
+    ui.salesRows.innerHTML = "";
+
+    if (!filtered.length) {
+      ui.salesRows.innerHTML = `<tr><td colspan="7" style="color:rgba(244,228,193,.55);padding:18px">Sin registros.</td></tr>`;
+      return;
+    }
+
+    filtered.forEach(s => {
+      const tr = document.createElement("tr");
+      tr.className = "clickable";
+      tr.innerHTML = `
+        <td>${new Date(s.created_at).toLocaleString()}</td>
+        <td class="mono">${escapeHtml(s.id.slice(0, 10))}…</td>
+        <td>${escapeHtml(s.client_name || "—")}</td>
+        <td><b style="color:#d4af37">${money(s.total)}</b></td>
+        <td><span class="pill">${escapeHtml(s.status)}</span></td>
+        <td>${escapeHtml(s.payment_method || "—")}</td>
+        <td>${renderSalesActions(s)}</td>
+      `;
+
+      tr.addEventListener("click", async (ev) => {
+        const isBtn = ev.target.closest("button");
+        if (isBtn) return;
+        await openTicketModal(s.id);
+      });
+
+      ui.salesRows.appendChild(tr);
+
+      const btnView = tr.querySelector("[data-view]");
+      const btnOpenTPV = tr.querySelector("[data-open]");
+      const btnReopen = tr.querySelector("[data-reopen]");
+      const btnCancel = tr.querySelector("[data-cancel]");
+      const btnPrintSale = tr.querySelector("[data-print]");
+      const btnHard = tr.querySelector("[data-hard]");
+
+      if (btnView) btnView.addEventListener("click", async () => {
+        await openTicketModal(s.id);
+      });
+      if (btnOpenTPV) btnOpenTPV.addEventListener("click", async () => {
+        await loadSaleIntoTPV(s.id);
+      });
+      if (btnReopen) btnReopen.addEventListener("click", async () => {
+        await reopenSaleToDraft(s.id);
+      });
+      if (btnCancel) btnCancel.addEventListener("click", async () => {
+        await cancelSale(s);
+      });
+      if (btnPrintSale) btnPrintSale.addEventListener("click", async () => {
+        await printSaleReceipt(s.id);
+      });
+      if (btnHard) btnHard.addEventListener("click", async () => {
+        await hardDeleteSale(s);
+      });
+    });
+  }
+
+  function renderSalesActions(s) {
+    if (s.status === "draft") {
+      return `
+        <button type="button" class="btnSmall" data-view="1">Ver ticket</button>
+        <button type="button" class="btnSmall" data-print="1">Imprimir</button>
+        <button type="button" class="btnSmall ok" data-open="1">Cargar TPV</button>
+        <button type="button" class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+      `;
+    }
+    if (s.status === "paid") {
+      return `
+        <button type="button" class="btnSmall" data-view="1">Ver ticket</button>
+        <button type="button" class="btnSmall" data-print="1">Imprimir</button>
+        <button type="button" class="btnSmall ok" data-reopen="1">Pasar a espera</button>
+        <button type="button" class="btnSmall danger" data-cancel="1">Anular</button>
+        <button type="button" class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+      `;
+    }
+    return `
+      <button type="button" class="btnSmall" data-view="1">Ver ticket</button>
+      <button type="button" class="btnSmall" data-print="1">Imprimir</button>
+      <button type="button" class="btnSmall danger" data-hard="1">Borrado definitivo</button>
+    `;
+  }
+
+  /* =========================
+     Invoices view + Supabase invoice archive
+  ========================= */
+  const INVOICE_TABLE_SQL = `create table if not exists public.invoices (
+  id uuid primary key default gen_random_uuid(),
+  invoice_number text unique not null,
+  sale_id uuid null,
+  original_invoice_id uuid null references public.invoices(id),
+  issued_at timestamptz not null default now(),
+  status text not null default 'issued',
+  client_name text,
+  client_tax_id text,
+  client_address text,
+  payment_method text,
+  subtotal numeric default 0,
+  adjustments numeric default 0,
+  tax_base numeric default 0,
+  tax_vat numeric default 0,
+  total numeric default 0,
+  notes text,
+  invoice_data jsonb,
+  items jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists invoices_issued_at_idx on public.invoices(issued_at desc);
+create index if not exists invoices_sale_id_idx on public.invoices(sale_id);
+
+alter table public.invoices enable row level security;
+create policy if not exists "Allow anon full invoices" on public.invoices
+for all to anon using (true) with check (true);`;
+
+  function invoiceNumberFromSale(sale, prefix = "FAC") {
+    const cleanSaleId = sale?.id && String(sale.id) !== "Borrador" ? String(sale.id) : "";
+    const stamp = (sale?.created_at ? new Date(sale.created_at) : new Date())
+      .toISOString().replace(/[-:T.Z]/g, "").slice(0, 14);
+    return cleanSaleId ? `${prefix}-${cleanSaleId.slice(0, 8).toUpperCase()}` : `${prefix}-${stamp}`;
+  }
+
+  function invoiceTableMissingMessage(errorMessage = "") {
+    return `No se pudo guardar/leer la factura en Supabase.\n\n` +
+      `Comprueba que existe la tabla public.invoices. Ejecuta este SQL en Supabase SQL Editor:\n\n` +
+      INVOICE_TABLE_SQL +
+      (errorMessage ? `\n\nError técnico: ${errorMessage}` : "");
+  }
+
+  function normalizeInvoiceItems(items, sign = 1) {
+    return (items || []).map(it => {
+      const qty = Number(it.qty || 1);
+      const unit = Number(it.unit_price ?? it.unit ?? 0) * sign;
+      const lt = Number(it.line_total ?? (Number(it.unit_price ?? it.unit ?? 0) * qty)) * sign;
+      return {
+        name: it.name,
+        qty,
+        unit_price: unit,
+        line_total: lt,
+        item_type: it.item_type || it.type || "servicio"
+      };
+    });
+  }
+
+  function saleObjectFromInvoice(inv) {
+    return {
+      id: inv.sale_id || inv.invoice_number,
+      created_at: inv.issued_at || inv.created_at,
+      payment_method: inv.payment_method || "—",
+      subtotal: Number(inv.subtotal || 0),
+      total: Number(inv.total || 0),
+      client_name: inv.client_name || "—",
+      notes: inv.notes || null,
+      invoice_number: inv.invoice_number,
+      invoice_label: inv.status === "refund" ? "FACTURA DE DEVOLUCIÓN" : "FACTURA"
+    };
+  }
+
+  function invoiceDataFromRow(inv) {
+    const extra = inv.invoice_data || {};
+    return {
+      name: inv.client_name || extra.name || "",
+      taxId: inv.client_tax_id || extra.taxId || "",
+      address: inv.client_address || extra.address || ""
+    };
+  }
+
+  async function readSaleWithItems(saleId) {
+    const { data: sale, error: saleErr } = await sb.from("sales")
+      .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+      .eq("id", saleId).single();
+    if (saleErr) throw saleErr;
+
+    const { data: items, error: itemsErr } = await sb.from("sale_items")
+      .select("name, qty, unit_price, line_total, item_type")
+      .eq("sale_id", saleId);
+    if (itemsErr) throw itemsErr;
+    return { sale, items: items || [] };
+  }
+
+  async function findIssuedInvoiceBySale(saleId) {
+    const { data, error } = await sb.from("invoices")
+      .select("*")
+      .eq("sale_id", saleId)
+      .eq("status", "issued")
+      .order("issued_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    return data || null;
+  }
+
+  async function saveInvoiceRecord({ sale, items, invoiceData, status = "issued", originalInvoice = null, reason = "" }) {
+    const sign = status === "refund" ? -1 : 1;
+    const sourceItems = normalizeInvoiceItems(items, sign);
+    const rawSubtotal = Number(sale.subtotal ?? (items || []).reduce((a,it)=>a+Number(it.line_total ?? ((it.unit_price||it.unit||0)*(it.qty||1))),0));
+    const rawTotal = Number(sale.total ?? rawSubtotal);
+    const subtotal = rawSubtotal * sign;
+    const total = rawTotal * sign;
+    const adjustments = total - subtotal;
+    const tax = taxBreakdown(total);
+    const prefix = status === "refund" ? "DEV" : "FAC";
+    const invoiceNumber = status === "refund"
+      ? `${prefix}-${new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 14)}`
+      : invoiceNumberFromSale(sale, prefix);
+
+    const row = {
+      invoice_number: invoiceNumber,
+      sale_id: sale.id && String(sale.id) !== "Borrador" ? sale.id : null,
+      original_invoice_id: originalInvoice?.id || null,
+      issued_at: new Date().toISOString(),
+      status,
+      client_name: invoiceData?.name || sale.client_name || null,
+      client_tax_id: invoiceData?.taxId || null,
+      client_address: invoiceData?.address || null,
+      payment_method: sale.payment_method || null,
+      subtotal,
+      adjustments,
+      tax_base: tax.base,
+      tax_vat: tax.vat,
+      total,
+      notes: status === "refund" ? `Devolución de ${originalInvoice?.invoice_number || "factura"}${reason ? ` · ${reason}` : ""}` : (sale.notes || null),
+      invoice_data: invoiceData || {},
+      items: sourceItems
+    };
+
+    const { data, error } = await sb.from("invoices").insert([row]).select("*").single();
+    if (error) throw error;
+    return data;
+  }
+
+  async function issueInvoiceForSale(saleId, invoiceData = null) {
+    try {
+      const existing = await findIssuedInvoiceBySale(saleId);
+      if (existing) {
+        const html = buildReceiptHtml({
+          sale: saleObjectFromInvoice(existing),
+          items: existing.items || [],
+          title: "Factura Ensanbliss",
+          mode: "invoice",
+          invoiceData: invoiceDataFromRow(existing)
+        });
+        printHtml(html);
+        log(`Factura recuperada: ${existing.invoice_number}`);
+        await refreshInvoicesIfVisible();
+        return existing;
+      }
+
+      const { sale, items } = await readSaleWithItems(saleId);
+      const data = invoiceData || await collectInvoiceData(sale.client_name || "");
+      if (!data) return null;
+
+      const inv = await saveInvoiceRecord({ sale, items, invoiceData: data, status: "issued" });
+      const html = buildReceiptHtml({
+        sale: saleObjectFromInvoice(inv),
+        items: inv.items || [],
+        title: "Factura Ensanbliss",
+        mode: "invoice",
+        invoiceData: invoiceDataFromRow(inv)
+      });
+      printHtml(html);
+      log(`Factura emitida y guardada: ${inv.invoice_number}`);
+      await refreshInvoicesIfVisible();
+      return inv;
+    } catch (e) {
+      await Dialog.alert(invoiceTableMissingMessage(e?.message || e), "Facturas Supabase");
+      return null;
+    }
+  }
+
+  async function issueInvoiceFromCurrent() {
+    try {
+      if (!cart.length) { log("No hay líneas para facturar."); return; }
+      const invoiceData = await collectInvoiceData((ui.clientName.value || "").trim());
+      if (!invoiceData) { log("Factura cancelada: faltan datos fiscales."); return; }
+      if (invoiceData.name) ui.clientName.value = invoiceData.name;
+
+      const saleId = currentSaleId || await upsertSale(currentStatus === "paid" ? "paid" : "draft");
+      if (!saleId) return;
+      await issueInvoiceForSale(saleId, invoiceData);
+    } catch (e) {
+      await Dialog.alert("No se pudo emitir la factura: " + (e?.message || e), "Error");
+    }
+  }
+
+  async function refreshInvoicesIfVisible() {
+    if (ui.viewInvoices?.classList.contains("active")) await refreshInvoices();
+  }
+
+  ui.btnInvoicesRefresh.addEventListener("click", refreshInvoices);
+  ui.invoiceSearch.addEventListener("input", renderInvoices);
+  ui.invoiceDateFrom.addEventListener("change", refreshInvoices);
+  ui.invoiceDateTo.addEventListener("change", refreshInvoices);
+  ui.btnInvoiceClearDates.addEventListener("click", async () => {
+    ui.invoiceDateFrom.value = "";
+    ui.invoiceDateTo.value = "";
+    await refreshInvoices();
+  });
+
+  async function refreshInvoices() {
+    try {
+      let query = sb.from("invoices")
+        .select("*");
+
+      const from = dateStartISO(ui.invoiceDateFrom.value);
+      const to = dateEndISO(ui.invoiceDateTo.value);
+      if (from) query = query.gte("issued_at", from);
+      if (to) query = query.lte("issued_at", to);
+
+      const { data, error } = await query
+        .order("issued_at", { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      invoicesAll = data || [];
+      renderInvoices();
+    } catch (e) {
+      ui.invoiceRows.innerHTML = `<tr><td colspan="7" style="color:rgba(244,228,193,.55);padding:18px;white-space:pre-wrap">${escapeHtml(invoiceTableMissingMessage(e?.message || e))}</td></tr>`;
+    }
+  }
+
+  function renderInvoices() {
+    const q = (ui.invoiceSearch.value || "").toLowerCase().trim();
+    const filtered = invoicesAll.filter(inv => {
+      const blob = `${inv.invoice_number || ""} ${inv.client_name || ""} ${inv.client_tax_id || ""} ${inv.sale_id || ""}`.toLowerCase();
+      return !q || blob.includes(q);
+    });
+
+    const dateInfo = [ui.invoiceDateFrom.value ? `desde ${ui.invoiceDateFrom.value}` : "", ui.invoiceDateTo.value ? `hasta ${ui.invoiceDateTo.value}` : ""].filter(Boolean).join(" · ");
+    ui.invoiceCount.textContent = dateInfo ? `${filtered.length} (${dateInfo})` : filtered.length;
+    ui.invoiceRows.innerHTML = "";
+
+    if (!filtered.length) {
+      ui.invoiceRows.innerHTML = `<tr><td colspan="7" style="color:rgba(244,228,193,.55);padding:18px">Sin facturas emitidas.</td></tr>`;
+      return;
+    }
+
+    filtered.forEach(inv => {
+      const tr = document.createElement("tr");
+      tr.className = "clickable";
+      const isRefund = inv.status === "refund";
+      tr.innerHTML = `
+        <td>${new Date(inv.issued_at || inv.created_at).toLocaleString()}</td>
+        <td class="mono">${escapeHtml(inv.invoice_number || "—")}</td>
+        <td>${escapeHtml(inv.client_name || "—")}</td>
+        <td class="mono">${escapeHtml(inv.client_tax_id || "—")}</td>
+        <td><b style="color:#d4af37">${money(inv.total)}</b></td>
+        <td><span class="pill ${isRefund ? "gray" : ""}">${isRefund ? "devolución" : "emitida"}</span></td>
+        <td>
+          <button type="button" class="btnSmall" data-print-invoice="1">Imprimir</button>
+          ${!isRefund ? `<button type="button" class="btnSmall danger" data-refund-invoice="1">Factura devolución</button>` : ""}
+        </td>
+      `;
+      tr.addEventListener("click", (ev) => {
+        if (ev.target.closest("button")) return;
+        printInvoiceRow(inv);
+      });
+      ui.invoiceRows.appendChild(tr);
+
+      const printBtn = tr.querySelector("[data-print-invoice]");
+      const refundBtn = tr.querySelector("[data-refund-invoice]");
+      if (printBtn) printBtn.addEventListener("click", () => printInvoiceRow(inv));
+      if (refundBtn) refundBtn.addEventListener("click", () => createRefundInvoice(inv));
+    });
+  }
+
+  function printInvoiceRow(inv) {
+    const html = buildReceiptHtml({
+      sale: saleObjectFromInvoice(inv),
+      items: inv.items || [],
+      title: inv.status === "refund" ? "Factura devolución Ensanbliss" : "Factura Ensanbliss",
+      mode: "invoice",
+      invoiceData: invoiceDataFromRow(inv)
+    });
+    printHtml(html);
+  }
+
+  async function createRefundInvoice(originalInvoice) {
+    const confirmed = await Dialog.confirm(
+      `Vas a generar una factura de devolución para ${originalInvoice.invoice_number}.\n\nLa factura original no se eliminará. Se creará una nueva factura negativa.`,
+      "Factura de devolución",
+      { danger: true, confirmText: "Generar devolución" }
+    );
+    if (!confirmed) return;
+
+    const reason = await Dialog.prompt("Motivo de la devolución (opcional):", "Devolución / corrección", "Factura devolución");
+    try {
+      const sale = saleObjectFromInvoice(originalInvoice);
+      const inv = await saveInvoiceRecord({
+        sale,
+        items: originalInvoice.items || [],
+        invoiceData: invoiceDataFromRow(originalInvoice),
+        status: "refund",
+        originalInvoice,
+        reason: reason || ""
+      });
+      printInvoiceRow(inv);
+      await refreshInvoices();
+      log(`Factura de devolución generada: ${inv.invoice_number}`);
+    } catch (e) {
+      await Dialog.alert(invoiceTableMissingMessage(e?.message || e), "Facturas Supabase");
+    }
+  }
+
+  /* =========================
+     Reopen: paid -> draft
+  ========================= */
+  async function reopenSaleToDraft(saleId) {
+    const confirmed = await Dialog.confirm(
+      "¿Pasar esta venta a 'En espera'? Esto la marcará como draft y podrás reabrirla.",
+      "Pasar a espera",
+      { confirmText: "Pasar a espera" }
+    );
+    if (!confirmed) return;
+
+    const { error } = await sb.from("sales").update({ status: "draft", payment_method: null }).eq("id", saleId);
+    if (error) {
+      await Dialog.alert(error.message, "Error");
+      return;
+    }
+    await refreshSales();
+    await openTicketModal(saleId);
+  }
+
+  /* =========================
+     Cancel sale
+  ========================= */
+  async function cancelSale(sale) {
+    const confirmed = await Dialog.confirm(
+      "¿Anular esta venta pagada? Se registrará un reverso en Finanzas (transactions).",
+      "Anular venta",
+      { danger: true, confirmText: "Anular venta" }
+    );
+    if (!confirmed) return;
+
+    const { error: upErr } = await sb.from("sales").update({ status: "cancelled" }).eq("id", sale.id);
+    if (upErr) {
+      await Dialog.alert(upErr.message, "Error");
+      return;
+    }
+
+    const { error: txErr } = await sb.from("transactions").insert([{
+      type: "expense",
+      amount: Number(sale.total || 0),
+      description: `ANULACIÓN TPV • Sale ${sale.id}`,
+      date: isoDate()
+    }]);
+    if (txErr) await Dialog.alert("Venta anulada, pero fallo insert en transactions: " + txErr.message, "Advertencia");
+
+    await refreshSales();
+  }
+
+  /* =========================
+     Hard delete
+  ========================= */
+  async function hardDeleteSale(sale) {
+    try {
+      const { data: linkedInvoices, error: invErr } = await sb.from("invoices")
+        .select("invoice_number")
+        .eq("sale_id", sale.id)
+        .limit(1);
+      if (!invErr && linkedInvoices && linkedInvoices.length) {
+        await Dialog.alert(`Esta venta tiene factura emitida (${linkedInvoices[0].invoice_number}). No se puede borrar la venta vinculada a una factura. Genera una factura de devolución si necesitas corregirla.`, "Factura emitida");
+        return;
+      }
+    } catch (_) {
+      // Si la tabla invoices no existe aún, se mantiene el comportamiento anterior.
+    }
+
+    const confirmed1 = await Dialog.confirm(
+      "Borrado definitivo elimina ticket (sales/sale_items). ¿Confirmas?",
+      "Borrado definitivo",
+      { danger: true, confirmText: "Borrar" }
+    );
+    if (!confirmed1) return;
+
+    const confirmed2 = await Dialog.confirm(
+      "Confirmación final: esta acción no se puede deshacer. ¿Borrar?",
+      "Confirmación final",
+      { danger: true, confirmText: "Sí, borrar definitivamente" }
+    );
+    if (!confirmed2) return;
+
+    const { error: itErr } = await sb.from("sale_items").delete().eq("sale_id", sale.id);
+    if (itErr) {
+      await Dialog.alert(itErr.message, "Error");
+      return;
+    }
+
+    const { error: sErr } = await sb.from("sales").delete().eq("id", sale.id);
+    if (sErr) {
+      await Dialog.alert(sErr.message, "Error");
+      return;
+    }
+
+    await refreshSales();
+  }
+
+
+  /* =========================
+     Ticket printing + daily cash summary
+  ========================= */
+  function receiptCss(mode = "ticket"){
+    if (mode === "invoice") {
+      return `
+      <style>
+        @page{size:A4;margin:12mm;}
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;}
+        .invoiceA4{width:100%;max-width:190mm;margin:0 auto;font-size:11.5px;line-height:1.25;}
+        .invHeader{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:start;border-bottom:3px solid #111;padding-bottom:10px;margin-bottom:10px;}
+        .brandBlock{display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:start;}
+        .invLogo{width:76px;max-width:100%;height:auto;object-fit:contain;display:block;margin:0;}
+        .companyName{font-size:23px;font-weight:900;margin:0 0 2px 0;letter-spacing:.2px;}
+        .companySub{font-size:11px;color:#333;margin-bottom:5px;}
+        .companyData{font-size:10px;color:#333;line-height:1.35;}
+        .invoiceTitleBox{text-align:right;}
+        .invoiceTitle{font-size:32px;font-weight:900;letter-spacing:1px;margin:0 0 8px;text-transform:uppercase;}
+        .invoiceMetaTable{width:100%;border-collapse:collapse;margin-left:auto;max-width:78mm;}
+        .invoiceMetaTable th{background:#111;color:#fff;font-size:10px;text-align:left;padding:6px 7px;text-transform:uppercase;white-space:nowrap;}
+        .invoiceMetaTable td{border:1px solid #bbb;padding:6px 7px;font-size:11px;text-align:left;}
+        .clientBox{border:1px solid #bbb;margin:10px 0 8px;display:grid;grid-template-columns:32mm 1fr;min-height:auto;}
+        .clientBox h3{margin:0;background:#111;color:#fff;padding:8px 9px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;}
+        .clientBody{padding:8px 10px;font-size:11.5px;line-height:1.35;display:grid;grid-template-columns:1.1fr .9fr 1.6fr;gap:8px;align-items:start;}
+        .clientBody .label{display:block;color:#666;font-size:9.5px;font-weight:900;text-transform:uppercase;margin-bottom:2px;}
+        .docInfoBar{border:1px solid #bbb;border-bottom:none;background:#f3f3f3;padding:6px 8px;font-size:10.5px;display:grid;grid-template-columns:1fr 1fr;gap:6px;color:#333;}
+        .docInfoBar b{color:#111;}
+        .docInfoBar .notes{grid-column:1 / -1;}
+        table.lines{width:100%;border-collapse:collapse;margin-top:0;}
+        table.lines th{background:#111;color:#fff;text-align:left;padding:7px 7px;font-size:11px;text-transform:uppercase;}
+        table.lines th.qty, table.lines th.price, table.lines th.amount{text-align:right;}
+        table.lines td{border-bottom:1px solid #d7d7d7;padding:7px 7px;vertical-align:top;font-size:11.5px;}
+        table.lines td.qty, table.lines td.price, table.lines td.amount{text-align:right;white-space:nowrap;}
+        .lineDesc{font-size:9.5px;color:#555;margin-top:2px;text-transform:uppercase;}
+        .invoiceBottom{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-top:12px;align-items:start;}
+        .obsBox{border:1px solid #bbb;min-height:24mm;padding:8px;font-size:10.5px;color:#333;}
+        .obsBox b{display:block;margin-bottom:5px;text-transform:uppercase;}
+        .totalsBox{border:1px solid #bbb;}
+        .totalsBox .trow{display:grid;grid-template-columns:1fr auto;gap:10px;padding:7px 9px;border-bottom:1px solid #ddd;font-size:11px;}
+        .totalsBox .trow:last-child{border-bottom:none;}
+        .totalsBox .grand{background:#111;color:#fff;font-size:15px;font-weight:900;}
+        .payBox{margin-top:8px;font-size:10.5px;color:#333;line-height:1.35;}
+        .legalNote{margin-top:10px;border-top:1px solid #bbb;padding-top:8px;font-size:9.5px;color:#555;line-height:1.35;text-align:center;}
+        .mono{font-family:Consolas,monospace}.muted{color:#666}.right{text-align:right}
+      </style>`;
+    }
+    return `
+      <style>
+        @page{size:80mm auto;margin:4mm;}
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;}
+        .receipt{width:72mm;margin:0 auto;font-size:12px;line-height:1.28;}
+        .center{text-align:center}.muted{color:#555}.mono{font-family:Consolas,monospace}
+        .logo{width:180px;max-width:100%;height:auto;border-radius:0;object-fit:contain;margin:0 auto 8px;display:block}
+        h1{font-size:20px;margin:2px 0 0;font-family:Georgia,serif;}
+        .sub{font-size:11px;margin:2px 0 8px;color:#444}
+        .rule{border-top:1px dashed #333;margin:8px 0}
+        .meta{font-size:11px;display:grid;gap:2px;margin:6px 0;}
+        .line{display:grid;grid-template-columns:1fr auto;gap:8px;padding:5px 0;border-bottom:1px dotted #bbb;}
+        .line:last-child{border-bottom:none}.name{font-weight:700}.desc{font-size:10px;color:#555;margin-top:2px}
+        .totals{margin-top:8px}.trow{display:flex;justify-content:space-between;margin:4px 0}.grand{font-size:16px;font-weight:800;border-top:1px dashed #333;padding-top:6px;margin-top:6px}
+        .footer{font-size:10px;color:#444;text-align:center;margin-top:10px}
+        .summary h2{font-size:15px;margin:8px 0;text-align:center}.summary .row{display:flex;justify-content:space-between;margin:5px 0}
+      </style>`;
+  }
+
+  function printHtml(html){
+    const frame = document.createElement("iframe");
+    frame.style.position = "fixed";
+    frame.style.right = "0";
+    frame.style.bottom = "0";
+    frame.style.width = "0";
+    frame.style.height = "0";
+    frame.style.border = "0";
+    document.body.appendChild(frame);
+    const doc = frame.contentWindow.document;
+    doc.open();
+    doc.write(html);
+    doc.close();
+    frame.onload = () => {
+      setTimeout(() => {
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+        setTimeout(() => document.body.removeChild(frame), 800);
+      }, 150);
+    };
+  }
+
+  function buildReceiptHtml({ sale, items, title = "Ticket", mode = "ticket", invoiceData = null }){
+    const subtotal = Number(sale.subtotal ?? (items || []).reduce((a,it)=>a+Number(it.line_total ?? ((it.unit_price||it.unit||0)*(it.qty||1))),0));
+    const total = Number(sale.total ?? subtotal);
+    const adj = total - subtotal;
+    const tax = taxBreakdown(total);
+    const id = sale.id ? String(sale.id) : "Borrador";
+    const date = sale.created_at ? new Date(sale.created_at).toLocaleString() : nowStr();
+    const isInvoice = mode === "invoice";
+    const cleanSaleId = sale.id && String(sale.id) !== "Borrador" ? String(sale.id) : "";
+    const invoiceStamp = (sale.created_at ? new Date(sale.created_at) : new Date())
+      .toISOString()
+      .replace(/[-:T.Z]/g, "")
+      .slice(0, 14);
+    const invoiceNumber = sale.invoice_number || (cleanSaleId ? `FAC-${cleanSaleId.slice(0, 8).toUpperCase()}` : `FAC-${invoiceStamp}`);
+    const inv = invoiceData || {};
+
+    if (isInvoice) {
+      const rows = (items || []).map((it, idx) => {
+        const qty = Number(it.qty || 1);
+        const unit = Number(it.unit_price ?? it.unit ?? 0);
+        const lt = Number(it.line_total ?? (unit * qty));
+        return `<tr>
+          <td>${idx + 1}</td>
+          <td><b>${escapeHtml(it.name)}</b><div class="lineDesc">${escapeHtml((it.item_type || it.type || "servicio").toUpperCase())}</div></td>
+          <td class="qty">${qty}</td>
+          <td class="price">${money(unit)}</td>
+          <td class="amount"><b>${money(lt)}</b></td>
+        </tr>`;
+      }).join("");
+
+      return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${receiptCss("invoice")}</head><body>
+        <div class="invoiceA4">
+          <div class="invHeader">
+            <div class="brandBlock">
+              <img class="invLogo" src="${BUSINESS.logo}" alt="${BUSINESS.name}">
+              <div>
+                <div class="companyName">${BUSINESS.name}</div>
+                <div class="companySub">${BUSINESS.subtitle}</div>
+                <div class="companyData">
+                  Web: ${BUSINESS.web}<br>
+                  Email: ${BUSINESS.email}<br>
+                  Tel: ${BUSINESS.phone}<br>
+                  Horario habitual: ${BUSINESS.hours}
+                </div>
+              </div>
+            </div>
+            <div class="invoiceTitleBox">
+              <div class="invoiceTitle">${escapeHtml(sale.invoice_label || "FACTURA")}</div>
+              <table class="invoiceMetaTable">
+                <tr><th>N.º factura</th><td class="mono">${escapeHtml(invoiceNumber)}</td></tr>
+                <tr><th>Fecha</th><td>${escapeHtml(date)}</td></tr>
+                <tr><th>Método</th><td>${escapeHtml(sale.payment_method || "—")}</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="clientBox">
+            <h3>Datos del cliente</h3>
+            <div class="clientBody">
+              <div><span class="label">Nombre fiscal</span><b>${escapeHtml(inv.name || sale.client_name || "—")}</b></div>
+              <div><span class="label">NIF / DNI / NIE</span><span class="mono"><b>${escapeHtml(inv.taxId || "—")}</b></span></div>
+              <div><span class="label">Dirección fiscal</span>${inv.address ? escapeHtml(inv.address) : "—"}</div>
+            </div>
+          </div>
+
+          <div class="docInfoBar">
+            <div>Venta: <b class="mono">${escapeHtml(id)}</b></div>
+            <div>Cliente TPV: <b>${escapeHtml(sale.client_name || inv.name || "—")}</b></div>
+            ${sale.notes ? `<div class="notes">Notas: <b>${escapeHtml(sale.notes)}</b></div>` : ""}
+          </div>
+          <table class="lines">
+            <thead>
+              <tr>
+                <th style="width:12mm;">#</th>
+                <th>Descripción</th>
+                <th class="qty" style="width:20mm;">Cant.</th>
+                <th class="price" style="width:28mm;">Precio</th>
+                <th class="amount" style="width:30mm;">Importe</th>
+              </tr>
+            </thead>
+            <tbody>${rows || `<tr><td colspan="5" class="muted">Sin líneas.</td></tr>`}</tbody>
+          </table>
+
+          <div class="invoiceBottom">
+            <div>
+              <div class="obsBox">
+                <b>Observaciones</b>
+                Importes con IVA incluido. Esta factura se genera desde el TPV Ensanbliss y corresponde a los servicios indicados.
+              </div>
+              <div class="payBox">
+                <b>Contacto:</b> ${BUSINESS.phone} · ${BUSINESS.email}<br>
+                <b>Web:</b> ${BUSINESS.web}
+              </div>
+            </div>
+            <div class="totalsBox">
+              <div class="trow"><span>Subtotal líneas</span><b>${money(subtotal)}</b></div>
+              <div class="trow"><span>Ajustes</span><b>${money(adj)}</b></div>
+              <div class="trow"><span>Base imponible</span><b>${money(tax.base)}</b></div>
+              <div class="trow"><span>IVA 21% incluido</span><b>${money(tax.vat)}</b></div>
+              <div class="trow grand"><span>TOTAL</span><span>${money(total)}</span></div>
+            </div>
+          </div>
+
+          <div class="legalNote">
+            ${BUSINESS.footer}<br>
+            Conserve esta factura para cualquier consulta.
+          </div>
+        </div>
+      </body></html>`;
+    }
+
+    const lines = (items || []).map(it => {
+      const qty = Number(it.qty || 1);
+      const unit = Number(it.unit_price ?? it.unit ?? 0);
+      const lt = Number(it.line_total ?? (unit * qty));
+      return `<div class="line"><div><div class="name">${escapeHtml(it.name)}</div><div class="desc">${escapeHtml((it.item_type || it.type || "item").toUpperCase())} • ${money(unit)} x ${qty}</div></div><b>${money(lt)}</b></div>`;
+    }).join("");
+
+    return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${receiptCss("ticket")}</head><body>
+      <div class="receipt">
+        <img class="logo" src="${BUSINESS.logo}" alt="${BUSINESS.name}">
+        <div class="center"><h1>${BUSINESS.name}</h1><div class="sub">${BUSINESS.subtitle}<br>${BUSINESS.web} · ${BUSINESS.email}<br>${BUSINESS.phone}<br>Horario habitual: ${BUSINESS.hours}</div></div>
+        <div class="rule"></div>
+        <div class="meta">
+          <div><b>Ticket:</b> <span class="mono">${escapeHtml(id)}</span></div>
+          <div><b>Fecha:</b> ${escapeHtml(date)}</div>
+          <div><b>Cliente:</b> ${escapeHtml(sale.client_name || "—")}</div>
+          <div><b>Método:</b> ${escapeHtml(sale.payment_method || "—")}</div>
+          ${sale.notes ? `<div><b>Notas:</b> ${escapeHtml(sale.notes)}</div>` : ""}
+        </div>
+        <div class="rule"></div>
+        ${lines || `<div class="center muted">Sin líneas.</div>`}
+        <div class="totals">
+          <div class="trow"><span>Subtotal líneas</span><b>${money(subtotal)}</b></div>
+          <div class="trow"><span>Ajustes</span><b>${money(adj)}</b></div>
+          <div class="trow"><span>Base imponible</span><b>${money(tax.base)}</b></div>
+          <div class="trow"><span>IVA 21% incluido</span><b>${money(tax.vat)}</b></div>
+          <div class="trow grand"><span>TOTAL</span><span>${money(total)}</span></div>
+        </div>
+        <div class="rule"></div>
+        <div class="footer">Web: ${BUSINESS.web}<br>Tel: ${BUSINESS.phone}<br>Horario habitual: ${BUSINESS.hours}<br>${BUSINESS.footer}<br>Conserve este ticket para cualquier consulta.</div>
+      </div>
+    </body></html>`;
+  }
+
+  async function collectInvoiceData(defaultName = "") {
+    const name = await Dialog.prompt("Nombre fiscal completo del cliente:", defaultName || "", "Modo factura");
+    if (!name) return null;
+
+    const taxId = await Dialog.prompt("NIF / DNI / NIE del cliente:", "", "Datos fiscales");
+    if (!taxId) return null;
+
+    const address = await Dialog.prompt("Dirección fiscal del cliente (opcional):", "", "Datos fiscales");
+    return { name: name.trim(), taxId: taxId.trim().toUpperCase(), address: address ? address.trim() : "" };
+  }
+
+  async function printCurrentTicket(mode = "ticket"){
+    const { subtotal, total } = totals();
+    if (!cart.length) { log("No hay líneas para imprimir."); return; }
+    const invoiceData = mode === "invoice" ? await collectInvoiceData((ui.clientName.value || "").trim()) : null;
+    if (mode === "invoice" && !invoiceData) { log("Factura cancelada: faltan datos fiscales."); return; }
+    if (invoiceData?.name) ui.clientName.value = invoiceData.name;
+
+    const sale = {
+      id: currentSaleId || "Borrador",
+      created_at: new Date().toISOString(),
+      status: currentStatus,
+      payment_method: selectedPayMethod || "—",
+      subtotal,
+      total,
+      client_name: (ui.clientName.value || "").trim() || null,
+      notes: (ui.notes.value || "").trim() || null
+    };
+    const items = cart.map(x => ({...x, unit_price:x.unit, item_type:x.type, line_total:Number(x.unit||0)*Number(x.qty||1)}));
+    printHtml(buildReceiptHtml({ sale, items, title: mode === "invoice" ? "Factura Ensanbliss" : "Ticket Ensanbliss", mode, invoiceData }));
+  }
+
+  async function printSaleReceipt(saleId, mode = "ticket"){
+    try{
+      const { data: sale, error: saleErr } = await sb.from("sales")
+        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+        .eq("id", saleId).single();
+      if (saleErr) throw saleErr;
+      const { data: items, error: itemsErr } = await sb.from("sale_items")
+        .select("name, qty, unit_price, line_total, item_type")
+        .eq("sale_id", saleId);
+      if (itemsErr) throw itemsErr;
+      const invoiceData = mode === "invoice" ? await collectInvoiceData(sale.client_name || "") : null;
+      if (mode === "invoice" && !invoiceData) return;
+      printHtml(buildReceiptHtml({ sale, items, title: mode === "invoice" ? "Factura Ensanbliss" : "Ticket Ensanbliss", mode, invoiceData }));
+    }catch(e){
+      await Dialog.alert("No se pudo imprimir el ticket: " + (e?.message || e), "Error de impresión");
+    }
+  }
+
+  async function openTodaySummary(){
+    try{
+      const today = isoDate();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate()+1);
+      const tomorrowStr = tomorrow.toISOString().split("T")[0];
+      const { data, error } = await sb.from("sales")
+        .select("id, created_at, status, payment_method, total, client_name")
+        .gte("created_at", today + "T00:00:00")
+        .lt("created_at", tomorrowStr + "T00:00:00")
+        .order("created_at", { ascending:false });
+      if(error) throw error;
+      const rows = data || [];
+      const paid = rows.filter(x=>x.status === "paid");
+      const cancelled = rows.filter(x=>x.status === "cancelled");
+      const draft = rows.filter(x=>x.status === "draft");
+      const totalPaid = paid.reduce((a,x)=>a+Number(x.total||0),0);
+      const byMethod = paid.reduce((acc,x)=>{ const k=x.payment_method||"sin método"; acc[k]=(acc[k]||0)+Number(x.total||0); return acc; },{});
+      const methods = Object.entries(byMethod).map(([k,v])=>`${k}: ${money(v)}`).join("\n") || "Sin pagos";
+      const msg = `Resumen de caja de hoy (${today})\n\nPagadas: ${paid.length} · ${money(totalPaid)}\nEn espera: ${draft.length}\nAnuladas: ${cancelled.length}\n\nPor método:\n${methods}`;
+      const print = await Dialog.confirm(msg, "Resumen de caja", { confirmText:"Imprimir resumen", cancelText:"Cerrar" });
+      if(print){
+        const html = `<!doctype html><html><head><meta charset="utf-8"><title>Resumen caja</title>${receiptCss()}</head><body><div class="receipt summary"><img class="logo" src="${BUSINESS.logo}"><h2>Resumen caja Ensanbliss</h2><div class="center muted">${today}</div><div class="rule"></div><div class="row"><span>Pagadas</span><b>${paid.length}</b></div><div class="row"><span>Total cobrado</span><b>${money(totalPaid)}</b></div><div class="row"><span>En espera</span><b>${draft.length}</b></div><div class="row"><span>Anuladas</span><b>${cancelled.length}</b></div><div class="rule"></div>${Object.entries(byMethod).map(([k,v])=>`<div class="row"><span>${escapeHtml(k)}</span><b>${money(v)}</b></div>`).join("") || '<div class="center muted">Sin pagos por método.</div>'}<div class="rule"></div><div class="footer">${BUSINESS.web}<br>${BUSINESS.phone}<br>Horario habitual: ${BUSINESS.hours}</div></div></body></html>`;
+        printHtml(html);
+      }
+    }catch(e){
+      await Dialog.alert("No se pudo calcular el resumen de caja: " + (e?.message || e), "Error");
+    }
+  }
+
+  ui.btnTodaySummary.addEventListener("click", openTodaySummary);
+
+  /* =========================
+     Ticket modal
+  ========================= */
+  function openModal(el) {
+    el.classList.add("open");
+  }
+
+  function closeModal(el) {
+    el.classList.remove("open");
+  }
+
+  ui.ticketClose.addEventListener("click", () => closeModal(ui.ticketModal));
+  ui.btnTicketPrint.addEventListener("click", async () => {
+    if (modalSaleId) await printSaleReceipt(modalSaleId, "ticket");
+    else await printCurrentTicket("ticket");
+  });
+
+  ui.btnTicketInvoice.addEventListener("click", async () => {
+    if (modalSaleId) await issueInvoiceForSale(modalSaleId);
+    else await issueInvoiceFromCurrent();
+  });
+
+  ui.btnTicketLoadTPV.addEventListener("click", async () => {
+    if (!modalSaleId) return;
+    await loadSaleIntoTPV(modalSaleId);
+    closeModal(ui.ticketModal);
+  });
+
+  ui.btnTicketReopenDraft.addEventListener("click", async () => {
+    if (!modalSaleId) return;
+    await reopenSaleToDraft(modalSaleId);
+  });
+
+  async function openTicketModal(saleId) {
+    try {
+      const { data: sale, error: saleErr } = await sb.from("sales")
+        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+        .eq("id", saleId).single();
+      if (saleErr) throw saleErr;
+
+      const { data: items, error: itemsErr } = await sb.from("sale_items")
+        .select("name, qty, unit_price, line_total, item_type")
+        .eq("sale_id", saleId);
+      if (itemsErr) throw itemsErr;
+
+      modalSaleId = sale.id;
+      modalSaleStatus = sale.status;
+
+      ui.ticketModalTitle.textContent = `Ticket • ${sale.id.slice(0, 10)}…`;
+      ui.ticketViewMeta.innerHTML = `
+        <span><b>Fecha:</b> ${new Date(sale.created_at).toLocaleString()}</span>
+        <span><b>Estado:</b> ${escapeHtml(sale.status)}</span>
+        <span><b>Método:</b> ${escapeHtml(sale.payment_method || "—")}</span>
+        <span><b>Cliente:</b> ${escapeHtml(sale.client_name || "—")}</span>
+        <span><b>Notas:</b> ${escapeHtml(sale.notes || "—")}</span>
+      `;
+
+      ui.ticketViewLines.innerHTML = "";
+      let computedSubtotal = 0;
+      (items || []).forEach(it => {
+        const lt = Number(it.line_total ?? (Number(it.unit_price || 0) * Number(it.qty || 1)));
+        computedSubtotal += lt;
+
+        const line = document.createElement("div");
+        line.className = "tLine";
+        line.innerHTML = `
+          <div class="tLeft">
+            <b>${escapeHtml(it.name)}</b>
+            <div>${escapeHtml((it.item_type || "").toUpperCase())} • ${money(it.unit_price)} x ${it.qty}</div>
+          </div>
+          <div class="tRight">${money(lt)}</div>
+        `;
+        ui.ticketViewLines.appendChild(line);
+      });
+
+      const sSubtotal = Number(sale.subtotal ?? computedSubtotal);
+      const sTotal = Number(sale.total ?? sSubtotal);
+      const sAdj = sTotal - sSubtotal;
+      const sTax = taxBreakdown(sTotal);
+
+      ui.ticketViewTotals.innerHTML = `
+        <div class="line"><span>Subtotal líneas</span><b>${money(sSubtotal)}</b></div>
+        <div class="line"><span>Ajustes</span><b>${money(sAdj)}</b></div>
+        <div class="line"><span>Base imponible</span><b>${money(sTax.base)}</b></div>
+        <div class="line"><span>IVA 21% incluido</span><b>${money(sTax.vat)}</b></div>
+        <div class="grand"><span>TOTAL</span><span>${money(sTotal)}</span></div>
+      `;
+
+      ui.btnTicketReopenDraft.style.display = (sale.status === "paid" || sale.status === "cancelled") ? "inline-block" : "none";
+
+      openModal(ui.ticketModal);
+    } catch (e) {
+      await Dialog.alert("Error abriendo ticket: " + (e?.message || e), "Error");
+    }
+  }
+
+  /* =========================
+     Catalog load
+  ========================= */
+  async function loadCatalog() {
+    log("Cargando terapias y suplementos...");
+    const { data, error } = await sb
+      .from("therapies")
+      .select("id,title,price,duration,minimum_duration,image_url,supplements_enabled")
+      .order("title", { ascending: true });
+
+    if (error) throw error;
+
+    therapies = (data || []).map(t => ({
+      ...t,
+      price: Number(t.price || 0)
+    }));
+
+    try {
+      const { data: supData, error: supErr } = await sb
+        .from("supplements")
+        .select("id,therapy_id,name,price,description,sort_order")
+        .order("sort_order", { ascending: true });
+      if (supErr) throw supErr;
+      supplements = (supData || []).map(normalizeSupplement);
+    } catch (supErr) {
+      supplements = [];
+      log("Terapias cargadas, pero no se pudieron cargar suplementos: " + (supErr?.message || supErr));
+    }
+
+    renderTherapies();
+    renderSupplements();
+    renderExtras();
+    const uniqueCount = uniqueSupplementsByNameAndPrice(supplements).length;
+    log(`Catálogo listo: ${therapies.length} terapia(s), ${uniqueCount} suplemento(s) visible(s) de ${supplements.length} registro(s).`);
+  }
+
+  ui.btnReload.addEventListener("click", async () => {
+    try {
+      await loadCatalog();
+    } catch (e) {
+      log("Error cargando catálogo: " + (e?.message || e));
+    }
+  });
+
+  /* =========================
+     Init
+  ========================= */
+  (async () => {
+    await pingSupabase();
+    await loadCatalog();
+    renderTicket();
+    setSalesStatus("draft");
+
+    const apptId = getParam("appointment_id");
+    const saleId = getParam("sale_id");
+    if (saleId) {
+      await loadSaleIntoTPV(saleId);
+      log(`Ticket ${saleId} cargado por enlace.`);
+    } else if (apptId) {
+      await loadAppointmentIntoTPV(apptId);
+    }
+    log("TPV listo. Cobro -> guarda en Ventas y limpia el TPV.");
+  })();
+</script>
+</body>
+</html>
