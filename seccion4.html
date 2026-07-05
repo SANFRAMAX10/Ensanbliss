@@ -325,7 +325,20 @@
         opacity: 0;
         animation-delay: 0.1s;
     }
-  </style>
+  
+/* Botón volver compacto añadido */
+.ens-back-arrow{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:34px;height:34px;min-width:34px;border-radius:999px;
+  border:1px solid rgba(212,175,55,.45);
+  background:rgba(255,255,255,.16);
+  color:#d4af37!important;text-decoration:none!important;
+  font-size:18px;font-weight:900;line-height:1;
+  box-shadow:0 6px 18px rgba(0,0,0,.18);
+  backdrop-filter:blur(8px);
+}
+.ens-back-arrow:hover{transform:translateY(-1px);background:rgba(212,175,55,.14)}
+</style>
 </head>
 <body>
 <!-- Fondo -->
@@ -336,7 +349,7 @@
 
 <!-- Banner Superior -->
 <div class="top-banner">
-  <a href="index.html" class="back-button">← Volver</a>
+  <a href="index.html" class="ens-back-arrow" title="Volver" aria-label="Volver">←</a>
   <h1><i class="fab fa-instagram"></i> Síguenos en Instagram</h1>
 </div>
 

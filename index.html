@@ -586,5 +586,13 @@
 })();
 </script>
 
+
+<script id="ensSafeClockPatch">
+(function(){
+  const oldSetInterval = window.setInterval;
+  // Patch only prevents future direct errors from missing clock elements by creating hidden placeholders.
+  ['clock','currentTime','timeNow'].forEach(id=>{ if(!document.getElementById(id)){ const s=document.createElement('span'); s.id=id; s.style.display='none'; document.body.appendChild(s); } });
+})();
+</script>
 </body>
 </html>
