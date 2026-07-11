@@ -893,7 +893,7 @@
 </head>
 
 <body class="tpv-tablet-mode">
-<div style="position:fixed;right:10px;bottom:10px;z-index:999999;padding:7px 10px;border-radius:999px;background:#d4af37;color:#111;font:800 11px Inter,Arial;box-shadow:0 8px 24px rgba(0,0,0,.28);">TPV V6 COBRO SAFE OK</div>
+<div style="position:fixed;right:10px;bottom:10px;z-index:999999;padding:7px 10px;border-radius:999px;background:#d4af37;color:#111;font:800 11px Inter,Arial;box-shadow:0 8px 24px rgba(0,0,0,.28);">TPV V7 GROUPON TICKET OK</div>
 <!-- CUSTOM DIALOG OVERLAY -->
 <div id="customDialog">
   <div class="dialog-box">
@@ -1812,6 +1812,22 @@
     return labels[method] || method || "—";
   }
 
+  // La tabla sales existente no admite "groupon" en su CHECK de payment_method.
+  // Para no romper el cobro, Groupon se identifica mediante una marca inequívoca
+  // en notes y, cuando el constraint lo exige, se persiste con un método compatible.
+  const GROUPON_DB_FALLBACK_METHOD = "card";
+  const GROUPON_NOTE_MARKER = "[PAYMENT:GROUPON]";
+
+  function isGrouponSale(sale) {
+    return normalizeForMatch(sale?.payment_method) === "groupon" ||
+      String(sale?.notes || "").includes(GROUPON_NOTE_MARKER) ||
+      /pago realizado a trav[eé]s de groupon/i.test(String(sale?.notes || ""));
+  }
+
+  function displayPaymentMethod(sale) {
+    return isGrouponSale(sale) ? "Groupon" : paymentLabel(sale?.payment_method);
+  }
+
   /* =========================
      Groupon: pago en caja 0€ + beneficio contable real
      Reglas:
@@ -1821,9 +1837,16 @@
      - La venta/factura/contabilidad se guardan por el beneficio neto real.
   ========================= */
   const GROUPON_RULES = {
+    // Precio habitual mostrado por Ensanbliss.
     standardPvp: 60,
-    standardBenefit: 26.52,
     apoloAfroditaPvp: 70,
+
+    // Precio público pagado por el cliente en Groupon.
+    standardGrouponPrice: 34.99,
+    apoloAfroditaGrouponPrice: 44.99,
+
+    // Liquidación interna para contabilidad. Nunca se imprime en el ticket del cliente.
+    standardBenefit: 26.52,
     apoloAfroditaBenefit: 34.10
   };
 
@@ -1885,34 +1908,50 @@
       const originalLineTotal = Number(line.unit || 0) * qty;
 
       if (line.type === "therapy") {
-        const benefit = grouponBenefitForLine(line);
-        const pvpGroupon = isApoloAfroditaLine(line)
+        const apoloAfrodita = isApoloAfroditaLine(line);
+        const normalPvp = apoloAfrodita
           ? GROUPON_RULES.apoloAfroditaPvp
           : GROUPON_RULES.standardPvp;
+        const grouponPrice = apoloAfrodita
+          ? GROUPON_RULES.apoloAfroditaGrouponPrice
+          : GROUPON_RULES.standardGrouponPrice;
+        const grouponDiscount = Math.max(0, normalPvp - grouponPrice);
 
+        // Líneas exclusivamente orientadas al ticket del cliente.
+        // La liquidación/beneficio interno se conserva en transactions, nunca aquí.
         items.push({
           sale_id: saleId,
           item_type: "therapy",
           item_ref_id: line.refId || null,
-          name: `${line.name} — Groupon: pagado por el cliente en Groupon, cobro en caja 0€`,
+          name: line.name,
           qty,
-          unit_price: 0,
-          line_total: 0
+          unit_price: normalPvp,
+          line_total: normalPvp * qty
         });
 
         items.push({
           sale_id: saleId,
           item_type: "custom",
           item_ref_id: null,
-          name: `Beneficio neto Groupon ${line.name} — PVP ${money(pvpGroupon)} / liquidación Ensanbliss`,
+          name: "Descuento promoción Groupon",
           qty: 1,
-          unit_price: benefit,
-          line_total: benefit
+          unit_price: -(grouponDiscount * qty),
+          line_total: -(grouponDiscount * qty)
+        });
+
+        items.push({
+          sale_id: saleId,
+          item_type: "custom",
+          item_ref_id: null,
+          name: "Importe pagado previamente a través de Groupon",
+          qty: 1,
+          unit_price: -(grouponPrice * qty),
+          line_total: -(grouponPrice * qty)
         });
         return;
       }
 
-      // Si hay suplementos/ajustes no Groupon, se mantienen como líneas normales.
+      // Los suplementos o conceptos no incluidos en Groupon se mantienen como líneas normales.
       let itemType = line.type;
       if (line.type === "adjustment") itemType = "custom";
       if (!["therapy", "extra", "supplement"].includes(line.type)) itemType = "custom";
@@ -2485,14 +2524,26 @@
       if (seen.has(key)) continue;
       seen.add(key);
 
-      const { error } = await sb.from("sales").update(payload).eq("id", saleId);
-      if (!error) return;
+      // IMPORTANTE: select() permite comprobar que Supabase realmente actualizó la fila.
+      // Un update sin select puede devolver error=null aunque RLS haya afectado 0 filas.
+      const { data, error } = await sb
+        .from("sales")
+        .update(payload)
+        .eq("id", saleId)
+        .select("id, status, payment_method")
+        .maybeSingle();
+
+      if (!error && data?.id) return data;
+      if (!error && !data) {
+        lastError = new Error("Supabase no actualizó la venta. Revisa las políticas RLS de la tabla sales.");
+        break;
+      }
 
       lastError = error;
-      const msg = String(error.message || error.details || "");
+      const msg = String(error?.message || error?.details || "");
       console.warn("[TPV] Reintentando update sales con payload compatible:", payload, error);
 
-      const missing = missingColumnFromSupabaseError(error);
+      const missing = missingColumnFromSupabaseError(error || {});
       if (missing && Object.prototype.hasOwnProperty.call(payload, missing)) {
         queue.unshift(removeKeysObj(payload, [missing]));
         continue;
@@ -2502,6 +2553,35 @@
     }
 
     throw lastError || new Error("No se pudo actualizar la venta en Supabase");
+  }
+
+  async function markSalePaidAndVerify(saleId, payload) {
+    try {
+      const updated = await updateSaleSafely(saleId, { ...payload, status: "paid" });
+      if (!updated || updated.status !== "paid") {
+        throw new Error("La venta no quedó registrada como pagada en Supabase.");
+      }
+      return updated;
+    } catch (error) {
+      const msg = String(error?.message || error?.details || error || "");
+      const grouponConstraint = payload?.payment_method === "groupon" &&
+        /sales_payment_method_check|payment_method.*check|violates check constraint/i.test(msg);
+
+      if (!grouponConstraint) throw error;
+
+      console.warn("[TPV] El CHECK de sales no admite Groupon. Se usa un valor compatible y la marca Groupon en notes.", error);
+      const fallbackPayload = {
+        ...payload,
+        status: "paid",
+        payment_method: GROUPON_DB_FALLBACK_METHOD,
+        notes: [GROUPON_NOTE_MARKER, payload?.notes || "Pago realizado a través de Groupon."].filter(Boolean).join(" ")
+      };
+      const updated = await updateSaleSafely(saleId, fallbackPayload);
+      if (!updated || updated.status !== "paid") {
+        throw new Error("La venta Groupon no quedó registrada como pagada en Supabase.");
+      }
+      return updated;
+    }
   }
 
   async function upsertSale(status) {
@@ -2886,13 +2966,14 @@
       const notesRaw = (ui.notes.value || "").trim();
       const notes = selectedPayMethod === "groupon"
         ? [
+            GROUPON_NOTE_MARKER,
             notesRaw,
             `Pago realizado a través de Groupon. Cobro en caja: €0.00. PVP original: ${money(originalTotal || 0)}. Beneficio neto Ensanbliss para facturación/contabilidad: ${money(grouponBenefit || total || 0)}.`
           ].filter(Boolean).join(" | ")
         : (notesRaw || null);
 
-      await updateSaleSafely(currentSaleId, {
-        status: "paid",
+      // Primero se registra y VERIFICA el cobro. Groupon también queda con status="paid".
+      await markSalePaidAndVerify(currentSaleId, {
         payment_method: selectedPayMethod,
         subtotal,
         total,
@@ -2906,40 +2987,68 @@
         await replaceSaleItemsForGroupon(currentSaleId);
       }
 
-      const txDesc = selectedPayMethod === "groupon"
-        ? `TPV (Groupon) • Sale ${currentSaleId} • PVP original ${money(originalTotal)} • cobro caja €0.00 • beneficio neto ${money(grouponBenefit || total || 0)}`
-        : `TPV (${paymentLabel(selectedPayMethod)}) • Sale ${currentSaleId} • ${cart.map(x => x.name).slice(0, 3).join(" + ")}${cart.length > 3 ? " +" : ""}`;
-
-      const txRow = {
-        sale_id: currentSaleId,
-        appointment_id: linkedAppointmentId,
-        type: "income",
-        amount: selectedPayMethod === "groupon" ? Number(grouponBenefit || total || 0) : total,
-        description: txDesc,
-        date: isoDate()
-      };
-
-      const { error: txErr } = await sb
-        .from("transactions")
-        .upsert([txRow], { onConflict: "sale_id" });
-      if (txErr) throw txErr;
-
-      if (linkedAppointmentId) {
-        await updateAppointmentAfterPaymentSafely(linkedAppointmentId, currentSaleId);
-      }
-
-      closePayModal();
-
       const paidId = currentSaleId;
       const shouldPrint = !!ui.printAfterPay.checked;
-      if (shouldPrint) {
-        await printSaleReceipt(paidId);
+
+      // El cobro ya está confirmado: cerrar siempre el modal antes de procesos secundarios.
+      closePayModal();
+      ui.btnConfirmPay.disabled = true;
+
+      // Los movimientos contables y la cita son secundarios: nunca deben dejar abierto
+      // el modal ni impedir que la venta aparezca en Pagadas.
+      try {
+        const txDesc = selectedPayMethod === "groupon"
+          ? `TPV (Groupon) • Sale ${paidId} • PVP original ${money(originalTotal)} • cobro caja €0.00 • beneficio neto ${money(grouponBenefit || total || 0)}`
+          : `TPV (${paymentLabel(selectedPayMethod)}) • Sale ${paidId} • ${cart.map(x => x.name).slice(0, 3).join(" + ")}${cart.length > 3 ? " +" : ""}`;
+
+        const txRow = {
+          sale_id: paidId,
+          appointment_id: linkedAppointmentId,
+          type: "income",
+          amount: selectedPayMethod === "groupon" ? Number(grouponBenefit || total || 0) : total,
+          description: txDesc,
+          date: isoDate()
+        };
+
+        const { error: txErr } = await sb
+          .from("transactions")
+          .upsert([txRow], { onConflict: "sale_id" });
+        if (txErr) console.warn("[TPV] Venta pagada, pero no se guardó el movimiento contable:", txErr);
+      } catch (txError) {
+        console.warn("[TPV] Venta pagada, pero falló el movimiento contable:", txError);
       }
+
+      if (linkedAppointmentId) {
+        try {
+          await updateAppointmentAfterPaymentSafely(linkedAppointmentId, paidId);
+        } catch (appointmentError) {
+          console.warn("[TPV] Venta pagada, pero no se actualizó la cita:", appointmentError);
+        }
+      }
+
+      if (shouldPrint) {
+        try {
+          await printSaleReceipt(paidId);
+        } catch (printError) {
+          console.warn("[TPV] Pago guardado, pero no se pudo abrir la impresión:", printError);
+        }
+      }
+
       resetTPV();
-      log(`Pago registrado. Venta ${paidId} guardada en "Ventas". TPV limpio.`);
+      ui.btnConfirmPay.disabled = false;
+
+      // Actualiza la pestaña Pagadas para que Groupon aparezca inmediatamente.
+      setSalesStatus("paid");
+      await refreshSales();
+      log(`Pago registrado. Venta ${paidId} guardada en Ventas > Pagadas.`);
 
     } catch (e) {
+      ui.btnConfirmPay.disabled = false;
       log("Error confirmando pago: " + (e?.message || e));
+      await Dialog.alert(
+        "No se ha podido completar el cobro: " + (e?.message || e),
+        "Error de cobro"
+      );
     }
   });
 
@@ -2988,8 +3097,66 @@
     return `${dateValue}T23:59:59.999`;
   }
 
+  async function recoverLegacyGrouponPaidSales() {
+    // Recupera ventas Groupon antiguas tanto si payment_method llegó a guardarse
+    // como si el CHECK lo rechazó y solo quedó la marca en notas.
+    const candidates = new Map();
+
+    const queries = [
+      sb.from("sales")
+        .select("id, status, payment_method, notes")
+        .ilike("payment_method", "groupon")
+        .not("status", "in", '(paid,cancelled)')
+        .limit(500),
+      sb.from("sales")
+        .select("id, status, payment_method, notes")
+        .ilike("notes", "%Groupon%")
+        .not("status", "in", '(paid,cancelled)')
+        .limit(500)
+    ];
+
+    for (const queryPromise of queries) {
+      const { data, error } = await queryPromise;
+      if (error) {
+        console.warn("[TPV] No se pudo ejecutar una búsqueda de Groupon antiguos:", error);
+        continue;
+      }
+      for (const sale of (data || [])) candidates.set(sale.id, sale);
+    }
+
+    let recovered = 0;
+    for (const sale of candidates.values()) {
+      if (!isGrouponSale(sale)) continue;
+      try {
+        const compatibleMethod = normalizeForMatch(sale.payment_method) === "groupon"
+          ? GROUPON_DB_FALLBACK_METHOD
+          : (sale.payment_method || GROUPON_DB_FALLBACK_METHOD);
+        const updated = await updateSaleSafely(sale.id, {
+          status: "paid",
+          payment_method: compatibleMethod,
+          notes: String(sale.notes || "").includes(GROUPON_NOTE_MARKER)
+            ? sale.notes
+            : [GROUPON_NOTE_MARKER, sale.notes || "Pago realizado a través de Groupon."].filter(Boolean).join(" ")
+        });
+        if (updated?.status === "paid") recovered++;
+      } catch (err) {
+        console.warn("[TPV] No se pudo recuperar la venta Groupon", sale.id, err);
+      }
+    }
+    return recovered;
+  }
+
   async function refreshSales() {
     try {
+      // Al entrar en Pagadas, repara automáticamente ventas Groupon antiguas
+      // que ya tenían método de pago pero no quedaron con status='paid'.
+      if (salesStatus === "paid") {
+        const recovered = await recoverLegacyGrouponPaidSales();
+        if (recovered > 0) {
+          log(`${recovered} venta(s) Groupon antigua(s) recuperada(s) como pagadas.`);
+        }
+      }
+
       let query = sb.from("sales")
         .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
         .eq("status", salesStatus);
@@ -3037,7 +3204,7 @@
         <td>${escapeHtml(s.client_name || "—")}</td>
         <td><b style="color:#d4af37">${money(s.total)}</b></td>
         <td><span class="pill">${escapeHtml(s.status)}</span></td>
-        <td>${escapeHtml(s.payment_method || "—")}</td>
+        <td>${escapeHtml(displayPaymentMethod(s))}</td>
         <td>${renderSalesActions(s)}</td>
       `;
 
@@ -3586,24 +3753,44 @@ for all to anon using (true) with check (true);`;
 
   function printHtml(html){
     const frame = document.createElement("iframe");
+    frame.setAttribute("aria-hidden", "true");
     frame.style.position = "fixed";
     frame.style.right = "0";
     frame.style.bottom = "0";
-    frame.style.width = "0";
-    frame.style.height = "0";
+    frame.style.width = "1px";
+    frame.style.height = "1px";
+    frame.style.opacity = "0";
+    frame.style.pointerEvents = "none";
     frame.style.border = "0";
     document.body.appendChild(frame);
+
     const doc = frame.contentWindow.document;
     doc.open();
     doc.write(html);
     doc.close();
-    frame.onload = () => {
-      setTimeout(() => {
+
+    const launchPrint = async () => {
+      try {
+        if (doc.fonts?.ready) await doc.fonts.ready;
+        const images = Array.from(doc.images || []);
+        await Promise.all(images.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
+          img.addEventListener("load", resolve, { once:true });
+          img.addEventListener("error", resolve, { once:true });
+          setTimeout(resolve, 1500);
+        })));
         frame.contentWindow.focus();
         frame.contentWindow.print();
-        setTimeout(() => document.body.removeChild(frame), 800);
-      }, 150);
+      } finally {
+        setTimeout(() => {
+          if (frame.parentNode) frame.parentNode.removeChild(frame);
+        }, 2500);
+      }
     };
+
+    frame.onload = () => setTimeout(launchPrint, 200);
+    setTimeout(() => {
+      if (frame.parentNode && doc.readyState === "complete") launchPrint();
+    }, 1200);
   }
 
   function buildReceiptHtml({ sale, items, title = "Ticket", mode = "ticket", invoiceData = null }){
@@ -3657,7 +3844,7 @@ for all to anon using (true) with check (true);`;
               <table class="invoiceMetaTable">
                 <tr><th>N.º factura</th><td class="mono">${escapeHtml(invoiceNumber)}</td></tr>
                 <tr><th>Fecha</th><td>${escapeHtml(date)}</td></tr>
-                <tr><th>Método</th><td>${escapeHtml(sale.payment_method || "—")}</td></tr>
+                <tr><th>Método</th><td>${escapeHtml(displayPaymentMethod(sale))}</td></tr>
               </table>
             </div>
           </div>
@@ -3717,12 +3904,35 @@ for all to anon using (true) with check (true);`;
       </body></html>`;
     }
 
-    const lines = (items || []).map(it => {
+    const isGroupon = isGrouponSale(sale);
+    const sourceItems = Array.isArray(items) ? items : [];
+    const customerItems = isGroupon
+      ? sourceItems.filter(it => !normalizeForMatch(it.name).includes("beneficio neto groupon"))
+      : sourceItems;
+
+    const lines = customerItems.map(it => {
       const qty = Number(it.qty || 1);
       const unit = Number(it.unit_price ?? it.unit ?? 0);
       const lt = Number(it.line_total ?? (unit * qty));
-      return `<div class="line"><div><div class="name">${escapeHtml(it.name)}</div><div class="desc">${escapeHtml((it.item_type || it.type || "item").toUpperCase())} • ${money(unit)} x ${qty}</div></div><b>${money(lt)}</b></div>`;
+      let cleanName = String(it.name || "");
+      if (isGroupon) cleanName = cleanName.replace(/\s*[—-]\s*Groupon:.*$/i, "").trim();
+      const detail = `${escapeHtml((it.item_type || it.type || "item").toUpperCase())} • ${money(unit)} x ${qty}`;
+      return `<div class="line"><div><div class="name">${escapeHtml(cleanName)}</div><div class="desc">${detail}</div></div><b>${money(lt)}</b></div>`;
     }).join("");
+
+    // En Groupon las líneas del ticket forman esta operación:
+    // PVP habitual - descuento promocional - importe ya pagado en Groupon = 0 € en Ensanbliss.
+    const customerSubtotal = isGroupon
+      ? customerItems.reduce((sum, it) => sum + Number(it.line_total ?? ((it.unit_price || 0) * (it.qty || 1))), 0)
+      : subtotal;
+    const customerAdj = isGroupon ? 0 : adj;
+    const customerTotal = isGroupon ? 0 : total;
+    const customerTax = taxBreakdown(customerTotal);
+    const grouponPaidBox = isGroupon ? `
+      <div style="margin:10px 0;padding:10px;border:2px solid #111;text-align:center;font-weight:900;font-size:13px;line-height:1.35;">
+        ✓ BONO GROUPON VERIFICADO<br>
+        <span style="font-size:10px;font-weight:600;">El cliente ya realizó el pago a través de Groupon. Total cobrado en Ensanbliss: €0.00.</span>
+      </div>` : "";
 
     return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${receiptCss("ticket")}</head><body>
       <div class="receipt">
@@ -3733,17 +3943,27 @@ for all to anon using (true) with check (true);`;
           <div><b>Ticket:</b> <span class="mono">${escapeHtml(id)}</span></div>
           <div><b>Fecha:</b> ${escapeHtml(date)}</div>
           <div><b>Cliente:</b> ${escapeHtml(sale.client_name || "—")}</div>
-          <div><b>Método:</b> ${escapeHtml(sale.payment_method || "—")}</div>
-          ${sale.notes ? `<div><b>Notas:</b> ${escapeHtml(sale.notes)}</div>` : ""}
+          <div><b>Método:</b> ${escapeHtml(displayPaymentMethod(sale))}</div>
+          <div><b>Estado:</b> ${isGroupon ? "VERIFICADO GROUPON" : escapeHtml(sale.status === "paid" ? "PAGADO" : (sale.status || "—"))}</div>
+          ${sale.notes && !isGroupon ? `<div><b>Notas:</b> ${escapeHtml(sale.notes)}</div>` : ""}
         </div>
         <div class="rule"></div>
         ${lines || `<div class="center muted">Sin líneas.</div>`}
+        ${grouponPaidBox}
         <div class="totals">
-          <div class="trow"><span>Subtotal líneas</span><b>${money(subtotal)}</b></div>
-          <div class="trow"><span>Ajustes</span><b>${money(adj)}</b></div>
-          <div class="trow"><span>Base imponible</span><b>${money(tax.base)}</b></div>
-          <div class="trow"><span>IVA 21% incluido</span><b>${money(tax.vat)}</b></div>
-          <div class="trow grand"><span>TOTAL</span><span>${money(total)}</span></div>
+          ${isGroupon ? `
+            <div class="trow"><span>Total del servicio y promoción</span><b>${money(0)}</b></div>
+            <div class="trow"><span>Base imponible cobrada en Ensanbliss</span><b>${money(0)}</b></div>
+            <div class="trow"><span>IVA cobrado en Ensanbliss</span><b>${money(0)}</b></div>
+            <div class="trow grand"><span>TOTAL COBRADO EN ENSANBLISS</span><span>${money(0)}</span></div>
+            <div class="trow"><span>Estado del bono</span><b>VERIFICADO GROUPON</b></div>
+          ` : `
+            <div class="trow"><span>Subtotal líneas</span><b>${money(customerSubtotal)}</b></div>
+            <div class="trow"><span>Ajustes</span><b>${money(customerAdj)}</b></div>
+            <div class="trow"><span>Base imponible</span><b>${money(customerTax.base)}</b></div>
+            <div class="trow"><span>IVA 21% incluido</span><b>${money(customerTax.vat)}</b></div>
+            <div class="trow grand"><span>TOTAL</span><span>${money(customerTotal)}</span></div>
+          `}
         </div>
         <div class="rule"></div>
         <div class="footer">Web: ${BUSINESS.web}<br>Tel: ${BUSINESS.phone}<br>Horario habitual: ${BUSINESS.hours}<br>${BUSINESS.footer}<br>Conserve este ticket para cualquier consulta.</div>
@@ -3885,7 +4105,7 @@ for all to anon using (true) with check (true);`;
       ui.ticketViewMeta.innerHTML = `
         <span><b>Fecha:</b> ${new Date(sale.created_at).toLocaleString()}</span>
         <span><b>Estado:</b> ${escapeHtml(sale.status)}</span>
-        <span><b>Método:</b> ${escapeHtml(sale.payment_method || "—")}</span>
+        <span><b>Método:</b> ${escapeHtml(displayPaymentMethod(sale))}</span>
         <span><b>Cliente:</b> ${escapeHtml(sale.client_name || "—")}</span>
         <span><b>Notas:</b> ${escapeHtml(sale.notes || "—")}</span>
       `;
