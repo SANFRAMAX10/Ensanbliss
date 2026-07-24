@@ -1076,6 +1076,7 @@
           <span class="dateFilterLabel">Hasta</span>
           <input class="dateFilter" id="salesDateTo" type="date" />
           <button type="button" class="pillBtn" id="btnSalesClearDates">Limpiar fechas</button>
+          <button type="button" class="pillBtn primary" id="btnSalesPdfReport"><i class="fa-solid fa-file-pdf"></i> Informe PDF</button>
           <span class="pill gray" id="salesCount">0</span>
           <button type="button" class="pillBtn" id="btnSalesRefresh">Actualizar</button>
         </div>
@@ -1147,6 +1148,35 @@
   </div>
 </div>
 
+
+<!-- MODAL: INFORME PDF DE VENTAS -->
+<div class="modal" id="salesReportModal">
+  <div class="modalCard" style="width:min(620px,96vw);">
+    <div class="modalHead">
+      <b><i class="fa-solid fa-file-pdf"></i> Informe PDF de ventas pagadas</b>
+      <button type="button" class="closeX" id="salesReportClose">Cerrar</button>
+    </div>
+    <div class="modalBodyFull">
+      <div class="grid2">
+        <div>
+          <label>Fecha inicial</label>
+          <input class="input dateFilter" style="width:100%;" id="salesReportFrom" type="date" />
+        </div>
+        <div>
+          <label>Fecha final</label>
+          <input class="input dateFilter" style="width:100%;" id="salesReportTo" type="date" />
+        </div>
+      </div>
+      <div class="note" style="margin-top:14px;line-height:1.55;">
+        Se incluirán exclusivamente las ventas con estado <b>paid</b>, con sus líneas de terapia y otros conceptos, base imponible, IVA del 21% y total. Al abrirse la vista de impresión podrás elegir <b>Guardar como PDF</b>.
+      </div>
+    </div>
+    <div class="modalFoot">
+      <button type="button" class="btn" id="salesReportCancel">Cancelar</button>
+      <button type="button" class="btn primary" id="salesReportGenerate"><i class="fa-solid fa-print"></i> Generar informe</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL: AGENDA SUPABASE -->
 <div class="modal" id="agendaModal">
@@ -1598,6 +1628,13 @@
     salesDateFrom: document.getElementById("salesDateFrom"),
     salesDateTo: document.getElementById("salesDateTo"),
     btnSalesClearDates: document.getElementById("btnSalesClearDates"),
+    btnSalesPdfReport: document.getElementById("btnSalesPdfReport"),
+    salesReportModal: document.getElementById("salesReportModal"),
+    salesReportClose: document.getElementById("salesReportClose"),
+    salesReportCancel: document.getElementById("salesReportCancel"),
+    salesReportFrom: document.getElementById("salesReportFrom"),
+    salesReportTo: document.getElementById("salesReportTo"),
+    salesReportGenerate: document.getElementById("salesReportGenerate"),
     salesCount: document.getElementById("salesCount"),
     salesRows: document.getElementById("salesRows"),
     btnSalesRefresh: document.getElementById("btnSalesRefresh"),
@@ -1638,9 +1675,10 @@
   const BUSINESS = {
     name: "Ensanbliss",
     subtitle: "Body & Soul Care",
-    web: "ensanblisss.es",
+    web: "ensanbliss.es",
+    nif: "Z2282882E",
     email: "info@ensanbliss.es",
-    phone: "+34 607 496 297",
+    phone: "607 496 297",
     hours: "Todos los días de 09:00 a 21:00",
     logo: "https://raw.githubusercontent.com/SANFRAMAX10/IMAGEN/refs/heads/main/Logo%20B%26W.png",
     footer: "Gracias por confiar en Ensanbliss. Tu bienestar, nuestra inspiración."
@@ -3086,6 +3124,142 @@
     ui.salesDateTo.value = "";
     await refreshSales();
   });
+
+  function closeSalesReportModal(){ closeModal(ui.salesReportModal); }
+
+  ui.btnSalesPdfReport.addEventListener("click", () => {
+    const today = isoDate();
+    ui.salesReportFrom.value = ui.salesDateFrom.value || today.slice(0, 8) + "01";
+    ui.salesReportTo.value = ui.salesDateTo.value || today;
+    openModal(ui.salesReportModal);
+  });
+  ui.salesReportClose.addEventListener("click", closeSalesReportModal);
+  ui.salesReportCancel.addEventListener("click", closeSalesReportModal);
+  ui.salesReportModal.addEventListener("click", (ev) => {
+    if (ev.target === ui.salesReportModal) closeSalesReportModal();
+  });
+  ui.salesReportGenerate.addEventListener("click", generatePaidSalesPdfReport);
+
+  function reportDateLabel(value){
+    if (!value) return "—";
+    const [y,m,d] = value.split("-");
+    return `${d}/${m}/${y}`;
+  }
+
+  function reportTherapyDetails(items){
+    if (!Array.isArray(items) || !items.length) return "Sin detalle de líneas";
+    return items.map(it => {
+      const qty = Number(it.qty || 1);
+      const name = String(it.name || "Concepto");
+      return qty > 1 ? `${name} × ${qty}` : name;
+    }).join(" · ");
+  }
+
+  function buildPaidSalesReportHtml({ from, to, sales, itemsBySale }){
+    let totalBase = 0, totalVat = 0, totalGross = 0;
+    const rows = sales.map((sale, index) => {
+      const gross = Number(sale.total || 0);
+      const tax = taxBreakdown(gross);
+      totalBase += tax.base;
+      totalVat += tax.vat;
+      totalGross += gross;
+      const details = reportTherapyDetails(itemsBySale.get(sale.id) || []);
+      return `<tr>
+        <td>${index + 1}</td>
+        <td>${escapeHtml(new Date(sale.created_at).toLocaleDateString("es-ES"))}</td>
+        <td class="mono">${escapeHtml(sale.id)}</td>
+        <td>${escapeHtml(sale.client_name || "Sin nombre")}</td>
+        <td>${escapeHtml(details)}</td>
+        <td>${escapeHtml(displayPaymentMethod(sale))}</td>
+        <td class="num">${money(tax.base)}</td>
+        <td class="num">${money(tax.vat)}</td>
+        <td class="num strong">${money(gross)}</td>
+      </tr>`;
+    }).join("");
+
+    return `<!doctype html><html lang="es"><head><meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <title>Informe de ventas Ensanbliss ${escapeHtml(from)} - ${escapeHtml(to)}</title>
+      <style>
+        @page{size:A4 landscape;margin:12mm 10mm 14mm}
+        *{box-sizing:border-box} body{margin:0;color:#171717;background:#fff;font-family:Arial,Helvetica,sans-serif;font-size:10px}
+        .report{width:100%}.header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #111;padding:0 0 10px;margin-bottom:12px}
+        .logoWrap{width:44%;display:flex;align-items:center}.logo{display:block;max-width:250px;max-height:82px;object-fit:contain;object-position:left center}
+        .company{text-align:right;line-height:1.5}.companyName{font-family:"Breathing","Allura","Brush Script MT",cursive;font-size:31px;font-weight:400;letter-spacing:.4px;line-height:1;margin-bottom:5px}
+        .company div:not(.companyName){font-size:10px}.title{text-align:center;margin:4px 0 12px}.title h1{font-size:18px;margin:0 0 4px;text-transform:uppercase;letter-spacing:.8px}.period{font-size:11px}
+        table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #777;padding:6px 5px;vertical-align:top;overflow-wrap:anywhere}th{background:#ededed;font-size:9px;text-transform:uppercase;text-align:left}
+        th:nth-child(1){width:3%}th:nth-child(2){width:8%}th:nth-child(3){width:17%}th:nth-child(4){width:12%}th:nth-child(5){width:25%}th:nth-child(6){width:9%}th:nth-child(7),th:nth-child(8),th:nth-child(9){width:8.66%}
+        .num{text-align:right;white-space:nowrap}.strong{font-weight:800}.mono{font-family:Consolas,monospace;font-size:8px}
+        tfoot td{font-weight:800;background:#e5e5e5;border-top:2px solid #111;font-size:10px}.footerNote{margin-top:8px;font-size:8.5px;color:#444;text-align:right}
+        .noRows{padding:25px;text-align:center;border:1px solid #999;font-size:12px}
+        @media print{.screenActions{display:none!important} body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+        .screenActions{position:fixed;right:15px;top:15px;display:flex;gap:8px}.screenActions button{padding:10px 14px;border:0;border-radius:8px;cursor:pointer;font-weight:700}.printBtn{background:#111;color:#fff}.closeBtn{background:#ddd;color:#111}
+      </style></head><body>
+      <div class="screenActions"><button class="closeBtn" onclick="window.close()">Cerrar</button><button class="printBtn" onclick="window.print()">Imprimir / Guardar PDF</button></div>
+      <main class="report">
+        <header class="header">
+          <div class="logoWrap"><img class="logo" src="${BUSINESS.logo}" alt="Logo Ensanbliss"></div>
+          <div class="company"><div class="companyName">ENSANBLISS</div><div><b>NIF:</b> ${BUSINESS.nif}</div><div>${BUSINESS.web}</div><div>${BUSINESS.phone}</div></div>
+        </header>
+        <section class="title"><h1>Informe de ventas pagadas</h1><div class="period">Periodo: ${reportDateLabel(from)} — ${reportDateLabel(to)}</div></section>
+        ${sales.length ? `<table><thead><tr><th>N.º</th><th>Fecha</th><th>ID</th><th>Cliente</th><th>Terapia / otros detalles</th><th>Método</th><th>Total sin IVA</th><th>IVA 21%</th><th>Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="6">TOTALES (${sales.length} ventas pagadas)</td><td class="num">${money(totalBase)}</td><td class="num">${money(totalVat)}</td><td class="num">${money(totalGross)}</td></tr></tfoot></table>` : `<div class="noRows">No existen ventas pagadas en el periodo seleccionado.</div>`}
+        <div class="footerNote">Documento interno generado el ${escapeHtml(new Date().toLocaleString("es-ES"))}. IVA incluido calculado mediante base imponible = total / 1,21.</div>
+      </main>
+      <script>window.addEventListener('load',()=>setTimeout(()=>window.print(),350));<\/script>
+      </body></html>`;
+  }
+
+  async function generatePaidSalesPdfReport(){
+    const from = ui.salesReportFrom.value;
+    const to = ui.salesReportTo.value;
+    if (!from || !to) {
+      await Dialog.alert("Selecciona la fecha inicial y la fecha final.", "Fechas obligatorias");
+      return;
+    }
+    if (from > to) {
+      await Dialog.alert("La fecha inicial no puede ser posterior a la fecha final.", "Periodo incorrecto");
+      return;
+    }
+
+    const originalText = ui.salesReportGenerate.innerHTML;
+    ui.salesReportGenerate.disabled = true;
+    ui.salesReportGenerate.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparando...';
+    try {
+      let query = sb.from("sales")
+        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+        .eq("status", "paid")
+        .gte("created_at", dateStartISO(from))
+        .lte("created_at", dateEndISO(to))
+        .order("created_at", { ascending: true });
+      const { data: sales, error } = await query;
+      if (error) throw error;
+
+      const paidSales = sales || [];
+      const itemsBySale = new Map();
+      const ids = paidSales.map(s => s.id);
+      if (ids.length) {
+        const { data: items, error: itemsError } = await sb.from("sale_items")
+          .select("sale_id, name, qty, unit_price, line_total, item_type")
+          .in("sale_id", ids);
+        if (itemsError) throw itemsError;
+        for (const item of (items || [])) {
+          if (!itemsBySale.has(item.sale_id)) itemsBySale.set(item.sale_id, []);
+          itemsBySale.get(item.sale_id).push(item);
+        }
+      }
+
+      const html = buildPaidSalesReportHtml({ from, to, sales: paidSales, itemsBySale });
+      const w = window.open("", "_blank");
+      if (!w) throw new Error("El navegador ha bloqueado la ventana de impresión. Permite las ventanas emergentes para generar el PDF.");
+      w.document.open(); w.document.write(html); w.document.close();
+      closeSalesReportModal();
+    } catch (e) {
+      await Dialog.alert("No se pudo generar el informe: " + (e?.message || e), "Error de informe");
+    } finally {
+      ui.salesReportGenerate.disabled = false;
+      ui.salesReportGenerate.innerHTML = originalText;
+    }
+  }
 
   function dateStartISO(dateValue) {
     if (!dateValue) return null;
