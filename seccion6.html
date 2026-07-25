@@ -211,6 +211,51 @@
     }
     .btnCard.customTherapyCard .price{color:rgba(244,228,193,.82)}
 
+    .btnCard.expenseCard{
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      border-color:rgba(255,90,95,.38);
+      background:linear-gradient(180deg, rgba(255,90,95,.13), rgba(0,0,0,.24));
+    }
+    .expenseCardIcon{
+      width:42px;
+      height:42px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      color:#fff1f1;
+      background:linear-gradient(180deg, #ff686d, #b92f35);
+      box-shadow:0 10px 24px rgba(255,90,95,.20);
+      font-size:18px;
+      margin-bottom:2px;
+    }
+    .btnCard.expenseCard .price{color:#ffb2b5}
+
+    .expensePreview{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+    .expensePreviewItem{
+      border:1px solid rgba(255,90,95,.20);
+      background:rgba(255,90,95,.07);
+      border-radius:14px;
+      padding:11px;
+    }
+    .expensePreviewItem span{
+      display:block;
+      color:rgba(244,228,193,.62);
+      font-size:10px;
+      font-weight:900;
+      text-transform:uppercase;
+      margin-bottom:4px;
+    }
+    .expensePreviewItem b{display:block;color:#ffb2b5;font-size:16px}
+    .expenseSigned{color:#ff8e93!important}
+    textarea.input{min-height:96px;resize:vertical;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+
     .btnCard .thumb{
       width:100%;
       height:110px;
@@ -772,8 +817,10 @@
     body.tpv-tablet-mode .btnCard .name{font-size:11px;line-height:1.12;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     body.tpv-tablet-mode .btnCard .price{font-size:12px;}
     body.tpv-tablet-mode .btnCard .meta{display:none;}
-    body.tpv-tablet-mode .customTherapyIcon{width:32px;height:32px;border-radius:12px;font-size:14px;margin:0;}
-    body.tpv-tablet-mode .btnCard.customTherapyCard{min-height:82px;}
+    body.tpv-tablet-mode .customTherapyIcon,
+    body.tpv-tablet-mode .expenseCardIcon{width:32px;height:32px;border-radius:12px;font-size:14px;margin:0;}
+    body.tpv-tablet-mode .btnCard.customTherapyCard,
+    body.tpv-tablet-mode .btnCard.expenseCard{min-height:82px;}
     body.tpv-tablet-mode .extrasGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
     body.tpv-tablet-mode .supplementsGrid{grid-template-columns:repeat(4,1fr);gap:7px;}
     body.tpv-tablet-mode .supplementCard{min-height:72px;padding:8px;border-radius:12px;gap:5px;}
@@ -868,6 +915,7 @@
     .agendaCard .agendaActions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 
     @media (max-width: 1100px){
+      .expensePreview{grid-template-columns:1fr;}
       .gridTPV{grid-template-columns:1fr}
       .brand{min-width:auto}
       .status-pill{min-width:auto}
@@ -893,7 +941,7 @@
 </head>
 
 <body class="tpv-tablet-mode">
-<div style="position:fixed;right:10px;bottom:10px;z-index:999999;padding:7px 10px;border-radius:999px;background:#d4af37;color:#111;font:800 11px Inter,Arial;box-shadow:0 8px 24px rgba(0,0,0,.28);">TPV V7 GROUPON TICKET OK</div>
+<div style="position:fixed;right:10px;bottom:10px;z-index:999999;padding:7px 10px;border-radius:999px;background:#d4af37;color:#111;font:800 11px Inter,Arial;box-shadow:0 8px 24px rgba(0,0,0,.28);">TPV V8 GASTOS SUPABASE</div>
 <!-- CUSTOM DIALOG OVERLAY -->
 <div id="customDialog">
   <div class="dialog-box">
@@ -1200,6 +1248,66 @@
       <div class="note" style="margin-top:10px;">
         Al cargar una cita se trae la terapia, duración, suplementos seleccionados, precio final, descuento/código aplicado y cliente. Si la reserva tiene un precio final diferente, se crea una línea de ajuste para cuadrar exactamente con la web.
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: GASTO DIRECTO A SUPABASE -->
+<div class="modal" id="expenseModal">
+  <div class="modalCard" style="width:min(720px,96vw);">
+    <div class="modalHead">
+      <b><i class="fa-solid fa-receipt"></i> Registrar gasto</b>
+      <button type="button" class="closeX" id="expenseClose">Cerrar</button>
+    </div>
+    <div class="modalBodyFull">
+      <div class="grid2">
+        <div>
+          <label>Título del gasto</label>
+          <input class="input" id="expenseTitle" maxlength="120" placeholder="Ej: Compra de aceites" />
+        </div>
+        <div>
+          <label>Valor total pagado (€)</label>
+          <input class="input" id="expenseAmount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0,00" />
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-top:4px;">
+        <div>
+          <label>Descripción</label>
+          <textarea class="input" id="expenseDescription" maxlength="1000" placeholder="Detalle, proveedor, factura, motivo u observaciones..."></textarea>
+        </div>
+        <div>
+          <label>IVA incluido</label>
+          <select class="input" id="expenseVat">
+            <option value="21" selected>21%</option>
+            <option value="10">10%</option>
+            <option value="4">4%</option>
+            <option value="0">0% / exento</option>
+          </select>
+          <div class="note" style="margin-top:10px;line-height:1.5;">
+            Se guardará directamente en <b>Supabase → transactions</b> como <b>expense</b>. No se añadirá al ticket de venta.
+          </div>
+        </div>
+      </div>
+
+      <div class="expensePreview">
+        <div class="expensePreviewItem">
+          <span>Movimiento</span>
+          <b class="expenseSigned" id="expenseSignedPreview">-€0.00</b>
+        </div>
+        <div class="expensePreviewItem">
+          <span>Base imponible</span>
+          <b id="expenseBasePreview">€0.00</b>
+        </div>
+        <div class="expensePreviewItem">
+          <span>Cuota IVA</span>
+          <b id="expenseVatPreview">€0.00</b>
+        </div>
+      </div>
+    </div>
+    <div class="modalFoot">
+      <button type="button" class="btn" id="expenseCancel">Cancelar</button>
+      <button type="button" class="btn primary" id="expenseSave"><i class="fa-solid fa-floppy-disk"></i> Guardar gasto</button>
     </div>
   </div>
 </div>
@@ -1576,6 +1684,18 @@
     btnDiscountPercent: document.getElementById("btnDiscountPercent"),
     btnDeposit: document.getElementById("btnDeposit"),
     btnGiftCard: document.getElementById("btnGiftCard"),
+
+    expenseModal: document.getElementById("expenseModal"),
+    expenseClose: document.getElementById("expenseClose"),
+    expenseCancel: document.getElementById("expenseCancel"),
+    expenseSave: document.getElementById("expenseSave"),
+    expenseTitle: document.getElementById("expenseTitle"),
+    expenseDescription: document.getElementById("expenseDescription"),
+    expenseAmount: document.getElementById("expenseAmount"),
+    expenseVat: document.getElementById("expenseVat"),
+    expenseSignedPreview: document.getElementById("expenseSignedPreview"),
+    expenseBasePreview: document.getElementById("expenseBasePreview"),
+    expenseVatPreview: document.getElementById("expenseVatPreview"),
 
     saleIdLabel: document.getElementById("saleIdLabel"),
     saleStatusLabel: document.getElementById("saleStatusLabel"),
@@ -2105,6 +2225,153 @@
   }
 
   /* =========================
+     Gastos directos: Supabase transactions
+     El campo amount se guarda positivo porque los informes clasifican y restan
+     por type="expense". El valor firmado negativo también queda en notes.
+  ========================= */
+  function roundMoney(value) {
+    return Math.round((Number(value || 0) + Number.EPSILON) * 100) / 100;
+  }
+
+  function expenseBreakdown(total, vatPercent) {
+    const gross = Math.abs(roundMoney(total));
+    const rate = Math.max(0, Number(vatPercent || 0));
+    const base = rate > 0 ? gross / (1 + rate / 100) : gross;
+    const vat = gross - base;
+    return {
+      total: roundMoney(gross),
+      signedAmount: -roundMoney(gross),
+      base: roundMoney(base),
+      vat: roundMoney(vat),
+      vatPercent: rate
+    };
+  }
+
+  function updateExpensePreview() {
+    const amount = Number(String(ui.expenseAmount.value || "0").replace(",", "."));
+    const vat = Number(ui.expenseVat.value || 21);
+    const detail = expenseBreakdown(Number.isFinite(amount) ? amount : 0, vat);
+    ui.expenseSignedPreview.textContent = `-${money(detail.total)}`;
+    ui.expenseBasePreview.textContent = money(detail.base);
+    ui.expenseVatPreview.textContent = money(detail.vat);
+  }
+
+  function resetExpenseForm() {
+    ui.expenseTitle.value = "";
+    ui.expenseDescription.value = "";
+    ui.expenseAmount.value = "";
+    ui.expenseVat.value = "21";
+    updateExpensePreview();
+  }
+
+  function openExpenseForm() {
+    resetExpenseForm();
+    openModal(ui.expenseModal);
+    setTimeout(() => ui.expenseTitle.focus(), 80);
+  }
+
+  function closeExpenseForm() {
+    closeModal(ui.expenseModal);
+  }
+
+  function expenseAccountingNotes({ expenseId, title, description, detail }) {
+    const metadata = {
+      app: "ensanbliss-tpv-seccion6",
+      kind: "expense",
+      source: "tpv_direct_expense",
+      expenseId,
+      iva: detail.vatPercent,
+      total: detail.total,
+      signedAmount: detail.signedAmount,
+      taxBase: detail.base,
+      vatAmount: detail.vat,
+      deductPct: 100,
+      method: "Otro",
+      status: "Pagado",
+      provider: "Proveedor no indicado",
+      concept: title,
+      notes: description || ""
+    };
+    return "ENSANBLISS_ACCOUNTING_JSON:" + JSON.stringify(metadata);
+  }
+
+  async function saveDirectExpense() {
+    const title = (ui.expenseTitle.value || "").trim();
+    const description = (ui.expenseDescription.value || "").trim();
+    const rawAmount = Number(String(ui.expenseAmount.value || "").replace(",", "."));
+    const vatPercent = Number(ui.expenseVat.value || 21);
+
+    if (!title) {
+      await Dialog.alert("Escribe el título del gasto.", "Dato obligatorio");
+      ui.expenseTitle.focus();
+      return;
+    }
+    if (!Number.isFinite(rawAmount) || rawAmount <= 0) {
+      await Dialog.alert("Introduce un valor de gasto superior a 0 €.", "Importe incorrecto");
+      ui.expenseAmount.focus();
+      return;
+    }
+    if (![0, 4, 10, 21].includes(vatPercent)) {
+      await Dialog.alert("Selecciona un porcentaje de IVA válido.", "IVA incorrecto");
+      return;
+    }
+
+    const detail = expenseBreakdown(rawAmount, vatPercent);
+    const uuid = (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function")
+      ? globalThis.crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const expenseId = `TPVG-${isoDate().replaceAll("-", "")}-${String(uuid).slice(0, 8).toUpperCase()}`;
+
+    const payload = {
+      type: "expense",
+      amount: detail.total,
+      description: title,
+      date: isoDate(),
+      category: "Otros",
+      client_name: "Proveedor no indicado",
+      notes: expenseAccountingNotes({ expenseId, title, description, detail })
+    };
+
+    const previousHtml = ui.expenseSave.innerHTML;
+    ui.expenseSave.disabled = true;
+    ui.expenseSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+    try {
+      const { data, error } = await sb
+        .from("transactions")
+        .insert([payload])
+        .select("id")
+        .single();
+      if (error) throw error;
+
+      closeExpenseForm();
+      log(`Gasto registrado: ${title} · -${money(detail.total)} · IVA ${vatPercent}% · ID ${data?.id || expenseId}`);
+      await Dialog.alert(
+        `Gasto guardado correctamente.\n\nConcepto: ${title}\nMovimiento: -${money(detail.total)}\nBase imponible: ${money(detail.base)}\nIVA (${vatPercent}%): ${money(detail.vat)}\n\nYa está disponible para los informes contables.`,
+        "Gasto registrado"
+      );
+      resetExpenseForm();
+    } catch (error) {
+      console.error("[TPV] Error guardando gasto:", error);
+      await Dialog.alert(
+        "No se ha podido guardar el gasto en Supabase: " + (error?.message || error),
+        "Error al registrar gasto"
+      );
+    } finally {
+      ui.expenseSave.disabled = false;
+      ui.expenseSave.innerHTML = previousHtml;
+    }
+  }
+
+  ui.expenseClose.addEventListener("click", closeExpenseForm);
+  ui.expenseCancel.addEventListener("click", closeExpenseForm);
+  ui.expenseSave.addEventListener("click", saveDirectExpense);
+  ui.expenseAmount.addEventListener("input", updateExpensePreview);
+  ui.expenseVat.addEventListener("change", updateExpensePreview);
+  ui.expenseModal.addEventListener("click", (event) => {
+    if (event.target === ui.expenseModal) closeExpenseForm();
+  });
+
+  /* =========================
      Catalog rendering
   ========================= */
   function renderTherapies() {
@@ -2120,6 +2387,17 @@
     `;
     customBtn.addEventListener("click", addCustomTicketLine);
     ui.therapyGrid.appendChild(customBtn);
+
+    const expenseBtn = document.createElement("div");
+    expenseBtn.className = "btnCard expenseCard";
+    expenseBtn.innerHTML = `
+      <div class="expenseCardIcon"><i class="fa-solid fa-receipt"></i></div>
+      <div class="name">GASTOS</div>
+      <div class="price">Registrar en negativo</div>
+      <div class="meta">Título, descripción, valor e IVA</div>
+    `;
+    expenseBtn.addEventListener("click", openExpenseForm);
+    ui.therapyGrid.appendChild(expenseBtn);
 
     therapies.forEach(t => {
       const btn = document.createElement("div");
