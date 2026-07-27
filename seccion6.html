@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -925,7 +924,7 @@
       .modalBody{grid-template-columns:1fr}
       .search{width:min(92vw,360px)}
     }
-  
+
 /* Botón volver compacto añadido */
 .ens-back-arrow{
   display:inline-flex;align-items:center;justify-content:center;
@@ -938,7 +937,7 @@
   backdrop-filter:blur(8px);
 }
 .ens-back-arrow:hover{transform:translateY(-1px);background:rgba(212,175,55,.14)}
-</style>
+  </style>
 </head>
 
 <body class="tpv-tablet-mode">
@@ -980,6 +979,7 @@
   <div class="actionsTop">
     <span class="proBadge">Modo profesional</span>
     <button type="button" class="pillBtn" id="btnTodaySummary">Resumen caja</button>
+    <button type="button" class="pillBtn" id="btnPrinter" title="Seleccionar y probar DATECS DPP-250"><i class="fa-solid fa-print"></i> Configurar impresora</button>
     <button type="button" class="pillBtn" id="btnReload">Recargar catálogo</button>
     <button type="button" class="pillBtn primary" id="btnNewSale">Nueva venta</button>
     <div class="status-pill">
@@ -1096,7 +1096,7 @@
             <button type="button" class="btn danger" id="btnClear">Vaciar</button>
             <button type="button" class="btn" id="btnHold">Dejar en espera</button>
             <button type="button" class="btn primary" id="btnPay">Pagar</button>
-            <button type="button" class="btn" id="btnPrint">Ticket</button>
+            <button type="button" class="btn" id="btnPrint"><i class="fa-solid fa-print"></i> Imprimir</button>
             <button type="button" class="btn" id="btnInvoice">Factura</button>
           </div>
 
@@ -1190,7 +1190,7 @@
           <tbody id="invoiceRows"></tbody>
         </table>
         <div class="note" style="margin-top:10px;">
-          Las facturas emitidas quedan guardadas en Supabase. No se eliminan; si hay que corregir una, genera una factura de devolución.
+          Las facturas normales, simplificadas y rectificativas comparten una numeración correlativa anual. No se eliminan; cualquier corrección debe realizarse mediante factura rectificativa.
         </div>
       </div>
     </section>
@@ -1202,7 +1202,7 @@
 <div class="modal" id="salesReportModal">
   <div class="modalCard" style="width:min(620px,96vw);">
     <div class="modalHead">
-      <b><i class="fa-solid fa-file-pdf"></i> Informe PDF de ventas pagadas</b>
+      <b><i class="fa-solid fa-file-pdf"></i> Informe fiscal de ventas, gastos y modelo 303</b>
       <button type="button" class="closeX" id="salesReportClose">Cerrar</button>
     </div>
     <div class="modalBodyFull">
@@ -1217,7 +1217,7 @@
         </div>
       </div>
       <div class="note" style="margin-top:14px;line-height:1.55;">
-        Se incluirán exclusivamente las ventas con estado <b>paid</b>, con sus líneas de terapia y otros conceptos, base imponible, IVA del 21% y total. Al abrirse la vista de impresión podrás elegir <b>Guardar como PDF</b>.
+        Se incluirán las ventas pagadas y los gastos registrados en el periodo. El informe mostrará base imponible, porcentaje de IVA, cuota de IVA y total. La segunda hoja incluirá una guía orientativa con los importes trasladables al modelo 303.
       </div>
     </div>
     <div class="modalFoot">
@@ -1566,6 +1566,45 @@
     }
   }
 
+  function formatAppointmentDateForPrint(value) {
+    if (!value) return "";
+    const raw = String(value).slice(0, 10);
+    const parts = raw.split("-");
+    return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : raw;
+  }
+
+  function formatAppointmentTimeForPrint(value) {
+    if (!value) return "";
+    return String(value).slice(0, 5);
+  }
+
+  function appointmentToPrintDetails(apt, therapyTitle = "", duration = 0) {
+    if (!apt) return null;
+    return {
+      date: formatAppointmentDateForPrint(apt.date),
+      time: formatAppointmentTimeForPrint(apt.time),
+      duration: duration ? `${duration} min` : "",
+      therapy: therapyTitle || String(apt.therapy_type || "").trim(),
+      reference: apt.id ? String(apt.id).slice(0, 8).toUpperCase() : ""
+    };
+  }
+
+  async function fetchAppointmentPrintDetails(appointmentId) {
+    if (!appointmentId) return null;
+    try {
+      const { data, error } = await sb.from("appointments")
+        .select("*")
+        .eq("id", appointmentId)
+        .maybeSingle();
+      if (error || !data) return null;
+      const duration = parseInt(data.duration || 0, 10) || 0;
+      return appointmentToPrintDetails(data, String(data.therapy_type || "").trim(), duration);
+    } catch (error) {
+      console.warn("[DATECS] No se pudieron cargar los detalles de la cita", error);
+      return null;
+    }
+  }
+
   async function loadAppointmentIntoTPV(appointmentId) {
     if (!appointmentId) return;
     try {
@@ -1580,8 +1619,13 @@
       linkedAppointmentId = apt.id;
       selectedClientId = apt.client_id || null;
 
+      const therapyTitle = (apt.therapy_type || "").trim();
+      const duration = parseInt(apt.duration || 60, 10) || 60;
+      currentAppointmentPrintDetails = appointmentToPrintDetails(apt, therapyTitle, duration);
+
       if (apt.sale_id) {
         await loadSaleIntoTPV(apt.sale_id);
+        currentAppointmentPrintDetails = appointmentToPrintDetails(apt, therapyTitle, duration);
         log(`Cita ya facturada. Ticket ${apt.sale_id} cargado.`);
         return;
       }
@@ -1591,16 +1635,13 @@
         `Cita agenda ${compactDateTime(apt.date, apt.time)}`,
         apt.email ? `Email: ${apt.email}` : "",
         apt.phone ? `Tel: ${apt.phone}` : "",
-        apt.notes ? `Notas: ${apt.notes}` : "",
+        apt.notes ? `Notas internas: ${apt.notes}` : "",
         appointmentDiscountMeta(apt)
       ].filter(Boolean).join(" | ");
 
       cart = [];
       currentSaleId = null;
       currentStatus = "new";
-
-      const therapyTitle = (apt.therapy_type || "").trim();
-      const duration = parseInt(apt.duration || 60, 10) || 60;
       const th = therapies.find(x => (x.title || "").trim().toLowerCase() === therapyTitle.toLowerCase());
       let therapyPrice = th ? calculateTherapyPriceLikeWeb(th, duration) : parseDbNumber(apt.final_price, 0);
 
@@ -1680,6 +1721,7 @@
     btnReload: document.getElementById("btnReload"),
     btnNewSale: document.getElementById("btnNewSale"),
     btnTodaySummary: document.getElementById("btnTodaySummary"),
+    btnPrinter: document.getElementById("btnPrinter"),
     btnQuickClient: document.getElementById("btnQuickClient"),
     btnAgendaPicker: document.getElementById("btnAgendaPicker"),
     btnDiscountPercent: document.getElementById("btnDiscountPercent"),
@@ -2176,6 +2218,7 @@
   let selectedPayMethod = "cash";
   let linkedAppointmentId = null;
   let selectedClientId = null;
+  let currentAppointmentPrintDetails = null;
 
   let salesStatus = "draft";
   let salesAll = [];
@@ -3002,6 +3045,9 @@
     cart = [];
     ui.clientName.value = "";
     ui.notes.value = "";
+    linkedAppointmentId = null;
+    selectedClientId = null;
+    currentAppointmentPrintDetails = null;
     renderTicket();
   }
 
@@ -3046,6 +3092,9 @@
     currentStatus = sale.status;
     linkedAppointmentId = sale.appointment_id || linkedAppointmentId || null;
     selectedClientId = sale.client_id || selectedClientId || null;
+    currentAppointmentPrintDetails = linkedAppointmentId
+      ? await fetchAppointmentPrintDetails(linkedAppointmentId)
+      : null;
     ui.clientName.value = sale.client_name || "";
     ui.notes.value = sale.notes || "";
 
@@ -3371,6 +3420,20 @@
 
   ui.btnPrint.addEventListener("click", () => printCurrentTicket("ticket"));
   ui.btnInvoice.addEventListener("click", () => issueInvoiceFromCurrent());
+  ui.btnPrinter.addEventListener("click", async () => {
+    try {
+      if (window.Android && typeof window.Android.selectDatecsPrinter === "function") {
+        window.Android.selectDatecsPrinter();
+      } else {
+        await Dialog.alert(
+          "La configuración directa de la DATECS solo está disponible dentro de la aplicación Android Ensanbliss.",
+          "Impresora DATECS"
+        );
+      }
+    } catch (error) {
+      log("No se pudo abrir la selección de impresora: " + (error?.message || error));
+    }
+  });
 
   /* =========================
      Sales view
@@ -3434,14 +3497,37 @@
     }).join(" · ");
   }
 
-  function buildPaidSalesReportHtml({ from, to, sales, itemsBySale }){
-    let totalBase = 0, totalVat = 0, totalGross = 0;
-    const rows = sales.map((sale, index) => {
+  function parseExpenseAccountingData(tx){
+    const total = Math.abs(Number(tx?.amount || 0));
+    let meta = null;
+    const notes = String(tx?.notes || "");
+    const prefix = "ENSANBLISS_ACCOUNTING_JSON:";
+    if (notes.startsWith(prefix)) {
+      try { meta = JSON.parse(notes.slice(prefix.length)); } catch (_) {}
+    }
+    const rate = Number(meta?.iva);
+    const hasRate = Number.isFinite(rate) && [0,4,10,21].includes(rate);
+    const detail = hasRate ? expenseBreakdown(total, rate) : { total:roundMoney(total), base:roundMoney(total), vat:0, vatPercent:null };
+    return {
+      concept: meta?.concept || tx?.description || "Gasto",
+      provider: meta?.provider || tx?.client_name || "Proveedor no indicado",
+      description: meta?.notes || "",
+      total: Number(meta?.total ?? detail.total),
+      base: Number(meta?.taxBase ?? detail.base),
+      vat: Number(meta?.vatAmount ?? detail.vat),
+      vatPercent: hasRate ? rate : null,
+      deductiblePct: Number(meta?.deductPct ?? 100)
+    };
+  }
+
+  function buildPaidSalesReportHtml({ from, to, sales, itemsBySale, expenses }){
+    let totalSalesBase = 0, totalSalesVat = 0, totalSalesGross = 0;
+    const salesRows = sales.map((sale, index) => {
       const gross = Number(sale.total || 0);
       const tax = taxBreakdown(gross);
-      totalBase += tax.base;
-      totalVat += tax.vat;
-      totalGross += gross;
+      totalSalesBase += tax.base;
+      totalSalesVat += tax.vat;
+      totalSalesGross += gross;
       const details = reportTherapyDetails(itemsBySale.get(sale.id) || []);
       return `<tr>
         <td>${index + 1}</td>
@@ -3451,93 +3537,135 @@
         <td>${escapeHtml(details)}</td>
         <td>${escapeHtml(displayPaymentMethod(sale))}</td>
         <td class="num">${money(tax.base)}</td>
+        <td class="num">21%</td>
         <td class="num">${money(tax.vat)}</td>
         <td class="num strong">${money(gross)}</td>
       </tr>`;
     }).join("");
 
+    let totalExpenseBase = 0, totalExpenseVat = 0, totalExpenseGross = 0;
+    const expenseByRate = new Map([[0,{base:0,vat:0,total:0}],[4,{base:0,vat:0,total:0}],[10,{base:0,vat:0,total:0}],[21,{base:0,vat:0,total:0}]]);
+    const expenseRows = expenses.map((tx, index) => {
+      const e = parseExpenseAccountingData(tx);
+      totalExpenseBase += e.base;
+      totalExpenseVat += e.vat;
+      totalExpenseGross += e.total;
+      if (e.vatPercent !== null) {
+        const bucket = expenseByRate.get(e.vatPercent) || {base:0,vat:0,total:0};
+        bucket.base += e.base; bucket.vat += e.vat; bucket.total += e.total;
+        expenseByRate.set(e.vatPercent, bucket);
+      }
+      return `<tr>
+        <td>${index + 1}</td>
+        <td>${escapeHtml(new Date(tx.date || tx.created_at).toLocaleDateString("es-ES"))}</td>
+        <td>${escapeHtml(e.concept)}</td>
+        <td>${escapeHtml(e.provider)}</td>
+        <td>${escapeHtml(e.description || "—")}</td>
+        <td class="num">${money(e.base)}</td>
+        <td class="num">${e.vatPercent === null ? "No informado" : `${e.vatPercent}%`}</td>
+        <td class="num">${money(e.vat)}</td>
+        <td class="num strong">${money(e.total)}</td>
+      </tr>`;
+    }).join("");
+
+    const deductibleExpenses = expenses.map(parseExpenseAccountingData).filter(e => e.vatPercent !== null && e.vatPercent > 0);
+    const deductibleBase = deductibleExpenses.reduce((a,e)=>a+e.base,0);
+    const deductibleVat = deductibleExpenses.reduce((a,e)=>a+e.vat*(Math.max(0,Math.min(100,e.deductiblePct))/100),0);
+    const estimatedResult = totalSalesVat - deductibleVat;
+
+    const rateRows = [0,4,10,21].map(rate => {
+      const b=expenseByRate.get(rate) || {base:0,vat:0,total:0};
+      return `<tr><td>${rate}%</td><td class="num">${money(b.base)}</td><td class="num">${money(b.vat)}</td><td class="num">${money(b.total)}</td></tr>`;
+    }).join("");
+
     return `<!doctype html><html lang="es"><head><meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
-      <title>Informe de ventas Ensanbliss ${escapeHtml(from)} - ${escapeHtml(to)}</title>
+      <title>Informe fiscal Ensanbliss ${escapeHtml(from)} - ${escapeHtml(to)}</title>
       <style>
-        @page{size:A4 landscape;margin:12mm 10mm 14mm}
-        *{box-sizing:border-box} body{margin:0;color:#171717;background:#fff;font-family:Arial,Helvetica,sans-serif;font-size:10px}
-        .report{width:100%}.header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #111;padding:0 0 10px;margin-bottom:12px}
-        .logoWrap{width:44%;display:flex;align-items:center}.logo{display:block;max-width:250px;max-height:82px;object-fit:contain;object-position:left center}
-        .company{text-align:right;line-height:1.5}.companyName{font-family:"Breathing","Allura","Brush Script MT",cursive;font-size:31px;font-weight:400;letter-spacing:.4px;line-height:1;margin-bottom:5px}
-        .company div:not(.companyName){font-size:10px}.title{text-align:center;margin:4px 0 12px}.title h1{font-size:18px;margin:0 0 4px;text-transform:uppercase;letter-spacing:.8px}.period{font-size:11px}
-        table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #777;padding:6px 5px;vertical-align:top;overflow-wrap:anywhere}th{background:#ededed;font-size:9px;text-transform:uppercase;text-align:left}
-        th:nth-child(1){width:3%}th:nth-child(2){width:8%}th:nth-child(3){width:17%}th:nth-child(4){width:12%}th:nth-child(5){width:25%}th:nth-child(6){width:9%}th:nth-child(7),th:nth-child(8),th:nth-child(9){width:8.66%}
-        .num{text-align:right;white-space:nowrap}.strong{font-weight:800}.mono{font-family:Consolas,monospace;font-size:8px}
-        tfoot td{font-weight:800;background:#e5e5e5;border-top:2px solid #111;font-size:10px}.footerNote{margin-top:8px;font-size:8.5px;color:#444;text-align:right}
-        .noRows{padding:25px;text-align:center;border:1px solid #999;font-size:12px}
+        @page{size:A4 landscape;margin:10mm 9mm 12mm} *{box-sizing:border-box}
+        body{margin:0;color:#171717;background:#fff;font-family:Arial,Helvetica,sans-serif;font-size:9px}
+        .page{width:100%;min-height:185mm}.pageBreak{break-before:page;page-break-before:always}
+        .header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #111;padding:0 0 8px;margin-bottom:9px}
+        .logoWrap{width:44%;display:flex;align-items:center}.logo{display:block;max-width:220px;max-height:70px;object-fit:contain;object-position:left center}
+        .company{text-align:right;line-height:1.45}.companyName{font-size:27px;font-weight:800;letter-spacing:.4px;line-height:1;margin-bottom:4px}
+        .title{text-align:center;margin:3px 0 9px}.title h1{font-size:17px;margin:0 0 3px;text-transform:uppercase;letter-spacing:.7px}.period{font-size:10px}
+        h2{font-size:13px;margin:11px 0 5px;text-transform:uppercase;border-left:5px solid #111;padding-left:7px}
+        table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #777;padding:4px 4px;vertical-align:top;overflow-wrap:anywhere}th{background:#ededed;font-size:8px;text-transform:uppercase;text-align:left}
+        .num{text-align:right;white-space:nowrap}.strong{font-weight:800}.mono{font-family:Consolas,monospace;font-size:7px}
+        tfoot td{font-weight:800;background:#e5e5e5;border-top:2px solid #111}.footerNote{margin-top:6px;font-size:7.5px;color:#444;text-align:right}
+        .noRows{padding:14px;text-align:center;border:1px solid #999;font-size:10px}.summaryGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+        .summaryBox{border:1px solid #777;padding:8px}.summaryBox h3{margin:0 0 7px;font-size:12px}.kpi{display:flex;justify-content:space-between;border-bottom:1px dotted #aaa;padding:4px 0}.kpi:last-child{border-bottom:0}.grandKpi{font-size:13px;font-weight:900;border-top:2px solid #111;margin-top:5px;padding-top:6px}
+        .guide{font-size:10px;line-height:1.45}.guideBox{border:1px solid #777;padding:10px;margin:8px 0}.guideBox h3{margin:0 0 6px;font-size:13px}.warning{border:2px solid #111;padding:9px;font-weight:700;margin-top:10px}
         @media print{.screenActions{display:none!important} body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-        .screenActions{position:fixed;right:15px;top:15px;display:flex;gap:8px}.screenActions button{padding:10px 14px;border:0;border-radius:8px;cursor:pointer;font-weight:700}.printBtn{background:#111;color:#fff}.closeBtn{background:#ddd;color:#111}
+        .screenActions{position:fixed;right:15px;top:15px;display:flex;gap:8px;z-index:99}.screenActions button{padding:10px 14px;border:0;border-radius:8px;cursor:pointer;font-weight:700}.printBtn{background:#111;color:#fff}.closeBtn{background:#ddd;color:#111}
       </style></head><body>
       <div class="screenActions"><button class="closeBtn" onclick="window.close()">Cerrar</button><button class="printBtn" onclick="window.print()">Imprimir / Guardar PDF</button></div>
-      <main class="report">
-        <header class="header">
-          <div class="logoWrap"><img class="logo" src="${BUSINESS.logo}" alt="Logo Ensanbliss"></div>
-          <div class="company"><div class="companyName">ENSANBLISS</div><div><b>NIF:</b> ${BUSINESS.nif}</div><div>${BUSINESS.web}</div><div>${BUSINESS.phone}</div></div>
-        </header>
-        <section class="title"><h1>Informe de ventas pagadas</h1><div class="period">Periodo: ${reportDateLabel(from)} — ${reportDateLabel(to)}</div></section>
-        ${sales.length ? `<table><thead><tr><th>N.º</th><th>Fecha</th><th>ID</th><th>Cliente</th><th>Terapia / otros detalles</th><th>Método</th><th>Total sin IVA</th><th>IVA 21%</th><th>Total</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="6">TOTALES (${sales.length} ventas pagadas)</td><td class="num">${money(totalBase)}</td><td class="num">${money(totalVat)}</td><td class="num">${money(totalGross)}</td></tr></tfoot></table>` : `<div class="noRows">No existen ventas pagadas en el periodo seleccionado.</div>`}
-        <div class="footerNote">Documento interno generado el ${escapeHtml(new Date().toLocaleString("es-ES"))}. IVA incluido calculado mediante base imponible = total / 1,21.</div>
-      </main>
-      <script>window.addEventListener('load',()=>setTimeout(()=>window.print(),350));<\/script>
-      </body></html>`;
+      <section class="page">
+        <header class="header"><div class="logoWrap"><img class="logo" src="${BUSINESS.logo}" alt="Logo Ensanbliss"></div><div class="company"><div class="companyName">ENSANBLISS</div><div><b>NIF:</b> ${BUSINESS.nif}</div><div>${BUSINESS.web}</div><div>${BUSINESS.phone}</div></div></header>
+        <div class="title"><h1>Informe fiscal de ventas y gastos</h1><div class="period">Periodo: ${reportDateLabel(from)} — ${reportDateLabel(to)}</div></div>
+        <h2>Ventas pagadas</h2>
+        ${sales.length ? `<table><thead><tr><th style="width:3%">N.º</th><th style="width:7%">Fecha</th><th style="width:13%">ID</th><th style="width:11%">Cliente</th><th style="width:22%">Terapia / detalle</th><th style="width:8%">Método</th><th>Base imponible</th><th>IVA %</th><th>Cuota IVA</th><th>Total</th></tr></thead><tbody>${salesRows}</tbody><tfoot><tr><td colspan="6">TOTALES (${sales.length} ventas)</td><td class="num">${money(totalSalesBase)}</td><td class="num">21%</td><td class="num">${money(totalSalesVat)}</td><td class="num">${money(totalSalesGross)}</td></tr></tfoot></table>` : `<div class="noRows">No existen ventas pagadas en el periodo.</div>`}
+        <h2>Gastos registrados</h2>
+        ${expenses.length ? `<table><thead><tr><th style="width:3%">N.º</th><th style="width:8%">Fecha</th><th style="width:17%">Concepto</th><th style="width:14%">Proveedor</th><th style="width:23%">Descripción</th><th>Base imponible</th><th>IVA %</th><th>Cuota IVA</th><th>Total</th></tr></thead><tbody>${expenseRows}</tbody><tfoot><tr><td colspan="5">TOTALES (${expenses.length} gastos)</td><td class="num">${money(totalExpenseBase)}</td><td></td><td class="num">${money(totalExpenseVat)}</td><td class="num">${money(totalExpenseGross)}</td></tr></tfoot></table>` : `<div class="noRows">No existen gastos registrados en el periodo.</div>`}
+        <div class="footerNote">Generado el ${escapeHtml(new Date().toLocaleString("es-ES"))}. Los gastos sin desglose fiscal guardado aparecen con IVA “No informado”.</div>
+      </section>
+
+      <section class="page pageBreak guide">
+        <header class="header"><div><div class="companyName">ENSANBLISS</div><div>Guía de apoyo para el modelo 303</div></div><div class="company"><b>Periodo:</b> ${reportDateLabel(from)} — ${reportDateLabel(to)}</div></header>
+        <div class="title"><h1>Datos orientativos para cumplimentar el modelo 303</h1><div>Régimen general · Operaciones interiores</div></div>
+        <div class="summaryGrid">
+          <div class="summaryBox"><h3>IVA devengado por ventas</h3><div class="kpi"><span>Casilla 07 · Base imponible al 21%</span><b>${money(totalSalesBase)}</b></div><div class="kpi"><span>Casilla 08 · Tipo</span><b>21%</b></div><div class="kpi"><span>Casilla 09 · Cuota devengada</span><b>${money(totalSalesVat)}</b></div></div>
+          <div class="summaryBox"><h3>IVA soportado deducible</h3><div class="kpi"><span>Casilla 28 · Base de operaciones interiores corrientes</span><b>${money(deductibleBase)}</b></div><div class="kpi"><span>Casilla 29 · Cuota deducible</span><b>${money(deductibleVat)}</b></div><div class="kpi grandKpi"><span>Diferencia provisional</span><b>${money(estimatedResult)}</b></div></div>
+        </div>
+        <div class="guideBox"><h3>Desglose de gastos por tipo de IVA</h3><table><thead><tr><th>Tipo</th><th>Base imponible</th><th>Cuota IVA</th><th>Total</th></tr></thead><tbody>${rateRows}</tbody></table></div>
+        <div class="guideBox"><h3>Cómo trasladar estos datos</h3>
+          <ol>
+            <li>En “IVA devengado”, introduce la base de las ventas al 21% en la casilla 07, el tipo 21 en la casilla 08 y la cuota en la casilla 09.</li>
+            <li>En “IVA deducible en operaciones interiores de bienes y servicios corrientes”, introduce en la casilla 28 la suma de bases de gastos con IVA deducible y en la casilla 29 la cuota deducible.</li>
+            <li>No incluyas en las casillas 28 y 29 gastos exentos, al 0%, no deducibles o sin factura válida. Revisa también inversiones, adquisiciones intracomunitarias, inversión del sujeto pasivo, rectificaciones y prorrata, porque requieren otras casillas.</li>
+            <li>La diferencia provisional mostrada es cuota devengada menos cuota deducible registrada; el resultado definitivo puede variar por compensaciones, regularizaciones y otras operaciones.</li>
+          </ol>
+        </div>
+        <div class="warning">Documento interno de apoyo. No sustituye la revisión contable ni la presentación oficial del modelo 303. Verifica que cada gasto tenga factura completa y derecho efectivo a deducción.</div>
+      </section>
+      <script>window.addEventListener('load',()=>setTimeout(()=>window.print(),350));<\/script></body></html>`;
   }
 
   async function generatePaidSalesPdfReport(){
     const from = ui.salesReportFrom.value;
     const to = ui.salesReportTo.value;
-    if (!from || !to) {
-      await Dialog.alert("Selecciona la fecha inicial y la fecha final.", "Fechas obligatorias");
-      return;
-    }
-    if (from > to) {
-      await Dialog.alert("La fecha inicial no puede ser posterior a la fecha final.", "Periodo incorrecto");
-      return;
-    }
+    if (!from || !to) { await Dialog.alert("Selecciona la fecha inicial y la fecha final.", "Fechas obligatorias"); return; }
+    if (from > to) { await Dialog.alert("La fecha inicial no puede ser posterior a la fecha final.", "Periodo incorrecto"); return; }
 
     const originalText = ui.salesReportGenerate.innerHTML;
     ui.salesReportGenerate.disabled = true;
     ui.salesReportGenerate.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparando...';
     try {
-      let query = sb.from("sales")
+      const { data: sales, error } = await sb.from("sales")
         .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
-        .eq("status", "paid")
-        .gte("created_at", dateStartISO(from))
-        .lte("created_at", dateEndISO(to))
-        .order("created_at", { ascending: true });
-      const { data: sales, error } = await query;
+        .eq("status", "paid").gte("created_at", dateStartISO(from)).lte("created_at", dateEndISO(to)).order("created_at", { ascending: true });
       if (error) throw error;
-
       const paidSales = sales || [];
       const itemsBySale = new Map();
       const ids = paidSales.map(s => s.id);
       if (ids.length) {
-        const { data: items, error: itemsError } = await sb.from("sale_items")
-          .select("sale_id, name, qty, unit_price, line_total, item_type")
-          .in("sale_id", ids);
+        const { data: items, error: itemsError } = await sb.from("sale_items").select("sale_id, name, qty, unit_price, line_total, item_type").in("sale_id", ids);
         if (itemsError) throw itemsError;
-        for (const item of (items || [])) {
-          if (!itemsBySale.has(item.sale_id)) itemsBySale.set(item.sale_id, []);
-          itemsBySale.get(item.sale_id).push(item);
-        }
+        for (const item of (items || [])) { if (!itemsBySale.has(item.sale_id)) itemsBySale.set(item.sale_id, []); itemsBySale.get(item.sale_id).push(item); }
       }
+      const { data: expenseData, error: expenseError } = await sb.from("transactions")
+        .select("*")
+        .eq("type", "expense").gte("date", from).lte("date", to).order("date", { ascending: true });
+      if (expenseError) throw expenseError;
 
-      const html = buildPaidSalesReportHtml({ from, to, sales: paidSales, itemsBySale });
+      const html = buildPaidSalesReportHtml({ from, to, sales: paidSales, itemsBySale, expenses: expenseData || [] });
       const w = window.open("", "_blank");
       if (!w) throw new Error("El navegador ha bloqueado la ventana de impresión. Permite las ventanas emergentes para generar el PDF.");
       w.document.open(); w.document.write(html); w.document.close();
       closeSalesReportModal();
     } catch (e) {
       await Dialog.alert("No se pudo generar el informe: " + (e?.message || e), "Error de informe");
-    } finally {
-      ui.salesReportGenerate.disabled = false;
-      ui.salesReportGenerate.innerHTML = originalText;
-    }
+    } finally { ui.salesReportGenerate.disabled = false; ui.salesReportGenerate.innerHTML = originalText; }
   }
 
   function dateStartISO(dateValue) {
@@ -3754,11 +3882,24 @@ alter table public.invoices enable row level security;
 create policy if not exists "Allow anon full invoices" on public.invoices
 for all to anon using (true) with check (true);`;
 
-  function invoiceNumberFromSale(sale, prefix = "FAC") {
-    const cleanSaleId = sale?.id && String(sale.id) !== "Borrador" ? String(sale.id) : "";
-    const stamp = (sale?.created_at ? new Date(sale.created_at) : new Date())
-      .toISOString().replace(/[-:T.Z]/g, "").slice(0, 14);
-    return cleanSaleId ? `${prefix}-${cleanSaleId.slice(0, 8).toUpperCase()}` : `${prefix}-${stamp}`;
+  function formatSequentialInvoiceNumber(year, sequence) {
+    return `F-${year}-${String(sequence).padStart(6, "0")}`;
+  }
+
+  async function nextSequentialInvoiceNumber(issuedAt = new Date()) {
+    const year = new Date(issuedAt).getFullYear();
+    const prefix = `F-${year}-`;
+    const { data, error } = await sb.from("invoices")
+      .select("invoice_number")
+      .ilike("invoice_number", `${prefix}%`)
+      .order("invoice_number", { ascending: false })
+      .limit(1);
+    if (error) throw error;
+    let sequence = 0;
+    const current = data?.[0]?.invoice_number || "";
+    const match = current.match(new RegExp(`^F-${year}-(\\d{6})$`));
+    if (match) sequence = Number(match[1]) || 0;
+    return formatSequentialInvoiceNumber(year, sequence + 1);
   }
 
   function invoiceTableMissingMessage(errorMessage = "") {
@@ -3793,7 +3934,8 @@ for all to anon using (true) with check (true);`;
       client_name: inv.client_name || "—",
       notes: inv.notes || null,
       invoice_number: inv.invoice_number,
-      invoice_label: inv.status === "refund" ? "FACTURA DE DEVOLUCIÓN" : "FACTURA"
+      invoice_label: inv.status === "refund" ? "FACTURA RECTIFICATIVA" : ((inv.invoice_data?.type === "simplified") ? "FACTURA SIMPLIFICADA" : "FACTURA"),
+      invoice_type: inv.invoice_data?.type || "normal"
     };
   }
 
@@ -3802,7 +3944,8 @@ for all to anon using (true) with check (true);`;
     return {
       name: inv.client_name || extra.name || "",
       taxId: inv.client_tax_id || extra.taxId || "",
-      address: inv.client_address || extra.address || ""
+      address: inv.client_address || extra.address || "",
+      type: extra.type || "normal"
     };
   }
 
@@ -3840,34 +3983,32 @@ for all to anon using (true) with check (true);`;
     const total = rawTotal * sign;
     const adjustments = total - subtotal;
     const tax = taxBreakdown(total);
-    const prefix = status === "refund" ? "DEV" : "FAC";
-    const invoiceNumber = status === "refund"
-      ? `${prefix}-${new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 14)}`
-      : invoiceNumberFromSale(sale, prefix);
+    const issuedAt = new Date().toISOString();
+    const fiscalData = invoiceData || { type:"simplified", name:"", taxId:"", address:"" };
 
-    const row = {
-      invoice_number: invoiceNumber,
-      sale_id: sale.id && String(sale.id) !== "Borrador" ? sale.id : null,
-      original_invoice_id: originalInvoice?.id || null,
-      issued_at: new Date().toISOString(),
-      status,
-      client_name: invoiceData?.name || sale.client_name || null,
-      client_tax_id: invoiceData?.taxId || null,
-      client_address: invoiceData?.address || null,
-      payment_method: sale.payment_method || null,
-      subtotal,
-      adjustments,
-      tax_base: tax.base,
-      tax_vat: tax.vat,
-      total,
-      notes: status === "refund" ? `Devolución de ${originalInvoice?.invoice_number || "factura"}${reason ? ` · ${reason}` : ""}` : (sale.notes || null),
-      invoice_data: invoiceData || {},
-      items: sourceItems
-    };
-
-    const { data, error } = await sb.from("invoices").insert([row]).select("*").single();
-    if (error) throw error;
-    return data;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const invoiceNumber = await nextSequentialInvoiceNumber(issuedAt);
+      const row = {
+        invoice_number: invoiceNumber,
+        sale_id: sale.id && String(sale.id) !== "Borrador" ? sale.id : null,
+        original_invoice_id: originalInvoice?.id || null,
+        issued_at: issuedAt,
+        status,
+        client_name: fiscalData.type === "simplified" ? null : (fiscalData.name || sale.client_name || null),
+        client_tax_id: fiscalData.type === "simplified" ? null : (fiscalData.taxId || null),
+        client_address: fiscalData.type === "simplified" ? null : (fiscalData.address || null),
+        payment_method: sale.payment_method || null,
+        subtotal, adjustments, tax_base: tax.base, tax_vat: tax.vat, total,
+        notes: status === "refund" ? `Rectificación de ${originalInvoice?.invoice_number || "factura"}${reason ? ` · ${reason}` : ""}` : null,
+        invoice_data: { ...fiscalData, type: fiscalData.type || "normal" },
+        items: sourceItems
+      };
+      const { data, error } = await sb.from("invoices").insert([row]).select("*").single();
+      if (!error) return data;
+      if (error.code !== "23505") throw error;
+      await new Promise(resolve => setTimeout(resolve, 100 + attempt * 100));
+    }
+    throw new Error("No se pudo reservar un número correlativo de factura después de varios intentos.");
   }
 
   async function issueInvoiceForSale(saleId, invoiceData = null) {
@@ -3979,16 +4120,17 @@ for all to anon using (true) with check (true);`;
       const tr = document.createElement("tr");
       tr.className = "clickable";
       const isRefund = inv.status === "refund";
+      const isSimple = inv.invoice_data?.type === "simplified";
       tr.innerHTML = `
         <td>${new Date(inv.issued_at || inv.created_at).toLocaleString()}</td>
         <td class="mono">${escapeHtml(inv.invoice_number || "—")}</td>
         <td>${escapeHtml(inv.client_name || "—")}</td>
         <td class="mono">${escapeHtml(inv.client_tax_id || "—")}</td>
         <td><b style="color:#d4af37">${money(inv.total)}</b></td>
-        <td><span class="pill ${isRefund ? "gray" : ""}">${isRefund ? "devolución" : "emitida"}</span></td>
+        <td><span class="pill ${isRefund ? "gray" : ""}">${isRefund ? "rectificativa" : (isSimple ? "simplificada" : "normal")}</span></td>
         <td>
           <button type="button" class="btnSmall" data-print-invoice="1">Imprimir</button>
-          ${!isRefund ? `<button type="button" class="btnSmall danger" data-refund-invoice="1">Factura devolución</button>` : ""}
+          ${!isRefund ? `<button type="button" class="btnSmall danger" data-refund-invoice="1">Factura rectificativa</button>` : ""}
         </td>
       `;
       tr.addEventListener("click", (ev) => {
@@ -4008,7 +4150,7 @@ for all to anon using (true) with check (true);`;
     const html = buildReceiptHtml({
       sale: saleObjectFromInvoice(inv),
       items: inv.items || [],
-      title: inv.status === "refund" ? "Factura devolución Ensanbliss" : "Factura Ensanbliss",
+      title: inv.status === "refund" ? "Factura rectificativa Ensanbliss" : "Factura Ensanbliss",
       mode: "invoice",
       invoiceData: invoiceDataFromRow(inv)
     });
@@ -4017,13 +4159,13 @@ for all to anon using (true) with check (true);`;
 
   async function createRefundInvoice(originalInvoice) {
     const confirmed = await Dialog.confirm(
-      `Vas a generar una factura de devolución para ${originalInvoice.invoice_number}.\n\nLa factura original no se eliminará. Se creará una nueva factura negativa.`,
+      `Vas a generar una factura rectificativa para ${originalInvoice.invoice_number}.\n\nLa factura original no se eliminará. Se creará una nueva factura negativa.`,
       "Factura de devolución",
       { danger: true, confirmText: "Generar devolución" }
     );
     if (!confirmed) return;
 
-    const reason = await Dialog.prompt("Motivo de la devolución (opcional):", "Devolución / corrección", "Factura devolución");
+    const reason = await Dialog.prompt("Motivo de la devolución (opcional):", "Devolución / corrección", "Factura rectificativa");
     try {
       const sale = saleObjectFromInvoice(originalInvoice);
       const inv = await saveInvoiceRecord({
@@ -4100,7 +4242,7 @@ for all to anon using (true) with check (true);`;
         .eq("sale_id", sale.id)
         .limit(1);
       if (!invErr && linkedInvoices && linkedInvoices.length) {
-        await Dialog.alert(`Esta venta tiene factura emitida (${linkedInvoices[0].invoice_number}). No se puede borrar la venta vinculada a una factura. Genera una factura de devolución si necesitas corregirla.`, "Factura emitida");
+        await Dialog.alert(`Esta venta tiene factura emitida (${linkedInvoices[0].invoice_number}). No se puede borrar la venta vinculada a una factura. Genera una factura rectificativa si necesitas corregirla.`, "Factura emitida");
         return;
       }
     } catch (_) {
@@ -4204,6 +4346,94 @@ for all to anon using (true) with check (true);`;
       </style>`;
   }
 
+
+  function buildDatecsTicketPayload(sale, items){
+    const sourceItems = Array.isArray(items) ? items : [];
+    const isGroupon = isGrouponSale(sale);
+    const printableItems = isGroupon
+      ? sourceItems.filter(it => {
+          const name = normalizeForMatch(it.name);
+          return !name.includes("beneficio neto groupon") &&
+                 !name.includes("descuento promocion groupon") &&
+                 !name.includes("importe pagado previamente") &&
+                 !name.includes("pagado a traves de groupon");
+        })
+      : sourceItems;
+
+    const subtotal = Number(sale.subtotal ?? sourceItems.reduce(
+      (sum, it) => sum + Number(it.line_total ?? ((it.unit_price ?? it.unit ?? 0) * (it.qty || 1))),
+      0
+    ));
+    const rawTotal = Number(sale.total ?? subtotal);
+    const total = isGroupon ? 0 : rawTotal;
+    const customerSubtotal = isGroupon ? 0 : subtotal;
+    const customerAdjustment = isGroupon ? 0 : (total - customerSubtotal);
+    const tax = taxBreakdown(total);
+
+    return {
+      business: {
+        name: BUSINESS.name || "ENSANBLISS",
+        subtitle: BUSINESS.subtitle || "Bienestar y terapias",
+        web: BUSINESS.web || "ensanbliss.es",
+        email: BUSINESS.email || "",
+        phone: BUSINESS.phone || "",
+        hours: BUSINESS.hours || "",
+        footer: BUSINESS.footer || "Gracias por confiar en Ensanbliss"
+      },
+      sale: {
+        id: sale.id ? String(sale.id) : "Borrador",
+        date: sale.created_at
+          ? new Date(sale.created_at).toLocaleString("es-ES")
+          : new Date().toLocaleString("es-ES"),
+        client: sale.client_name || "Sin nombre",
+        payment: displayPaymentMethod(sale),
+        status: isGroupon
+          ? "VERIFICADO GROUPON"
+          : (sale.status === "paid" ? "PAGADO" : String(sale.status || "BORRADOR").toUpperCase()),
+        appointment: sale.appointment_details || currentAppointmentPrintDetails || null,
+        is_groupon: isGroupon,
+        subtotal: customerSubtotal,
+        adjustment: customerAdjustment,
+        tax_base: tax.base,
+        vat: tax.vat,
+        total
+      },
+      items: printableItems.map(it => {
+        const qty = Number(it.qty || 1);
+        const unit = Number(it.unit_price ?? it.unit ?? 0);
+        return {
+          name: String(it.name || "Concepto"),
+          qty,
+          unit,
+          total: Number(it.line_total ?? (unit * qty))
+        };
+      })
+    };
+  }
+
+  function tryPrintDatecsTicket(sale, items){
+    try {
+      if (!window.Android || typeof window.Android.printDatecsTicket !== "function") return false;
+      const payload = buildDatecsTicketPayload(sale, items);
+      window.Android.printDatecsTicket(JSON.stringify(payload));
+      log("Ticket enviado a la DATECS DPP-250...");
+      return true;
+    } catch (error) {
+      console.error("[DATECS] No se pudo enviar el ticket al puente Android", error);
+      log("Error enviando a la DATECS: " + (error?.message || error));
+      return false;
+    }
+  }
+
+  window.onDatecsPrintResult = function(success, message){
+    const text = String(message || (success ? "Impresión completada." : "Error de impresión."));
+    log(text);
+    if (ui?.btnPrinter) {
+      ui.btnPrinter.title = text;
+      ui.btnPrinter.classList.toggle("primary", Boolean(success && /seleccionada|impreso/i.test(text)));
+    }
+  };
+
   function printHtml(html){
     const frame = document.createElement("iframe");
     frame.setAttribute("aria-hidden", "true");
@@ -4259,8 +4489,9 @@ for all to anon using (true) with check (true);`;
       .toISOString()
       .replace(/[-:T.Z]/g, "")
       .slice(0, 14);
-    const invoiceNumber = sale.invoice_number || (cleanSaleId ? `FAC-${cleanSaleId.slice(0, 8).toUpperCase()}` : `FAC-${invoiceStamp}`);
+    const invoiceNumber = sale.invoice_number || `BORRADOR-${invoiceStamp}`;
     const inv = invoiceData || {};
+    const isSimpleInvoice = inv.type === "simplified" || sale.invoice_type === "simplified";
 
     if (isInvoice) {
       const rows = (items || []).map((it, idx) => {
@@ -4293,7 +4524,7 @@ for all to anon using (true) with check (true);`;
               </div>
             </div>
             <div class="invoiceTitleBox">
-              <div class="invoiceTitle">${escapeHtml(sale.invoice_label || "FACTURA")}</div>
+              <div class="invoiceTitle">${escapeHtml(sale.invoice_label || (isSimpleInvoice ? "FACTURA SIMPLIFICADA" : "FACTURA"))}</div>
               <table class="invoiceMetaTable">
                 <tr><th>N.º factura</th><td class="mono">${escapeHtml(invoiceNumber)}</td></tr>
                 <tr><th>Fecha</th><td>${escapeHtml(date)}</td></tr>
@@ -4302,6 +4533,8 @@ for all to anon using (true) with check (true);`;
             </div>
           </div>
 
+          ${isSimpleInvoice ? `
+          <div class="clientBox"><h3>Tipo de documento</h3><div class="clientBody" style="grid-template-columns:1fr;"><div><b>Factura simplificada</b><br><span class="muted">Documento emitido sin datos fiscales del destinatario.</span></div></div></div>` : `
           <div class="clientBox">
             <h3>Datos del cliente</h3>
             <div class="clientBody">
@@ -4309,12 +4542,11 @@ for all to anon using (true) with check (true);`;
               <div><span class="label">NIF / DNI / NIE</span><span class="mono"><b>${escapeHtml(inv.taxId || "—")}</b></span></div>
               <div><span class="label">Dirección fiscal</span>${inv.address ? escapeHtml(inv.address) : "—"}</div>
             </div>
-          </div>
+          </div>`}
 
           <div class="docInfoBar">
             <div>Venta: <b class="mono">${escapeHtml(id)}</b></div>
-            <div>Cliente TPV: <b>${escapeHtml(sale.client_name || inv.name || "—")}</b></div>
-            ${sale.notes ? `<div class="notes">Notas: <b>${escapeHtml(sale.notes)}</b></div>` : ""}
+            <div>Tipo: <b>${isSimpleInvoice ? "Factura simplificada" : "Factura normal"}</b></div>
           </div>
           <table class="lines">
             <thead>
@@ -4360,7 +4592,13 @@ for all to anon using (true) with check (true);`;
     const isGroupon = isGrouponSale(sale);
     const sourceItems = Array.isArray(items) ? items : [];
     const customerItems = isGroupon
-      ? sourceItems.filter(it => !normalizeForMatch(it.name).includes("beneficio neto groupon"))
+      ? sourceItems.filter(it => {
+          const name = normalizeForMatch(it.name);
+          return !name.includes("beneficio neto groupon") &&
+                 !name.includes("descuento promocion groupon") &&
+                 !name.includes("importe pagado previamente") &&
+                 !name.includes("pagado a traves de groupon");
+        })
       : sourceItems;
 
     const lines = customerItems.map(it => {
@@ -4369,8 +4607,10 @@ for all to anon using (true) with check (true);`;
       const lt = Number(it.line_total ?? (unit * qty));
       let cleanName = String(it.name || "");
       if (isGroupon) cleanName = cleanName.replace(/\s*[—-]\s*Groupon:.*$/i, "").trim();
-      const detail = `${escapeHtml((it.item_type || it.type || "item").toUpperCase())} • ${money(unit)} x ${qty}`;
-      return `<div class="line"><div><div class="name">${escapeHtml(cleanName)}</div><div class="desc">${detail}</div></div><b>${money(lt)}</b></div>`;
+      const detail = isGroupon
+        ? "Servicio incluido en bono Groupon"
+        : `${escapeHtml((it.item_type || it.type || "item").toUpperCase())} • ${money(unit)} x ${qty}`;
+      return `<div class="line"><div><div class="name">${escapeHtml(cleanName)}</div><div class="desc">${detail}</div></div>${isGroupon ? "" : `<b>${money(lt)}</b>`}</div>`;
     }).join("");
 
     // En Groupon las líneas del ticket forman esta operación:
@@ -4384,7 +4624,7 @@ for all to anon using (true) with check (true);`;
     const grouponPaidBox = isGroupon ? `
       <div style="margin:10px 0;padding:10px;border:2px solid #111;text-align:center;font-weight:900;font-size:13px;line-height:1.35;">
         ✓ BONO GROUPON VERIFICADO<br>
-        <span style="font-size:10px;font-weight:600;">El cliente ya realizó el pago a través de Groupon. Total cobrado en Ensanbliss: €0.00.</span>
+        <span style="font-size:10px;font-weight:600;">Bono validado. El importe ha sido gestionado directamente por Groupon.</span>
       </div>` : "";
 
     return `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>${receiptCss("ticket")}</head><body>
@@ -4398,18 +4638,16 @@ for all to anon using (true) with check (true);`;
           <div><b>Cliente:</b> ${escapeHtml(sale.client_name || "—")}</div>
           <div><b>Método:</b> ${escapeHtml(displayPaymentMethod(sale))}</div>
           <div><b>Estado:</b> ${isGroupon ? "VERIFICADO GROUPON" : escapeHtml(sale.status === "paid" ? "PAGADO" : (sale.status || "—"))}</div>
-          ${sale.notes && !isGroupon ? `<div><b>Notas:</b> ${escapeHtml(sale.notes)}</div>` : ""}
+          ${sale.appointment_details ? `<div><b>Cita:</b> ${escapeHtml([sale.appointment_details.date, sale.appointment_details.time].filter(Boolean).join(" "))}${sale.appointment_details.duration ? ` · ${escapeHtml(sale.appointment_details.duration)}` : ""}</div>` : ""}
         </div>
         <div class="rule"></div>
         ${lines || `<div class="center muted">Sin líneas.</div>`}
         ${grouponPaidBox}
         <div class="totals">
           ${isGroupon ? `
-            <div class="trow"><span>Total del servicio y promoción</span><b>${money(0)}</b></div>
-            <div class="trow"><span>Base imponible cobrada en Ensanbliss</span><b>${money(0)}</b></div>
-            <div class="trow"><span>IVA cobrado en Ensanbliss</span><b>${money(0)}</b></div>
-            <div class="trow grand"><span>TOTAL COBRADO EN ENSANBLISS</span><span>${money(0)}</span></div>
-            <div class="trow"><span>Estado del bono</span><b>VERIFICADO GROUPON</b></div>
+            <div class="trow grand"><span>BONO GROUPON</span><span>VERIFICADO</span></div>
+            <div class="trow"><span>Cobro en Ensanbliss</span><b>NO PROCEDE</b></div>
+            <div class="trow"><span>Importe</span><b>Gestionado por Groupon</b></div>
           ` : `
             <div class="trow"><span>Subtotal líneas</span><b>${money(customerSubtotal)}</b></div>
             <div class="trow"><span>Ajustes</span><b>${money(customerAdj)}</b></div>
@@ -4425,14 +4663,20 @@ for all to anon using (true) with check (true);`;
   }
 
   async function collectInvoiceData(defaultName = "") {
-    const name = await Dialog.prompt("Nombre fiscal completo del cliente:", defaultName || "", "Modo factura");
-    if (!name) return null;
+    const normal = await Dialog.confirm(
+      "Selecciona el tipo de factura.\n\nLa factura simplificada no incluye datos fiscales del cliente. La factura normal solicita nombre, NIF y dirección.",
+      "Tipo de factura",
+      { confirmText: "Factura normal", cancelText: "Factura simplificada" }
+    );
+    if (!normal) return { type:"simplified", name:"", taxId:"", address:"" };
 
+    const name = await Dialog.prompt("Nombre fiscal completo del cliente:", defaultName || "", "Factura normal");
+    if (!name) return null;
     const taxId = await Dialog.prompt("NIF / DNI / NIE del cliente:", "", "Datos fiscales");
     if (!taxId) return null;
-
-    const address = await Dialog.prompt("Dirección fiscal del cliente (opcional):", "", "Datos fiscales");
-    return { name: name.trim(), taxId: taxId.trim().toUpperCase(), address: address ? address.trim() : "" };
+    const address = await Dialog.prompt("Dirección fiscal del cliente:", "", "Datos fiscales");
+    if (!address) return null;
+    return { type:"normal", name:name.trim(), taxId:taxId.trim().toUpperCase(), address:address.trim() };
   }
 
   async function printCurrentTicket(mode = "ticket"){
@@ -4440,8 +4684,11 @@ for all to anon using (true) with check (true);`;
     if (!cart.length) { log("No hay líneas para imprimir."); return; }
     const invoiceData = mode === "invoice" ? await collectInvoiceData((ui.clientName.value || "").trim()) : null;
     if (mode === "invoice" && !invoiceData) { log("Factura cancelada: faltan datos fiscales."); return; }
-    if (invoiceData?.name) ui.clientName.value = invoiceData.name;
+    if (invoiceData?.type === "normal" && invoiceData?.name) ui.clientName.value = invoiceData.name;
 
+    if (!currentAppointmentPrintDetails && linkedAppointmentId) {
+      currentAppointmentPrintDetails = await fetchAppointmentPrintDetails(linkedAppointmentId);
+    }
     const sale = {
       id: currentSaleId || "Borrador",
       created_at: new Date().toISOString(),
@@ -4450,24 +4697,30 @@ for all to anon using (true) with check (true);`;
       subtotal,
       total,
       client_name: (ui.clientName.value || "").trim() || null,
-      notes: (ui.notes.value || "").trim() || null
+      notes: (ui.notes.value || "").trim() || null,
+      appointment_details: currentAppointmentPrintDetails
     };
     const items = cart.map(x => ({...x, unit_price:x.unit, item_type:x.type, line_total:Number(x.unit||0)*Number(x.qty||1)}));
+    if (mode === "ticket" && tryPrintDatecsTicket(sale, items)) return;
     printHtml(buildReceiptHtml({ sale, items, title: mode === "invoice" ? "Factura Ensanbliss" : "Ticket Ensanbliss", mode, invoiceData }));
   }
 
   async function printSaleReceipt(saleId, mode = "ticket"){
     try{
       const { data: sale, error: saleErr } = await sb.from("sales")
-        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes")
+        .select("id, created_at, status, payment_method, total, subtotal, client_name, notes, appointment_id")
         .eq("id", saleId).single();
       if (saleErr) throw saleErr;
       const { data: items, error: itemsErr } = await sb.from("sale_items")
         .select("name, qty, unit_price, line_total, item_type")
         .eq("sale_id", saleId);
       if (itemsErr) throw itemsErr;
+      sale.appointment_details = sale.appointment_id
+        ? await fetchAppointmentPrintDetails(sale.appointment_id)
+        : null;
       const invoiceData = mode === "invoice" ? await collectInvoiceData(sale.client_name || "") : null;
       if (mode === "invoice" && !invoiceData) return;
+      if (mode === "ticket" && tryPrintDatecsTicket(sale, items || [])) return;
       printHtml(buildReceiptHtml({ sale, items, title: mode === "invoice" ? "Factura Ensanbliss" : "Ticket Ensanbliss", mode, invoiceData }));
     }catch(e){
       await Dialog.alert("No se pudo imprimir el ticket: " + (e?.message || e), "Error de impresión");
@@ -4665,7 +4918,6 @@ for all to anon using (true) with check (true);`;
     }
     log("TPV listo. Cobro -> guarda en Ventas y limpia el TPV.");
   })();
-  
 </script>
 </body>
 </html>
